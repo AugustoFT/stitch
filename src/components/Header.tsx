@@ -41,7 +41,7 @@ const Header: React.FC = () => {
       </div>
       
       <nav className={`${isMenuOpen ? 'flex' : 'hidden'} md:flex absolute md:static top-full left-0 right-0 bg-white md:bg-transparent p-4 md:p-0 flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 shadow-md md:shadow-none`}>
-        <a href="#mochilas" className="text-foreground hover:text-stitch-blue transition-colors">Mochilas</a>
+        <a href="#mochilas" className="text-foreground hover:text-stitch-blue transition-colors">Pelúcias</a>
         <a href="#beneficios" className="text-foreground hover:text-stitch-blue transition-colors">Benefícios</a>
         <a href="#depoimentos" className="text-foreground hover:text-stitch-blue transition-colors">Depoimentos</a>
         <a href="#faq" className="text-foreground hover:text-stitch-blue transition-colors">FAQ</a>

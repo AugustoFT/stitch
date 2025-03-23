@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Star, Clock, Check, ShoppingBag, Gift, TruckIcon } from 'lucide-react';
@@ -105,10 +104,10 @@ const Index: React.FC = () => {
                 LANÇAMENTO OFICIAL DISNEY
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-stitch-blue leading-tight mb-6">
-                Mochilas <span className="text-stitch-pink">Stitch</span> Exclusivas
+                Pelúcias <span className="text-stitch-pink">Stitch</span> Exclusivas
               </h1>
               <p className="text-gray-700 text-lg mb-8">
-                Adquira sua mochila oficial da Disney e leve o carismático Stitch para todas as suas aventuras. Design único, qualidade premium e muita fofura!
+                Adquira sua pelúcia oficial da Disney e leve o carismático Stitch para todas as suas aventuras. Design único, qualidade premium e muita fofura!
               </p>
               
               <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg mb-8 border border-stitch-blue/20">
@@ -159,8 +158,8 @@ const Index: React.FC = () => {
             >
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/af477ee3-7e6c-43ab-a87e-4472d793528b.png" 
-                  alt="Mochila Stitch" 
+                  src="/lovable-uploads/6f2fec12-1442-466f-9a02-b8a24dc751d4.png" 
+                  alt="Pelúcia Stitch" 
                   className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
                 />
                 <motion.div 
@@ -190,35 +189,35 @@ const Index: React.FC = () => {
         >
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Nossos Modelos Exclusivos</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Escolha sua mochila favorita do Stitch e leve este amiguinho fofo para todos os lugares. Cada modelo é oficial da Disney e feito com materiais de altíssima qualidade.
+            Escolha sua pelúcia favorita do Stitch e leve este amiguinho fofo para todos os lugares. Cada modelo é oficial da Disney e feito com materiais de altíssima qualidade.
           </p>
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <ProductCard
-            title="Mochila Stitch Azul 3D"
-            price="R$ 149,90"
-            description="Mochila oficial Disney com tema do Stitch em pelúcia super macia. Perfeita para o dia a dia, com compartimentos espaçosos."
-            imageUrl="/lovable-uploads/af477ee3-7e6c-43ab-a87e-4472d793528b.png"
-            size="31 x 40 x 12 cm"
+            title="Pelúcia Stitch Azul"
+            price="R$ 89,90"
+            description="Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs."
+            imageUrl="/lovable-uploads/01ea5cbe-5885-4afa-9b29-a5936f5dfafc.png"
+            size="20 cm"
             onBuyClick={scrollToCheckout}
           />
           
           <ProductCard
-            title="Bolsa Stitch Pelúcia"
-            price="R$ 129,90"
-            description="Bolsa temática do Stitch com o personagem em 3D. Design fofo e compartimento principal com bom espaço interno."
-            imageUrl="/lovable-uploads/14fa01ad-1a01-4957-ba41-870be0990efe.png"
-            size="35 x 28 x 12 cm"
+            title="Pelúcia Angel Rosa"
+            price="R$ 89,90"
+            description="Pelúcia da Angel (Experimento 624) em rosa vibrante. A namorada do Stitch com acabamento premium e super fofa."
+            imageUrl="/lovable-uploads/10640ba9-0eca-46e1-8aec-ecfe98856602.png"
+            size="20 cm"
             onBuyClick={scrollToCheckout}
           />
           
           <ProductCard
-            title="Mochila Stitch Face"
+            title="Kit Stitch e Angel"
             price="R$ 159,90"
-            description="Mochila com rosto expressivo do Stitch e orelhas em destaque. Material de alta qualidade e resistência."
-            imageUrl="/lovable-uploads/469f6fd3-1d8f-4771-b2bd-85a34c33b46d.png"
-            size="26 x 22 x 10 cm"
+            description="Kit com 2 pelúcias oficiais Disney: Stitch azul e Angel rosa. Perfeitos para colecionar ou presentear. Economize comprando o par!"
+            imageUrl="/lovable-uploads/a49577ad-eacf-43f0-87bb-85a716ec4dba.png"
+            size="20 cm cada"
             onBuyClick={scrollToCheckout}
           />
         </div>
@@ -553,7 +552,7 @@ const Index: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Adquira sua mochila oficial do Stitch hoje mesmo e ganhe um adesivo exclusivo da Disney.
+            Adquira sua pelúcia oficial do Stitch hoje mesmo e ganhe um adesivo exclusivo da Disney.
             <span className="block mt-2 text-stitch-yellow font-bold">Frete grátis para todo o Brasil!</span>
           </motion.p>
           <motion.button 
@@ -582,7 +581,7 @@ const Index: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Garanta sua Mochila Stitch</h2>
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Garanta sua Pelúcia Stitch</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Preencha o formulário abaixo para realizar seu pedido. Estoque limitado!
           </p>
