@@ -1,6 +1,7 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { Star, Clock, Check, ShoppingBag, Gift, TruckIcon } from 'lucide-react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import CheckoutForm from '../components/CheckoutForm';
@@ -14,17 +15,71 @@ const Index: React.FC = () => {
   const productRef = useRef<HTMLDivElement>(null);
   const productInView = useInView(productRef, { once: true, margin: "-100px" });
   
-  const detailsRef = useRef<HTMLDivElement>(null);
-  const detailsInView = useInView(detailsRef, { once: true, margin: "-100px" });
+  const benefitsRef = useRef<HTMLDivElement>(null);
+  const benefitsInView = useInView(benefitsRef, { once: true, margin: "-100px" });
   
-  const featureRef = useRef<HTMLDivElement>(null);
-  const featureInView = useInView(featureRef, { once: true, margin: "-100px" });
+  const testRef = useRef<HTMLDivElement>(null);
+  const testInView = useInView(testRef, { once: true, margin: "-100px" });
   
-  const testimonialRef = useRef<HTMLDivElement>(null);
-  const testimonialInView = useInView(testimonialRef, { once: true, margin: "-100px" });
+  const faqRef = useRef<HTMLDivElement>(null);
+  const faqInView = useInView(faqRef, { once: true, margin: "-100px" });
   
   const checkoutRef = useRef<HTMLDivElement>(null);
   const checkoutInView = useInView(checkoutRef, { once: true, margin: "-100px" });
+
+  // Countdown timer
+  const [timeLeft, setTimeLeft] = useState({
+    days: 2,
+    hours: 12,
+    minutes: 30,
+    seconds: 0
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        const newSeconds = prev.seconds - 1;
+        
+        if (newSeconds < 0) {
+          const newMinutes = prev.minutes - 1;
+          
+          if (newMinutes < 0) {
+            const newHours = prev.hours - 1;
+            
+            if (newHours < 0) {
+              const newDays = prev.days - 1;
+              return {
+                days: Math.max(0, newDays),
+                hours: newDays < 0 ? 0 : 23,
+                minutes: newDays < 0 && newHours < 0 ? 0 : 59,
+                seconds: newDays < 0 && newHours < 0 && newMinutes < 0 ? 0 : 59
+              };
+            }
+            
+            return {
+              ...prev,
+              hours: newHours,
+              minutes: 59,
+              seconds: 59
+            };
+          }
+          
+          return {
+            ...prev,
+            minutes: newMinutes,
+            seconds: 59
+          };
+        }
+        
+        return {
+          ...prev,
+          seconds: newSeconds
+        };
+      });
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, []);
 
   const scrollToCheckout = () => {
     checkoutRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -32,7 +87,7 @@ const Index: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="star-bg">
+      <div className="bg-gradient-to-b from-stitch-blue/20 to-white">
         <Header />
         
         {/* Hero Section */}
@@ -47,14 +102,37 @@ const Index: React.FC = () => {
               transition={{ duration: 0.8 }}
             >
               <div className="bg-stitch-pink text-white text-sm font-bold py-1 px-4 rounded-full mb-6 inline-block">
-                EDIÇÃO LIMITADA
+                LANÇAMENTO OFICIAL DISNEY
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-tight mb-6">
-                Pelúcia <span className="text-stitch-blue">Stitch</span> Interativa
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-stitch-blue leading-tight mb-6">
+                Mochilas <span className="text-stitch-pink">Stitch</span> Exclusivas
               </h1>
-              <p className="text-gray-200 text-lg mb-8">
-                Adote seu próprio Stitch e experimente toda a diversão e fofura do querido alienígena azul. Ohana significa família!
+              <p className="text-gray-700 text-lg mb-8">
+                Adquira sua mochila oficial da Disney e leve o carismático Stitch para todas as suas aventuras. Design único, qualidade premium e muita fofura!
               </p>
+              
+              <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg mb-8 border border-stitch-blue/20">
+                <p className="text-stitch-blue font-bold mb-2">Oferta por tempo limitado:</p>
+                <div className="flex gap-2">
+                  <div className="bg-stitch-dark text-white px-3 py-2 rounded-md text-center min-w-[60px]">
+                    <div className="text-xl font-bold">{String(timeLeft.days).padStart(2, '0')}</div>
+                    <div className="text-xs">dias</div>
+                  </div>
+                  <div className="bg-stitch-dark text-white px-3 py-2 rounded-md text-center min-w-[60px]">
+                    <div className="text-xl font-bold">{String(timeLeft.hours).padStart(2, '0')}</div>
+                    <div className="text-xs">horas</div>
+                  </div>
+                  <div className="bg-stitch-dark text-white px-3 py-2 rounded-md text-center min-w-[60px]">
+                    <div className="text-xl font-bold">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                    <div className="text-xs">min</div>
+                  </div>
+                  <div className="bg-stitch-dark text-white px-3 py-2 rounded-md text-center min-w-[60px]">
+                    <div className="text-xl font-bold">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                    <div className="text-xs">seg</div>
+                  </div>
+                </div>
+              </div>
+              
               <motion.button 
                 className="btn-primary mr-4"
                 onClick={scrollToCheckout}
@@ -64,8 +142,8 @@ const Index: React.FC = () => {
                 Comprar Agora
               </motion.button>
               <motion.a 
-                href="#detalhes"
-                className="inline-block py-3 px-6 text-white border border-white/30 rounded-md hover:bg-white/10 transition-colors"
+                href="#beneficios"
+                className="inline-block py-3 px-6 text-stitch-blue border border-stitch-blue/30 rounded-md hover:bg-stitch-blue/10 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -79,19 +157,28 @@ const Index: React.FC = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="flex justify-center"
             >
-              <img 
-                src="/lovable-uploads/be4eeb13-1ca3-4176-ac10-9c6064fedf07.png" 
-                alt="Stitch Pelúcia Interativa" 
-                className="w-4/5 max-w-md animate-float"
-              />
+              <div className="relative">
+                <img 
+                  src="/lovable-uploads/af477ee3-7e6c-43ab-a87e-4472d793528b.png" 
+                  alt="Mochila Stitch" 
+                  className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
+                />
+                <motion.div 
+                  className="absolute -right-10 top-10 bg-stitch-yellow text-stitch-dark p-3 rounded-full shadow-lg font-bold text-lg transform rotate-12"
+                  animate={{ rotate: [12, 16, 12] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  20% OFF
+                </motion.div>
+              </div>
             </motion.div>
           </div>
         </section>
       </div>
       
-      {/* Product Section */}
+      {/* Products Section */}
       <section 
-        id="produto"
+        id="mochilas"
         ref={productRef}
         className="py-16 px-6 md:px-12 max-w-7xl mx-auto"
       >
@@ -101,68 +188,71 @@ const Index: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Conheça seu novo amigo</h2>
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Nossos Modelos Exclusivos</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            A pelúcia interativa do Stitch foi desenhada com detalhes incríveis para replicar fielmente o personagem do filme. Venha conhecer!
+            Escolha sua mochila favorita do Stitch e leve este amiguinho fofo para todos os lugares. Cada modelo é oficial da Disney e feito com materiais de altíssima qualidade.
           </p>
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <ProductCard
-            title="Stitch Pelúcia Interativa"
+            title="Mochila Stitch Azul 3D"
             price="R$ 149,90"
-            description="Pelúcia interativa que reproduz sons e frases do Stitch. Tamanho médio (30cm) e super macio."
-            imageUrl="/lovable-uploads/be4eeb13-1ca3-4176-ac10-9c6064fedf07.png"
+            description="Mochila oficial Disney com tema do Stitch em pelúcia super macia. Perfeita para o dia a dia, com compartimentos espaçosos."
+            imageUrl="/lovable-uploads/af477ee3-7e6c-43ab-a87e-4472d793528b.png"
+            size="31 x 40 x 12 cm"
             onBuyClick={scrollToCheckout}
           />
           
           <ProductCard
-            title="Stitch Pelúcia Deluxe"
-            price="R$ 199,90"
-            description="Versão premium com mais funcionalidades: movimenta as orelhas, brilha no escuro e fala mais frases!"
-            imageUrl="/lovable-uploads/be4eeb13-1ca3-4176-ac10-9c6064fedf07.png"
+            title="Bolsa Stitch Pelúcia"
+            price="R$ 129,90"
+            description="Bolsa temática do Stitch com o personagem em 3D. Design fofo e compartimento principal com bom espaço interno."
+            imageUrl="/lovable-uploads/14fa01ad-1a01-4957-ba41-870be0990efe.png"
+            size="35 x 28 x 12 cm"
             onBuyClick={scrollToCheckout}
           />
           
           <ProductCard
-            title="Stitch + Lilo Combo"
-            price="R$ 249,90"
-            description="Conjunto com Stitch e Lilo, os inseparáveis amigos da ilha. Pelúcias de alta qualidade."
-            imageUrl="/lovable-uploads/be4eeb13-1ca3-4176-ac10-9c6064fedf07.png"
+            title="Mochila Stitch Face"
+            price="R$ 159,90"
+            description="Mochila com rosto expressivo do Stitch e orelhas em destaque. Material de alta qualidade e resistência."
+            imageUrl="/lovable-uploads/469f6fd3-1d8f-4771-b2bd-85a34c33b46d.png"
+            size="26 x 22 x 10 cm"
             onBuyClick={scrollToCheckout}
           />
         </div>
       </section>
       
-      {/* Details Section */}
+      {/* Benefits Section */}
       <section 
-        id="detalhes"
-        ref={detailsRef}
-        className="py-16 px-6 md:px-12 bg-gray-50"
+        id="beneficios"
+        ref={benefitsRef}
+        className="py-16 px-6 md:px-12 bg-gradient-to-b from-white to-stitch-light/50"
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={detailsInView ? { opacity: 1, y: 0 } : {}}
+            animate={benefitsInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Por que você vai amar</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Nossa pelúcia do Stitch foi criada com o maior cuidado para trazer toda a magia do filme para sua casa.
+              Nossas mochilas do Stitch combinam estilo, qualidade e o carisma do personagem mais amado da Disney.
             </p>
           </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
-              animate={detailsInView ? { opacity: 1, x: 0 } : {}}
+              animate={benefitsInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <img 
-                  src="/lovable-uploads/be4eeb13-1ca3-4176-ac10-9c6064fedf07.png" 
-                  alt="Detalhes da Pelúcia" 
+                  src="/lovable-uploads/133875ed-7115-4a36-9f30-a7beab0b7c35.png" 
+                  alt="Mochila Stitch" 
                   className="w-full h-auto"
                 />
               </div>
@@ -170,55 +260,47 @@ const Index: React.FC = () => {
             
             <motion.div
               initial={{ opacity: 0, x: 30 }}
-              animate={detailsInView ? { opacity: 1, x: 0 } : {}}
+              animate={benefitsInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               <ul className="space-y-6">
                 <li className="flex items-start">
                   <div className="bg-stitch-blue text-white p-3 rounded-full mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                    <Check className="h-5 w-5" />
                   </div>
                   <div>
                     <h3 className="text-xl font-medium mb-1">Material Premium</h3>
-                    <p className="text-gray-600">Feito com pelúcia super macia e antialérgica, segura para crianças.</p>
+                    <p className="text-gray-600">Feita com pelúcia super macia e de alta qualidade que mantém a forma e as cores vibrantes por muito tempo.</p>
                   </div>
                 </li>
                 
                 <li className="flex items-start">
-                  <div className="bg-stitch-blue text-white p-3 rounded-full mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                  <div className="bg-stitch-pink text-white p-3 rounded-full mr-4">
+                    <Check className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-medium mb-1">Interativo</h3>
-                    <p className="text-gray-600">Reproduz frases icônicas e sons do Stitch com apenas um toque.</p>
+                    <h3 className="text-xl font-medium mb-1">Design Exclusivo</h3>
+                    <p className="text-gray-600">Licenciada oficialmente pela Disney, com detalhes fiéis ao personagem Stitch, feita para fãs exigentes.</p>
                   </div>
                 </li>
                 
                 <li className="flex items-start">
-                  <div className="bg-stitch-blue text-white p-3 rounded-full mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                  <div className="bg-stitch-teal text-white p-3 rounded-full mr-4">
+                    <Check className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-medium mb-1">Detalhes Perfeitos</h3>
-                    <p className="text-gray-600">Cada detalhe foi cuidadosamente projetado para reproduzir o Stitch com fidelidade.</p>
+                    <h3 className="text-xl font-medium mb-1">Compartimentos Práticos</h3>
+                    <p className="text-gray-600">Espaço interno organizador para levar seus pertences com segurança e praticidade no dia a dia.</p>
                   </div>
                 </li>
                 
                 <li className="flex items-start">
-                  <div className="bg-stitch-blue text-white p-3 rounded-full mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                  <div className="bg-stitch-yellow text-stitch-dark p-3 rounded-full mr-4">
+                    <Check className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-medium mb-1">Presente Perfeito</h3>
-                    <p className="text-gray-600">O melhor presente para fãs de Lilo & Stitch de todas as idades.</p>
+                    <h3 className="text-xl font-medium mb-1">Versatilidade</h3>
+                    <p className="text-gray-600">Perfeita para diversas ocasiões: escola, faculdade, passeios e viagens curtas. Estilo e diversão em qualquer lugar!</p>
                   </div>
                 </li>
               </ul>
@@ -228,71 +310,69 @@ const Index: React.FC = () => {
       </section>
       
       {/* Features Section */}
-      <section 
-        ref={featureRef}
-        className="py-16 px-6 md:px-12 max-w-7xl mx-auto"
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={featureInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Características</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            O que torna nossa pelúcia do Stitch tão especial? Confira as características:
-          </p>
-        </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <motion.div 
             className="glass-card p-6 rounded-xl text-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={featureInView ? { opacity: 1, y: 0 } : {}}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
+            whileHover={{ y: -5 }}
           >
             <div className="w-16 h-16 bg-stitch-blue/10 text-stitch-blue rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+              <ShoppingBag className="h-8 w-8" />
             </div>
-            <h3 className="text-xl font-medium mb-2">Tamanho Ideal</h3>
+            <h3 className="text-xl font-medium mb-2">Produto Original</h3>
             <p className="text-gray-600">
-              Com 30cm de altura, é o tamanho perfeito para abraçar e carregar para qualquer lugar.
+              Produtos licenciados oficialmente pela Disney Store, garantindo autenticidade.
             </p>
           </motion.div>
           
           <motion.div 
             className="glass-card p-6 rounded-xl text-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={featureInView ? { opacity: 1, y: 0 } : {}}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
+            whileHover={{ y: -5 }}
           >
             <div className="w-16 h-16 bg-stitch-pink/10 text-stitch-pink rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 01.001-7.072m8.485 12.728a9 9 0 000-12.728M1.878 15.536a9 9 0 010-12.728" />
-              </svg>
+              <Gift className="h-8 w-8" />
             </div>
-            <h3 className="text-xl font-medium mb-2">Sons Autênticos</h3>
+            <h3 className="text-xl font-medium mb-2">Brinde Exclusivo</h3>
             <p className="text-gray-600">
-              Reproduz até 10 frases e sons originais do filme, como "Hi!" e "Ohana".
+              Ganhe um adesivo exclusivo do Stitch em cada compra realizada.
             </p>
           </motion.div>
           
           <motion.div 
             className="glass-card p-6 rounded-xl text-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={featureInView ? { opacity: 1, y: 0 } : {}}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
+            whileHover={{ y: -5 }}
+          >
+            <div className="w-16 h-16 bg-stitch-teal/10 text-stitch-teal rounded-full flex items-center justify-center mx-auto mb-4">
+              <TruckIcon className="h-8 w-8" />
+            </div>
+            <h3 className="text-xl font-medium mb-2">Frete Grátis</h3>
+            <p className="text-gray-600">
+              Entregamos para todo o Brasil sem custo adicional nas compras acima de R$99.
+            </p>
+          </motion.div>
+          
+          <motion.div 
+            className="glass-card p-6 rounded-xl text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            whileHover={{ y: -5 }}
           >
             <div className="w-16 h-16 bg-stitch-yellow/10 text-stitch-yellow rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
+              <Clock className="h-8 w-8" />
             </div>
-            <h3 className="text-xl font-medium mb-2">Brilha no Escuro</h3>
+            <h3 className="text-xl font-medium mb-2">Entrega Rápida</h3>
             <p className="text-gray-600">
-              Os olhos e detalhes especiais brilham no escuro, assim como no filme.
+              Envio em até 24h após a confirmação do pagamento.
             </p>
           </motion.div>
         </div>
@@ -300,19 +380,20 @@ const Index: React.FC = () => {
       
       {/* Testimonials Section */}
       <section 
-        ref={testimonialRef}
-        className="py-16 px-6 md:px-12 bg-gray-50"
+        id="depoimentos"
+        ref={testRef}
+        className="py-16 px-6 md:px-12 bg-gradient-to-b from-stitch-light/50 to-white"
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={testimonialInView ? { opacity: 1, y: 0 } : {}}
+            animate={testInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">O que nossos clientes dizem</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Veja os depoimentos de quem já adotou um Stitch e está feliz com seu novo amigo.
+              Veja os depoimentos de quem já garantiu sua mochila do Stitch e está encantado com a qualidade.
             </p>
           </motion.div>
           
@@ -320,54 +401,172 @@ const Index: React.FC = () => {
             <motion.div 
               className="bg-white p-6 rounded-xl shadow-md"
               initial={{ opacity: 0, y: 30 }}
-              animate={testimonialInView ? { opacity: 1, y: 0 } : {}}
+              animate={testInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
               <div className="flex items-center mb-4">
-                <div className="text-stitch-yellow">
-                  {'★★★★★'}
+                <div className="text-stitch-yellow flex">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-current" />
+                  ))}
                 </div>
               </div>
               <p className="text-gray-600 mb-4">
-                "Minha filha amou o Stitch! A qualidade é incrível e os sons são igualzinhos aos do filme. Superou todas as minhas expectativas!"
+                "Minha filha amou a mochila do Stitch! A qualidade é impressionante, super macia e os detalhes são perfeitos. Já estamos de olho nos outros modelos!"
               </p>
-              <div className="font-medium">Maria S.</div>
+              <div className="font-medium">Camila R.</div>
+              <div className="text-sm text-gray-500">São Paulo, SP</div>
             </motion.div>
             
             <motion.div 
               className="bg-white p-6 rounded-xl shadow-md"
               initial={{ opacity: 0, y: 30 }}
-              animate={testimonialInView ? { opacity: 1, y: 0 } : {}}
+              animate={testInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <div className="flex items-center mb-4">
-                <div className="text-stitch-yellow">
-                  {'★★★★★'}
+                <div className="text-stitch-yellow flex">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-current" />
+                  ))}
                 </div>
               </div>
               <p className="text-gray-600 mb-4">
-                "Comprei para o meu sobrinho e ele não larga mais! A pelúcia é super macia e os detalhes são incríveis. Vale cada centavo!"
+                "Comprei para o meu sobrinho e ele não larga mais! Além de linda, é bem espaçosa e resistente. A entrega foi super rápida e o atendimento excelente!"
               </p>
-              <div className="font-medium">João P.</div>
+              <div className="font-medium">Pedro M.</div>
+              <div className="text-sm text-gray-500">Rio de Janeiro, RJ</div>
             </motion.div>
             
             <motion.div 
               className="bg-white p-6 rounded-xl shadow-md"
               initial={{ opacity: 0, y: 30 }}
-              animate={testimonialInView ? { opacity: 1, y: 0 } : {}}
+              animate={testInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <div className="flex items-center mb-4">
-                <div className="text-stitch-yellow">
-                  {'★★★★★'}
+                <div className="text-stitch-yellow flex">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-current" />
+                  ))}
                 </div>
               </div>
               <p className="text-gray-600 mb-4">
-                "Sou fã de Lilo & Stitch desde criança e essa pelúcia é perfeita! Os sons são idênticos e a qualidade do material é excelente!"
+                "Sou fã de Lilo & Stitch e essa mochila superou minhas expectativas! O material é de ótima qualidade e chama atenção por onde passo. Recomendo demais!"
               </p>
-              <div className="font-medium">Ana C.</div>
+              <div className="font-medium">Juliana T.</div>
+              <div className="text-sm text-gray-500">Curitiba, PR</div>
             </motion.div>
           </div>
+        </div>
+      </section>
+      
+      {/* FAQ Section */}
+      <section 
+        id="faq"
+        ref={faqRef}
+        className="py-16 px-6 md:px-12 max-w-7xl mx-auto"
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={faqInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Perguntas Frequentes</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Tire suas dúvidas sobre nossos produtos e formas de pagamento.
+          </p>
+        </motion.div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={faqInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h3 className="text-xl font-bold text-stitch-blue mb-2">As mochilas são originais Disney?</h3>
+            <p className="text-gray-600">Sim, todos os nossos produtos são originais e licenciados oficialmente pela Disney Store, garantindo qualidade e autenticidade.</p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={faqInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h3 className="text-xl font-bold text-stitch-blue mb-2">Qual o prazo de entrega?</h3>
+            <p className="text-gray-600">O prazo médio de entrega é de 3 a 7 dias úteis, dependendo da sua localização. Para capitais, costuma chegar em até 3 dias úteis.</p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={faqInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <h3 className="text-xl font-bold text-stitch-blue mb-2">Como faço para limpar a mochila?</h3>
+            <p className="text-gray-600">Recomendamos a limpeza a seco ou com pano levemente umedecido. Não recomendamos máquina de lavar para preservar a pelúcia e os detalhes.</p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={faqInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <h3 className="text-xl font-bold text-stitch-blue mb-2">Quais formas de pagamento são aceitas?</h3>
+            <p className="text-gray-600">Aceitamos cartões de crédito, boleto bancário, transferência via PIX e PayPal. Parcelamos em até 12x com juros no cartão.</p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={faqInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <h3 className="text-xl font-bold text-stitch-blue mb-2">É possível trocar o produto?</h3>
+            <p className="text-gray-600">Sim, oferecemos prazo de 7 dias para troca ou devolução caso o produto apresente algum defeito ou não atenda às suas expectativas.</p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={faqInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <h3 className="text-xl font-bold text-stitch-blue mb-2">Há outros modelos disponíveis?</h3>
+            <p className="text-gray-600">Sim, além dos modelos exibidos no site, temos outras opções de personagens Disney. Entre em contato conosco para mais informações.</p>
+          </motion.div>
+        </div>
+      </section>
+      
+      {/* CTA Section */}
+      <section className="py-12 px-6 md:px-12 bg-gradient-to-r from-stitch-blue to-stitch-darkblue text-white">
+        <div className="max-w-5xl mx-auto text-center">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-display font-bold mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Não perca esta oferta exclusiva!
+          </motion.h2>
+          <motion.p 
+            className="text-xl mb-8 max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            Adquira sua mochila oficial do Stitch hoje mesmo e ganhe um adesivo exclusivo da Disney.
+            <span className="block mt-2 text-stitch-yellow font-bold">Frete grátis para todo o Brasil!</span>
+          </motion.p>
+          <motion.button 
+            className="bg-stitch-pink hover:bg-stitch-pink/90 text-white font-bold text-lg py-4 px-8 rounded-full shadow-lg transition-all duration-300"
+            onClick={scrollToCheckout}
+            whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
+            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            COMPRAR AGORA
+          </motion.button>
         </div>
       </section>
       
@@ -383,9 +582,9 @@ const Index: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Garanta seu Stitch Agora</h2>
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Garanta sua Mochila Stitch</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Nosso estoque é limitado! Preencha o formulário abaixo para garantir o seu e receba em casa com frete grátis.
+            Preencha o formulário abaixo para realizar seu pedido. Estoque limitado!
           </p>
         </motion.div>
         
