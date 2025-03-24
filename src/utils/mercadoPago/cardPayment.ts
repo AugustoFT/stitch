@@ -91,7 +91,9 @@ export const processCardPayment = async (cardData: any, formData: any, installme
           identification: {
             type: 'CPF',
             number: cpf
-          }
+          },
+          first_name: formData.nome.split(' ')[0],
+          last_name: formData.nome.split(' ').slice(1).join(' ') || formData.nome.split(' ')[0]
         }
       };
       

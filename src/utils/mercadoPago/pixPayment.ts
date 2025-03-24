@@ -36,7 +36,9 @@ export const createPixPayment = async (formData: any, amount: number = 139.99, d
         identification: {
           type: 'CPF',
           number: cpf
-        }
+        },
+        first_name: formData.nome.split(' ')[0],
+        last_name: formData.nome.split(' ').slice(1).join(' ') || formData.nome.split(' ')[0]
       },
       payment_methods: {
         default_payment_method_id: 'pix',

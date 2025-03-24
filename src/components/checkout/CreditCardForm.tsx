@@ -131,11 +131,16 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       toast.info("Processando pagamento, aguarde...");
       
       // Validate form data before proceeding
-      if (!formData.nome || !formData.email || !formData.cpf || !formData.endereco || !formData.cep) {
+      if (!formData.nome || !formData.email || !formData.cpf) {
         toast.error("Por favor, preencha todos os campos obrigatórios.");
         setIsSubmitting(false);
         return;
       }
+      
+      // Log data for debugging
+      console.log('Form data:', formData);
+      console.log('Total amount:', totalAmount);
+      console.log('Installments:', installments);
       
       // Get card data and process payment
       const cardData: CardData = {
@@ -153,6 +158,8 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         totalAmount, 
         getProductDescription()
       );
+      
+      console.log('Payment result:', result);
       
       setLocalPaymentResult(result);
       setLocalCardPaymentStatus(result.status);

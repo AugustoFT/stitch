@@ -1,5 +1,5 @@
 
-import { MercadoPagoConfig, Preference, Payment } from 'mercadopago';
+import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 
 // Initialize the MercadoPago client with production credentials
 export const mercadoPagoPublicKey = 'APP_USR-46646251-3224-483c-b69d-85c5f8c96428';
@@ -35,16 +35,16 @@ export const initMercadoPago = () => {
 export function determineCardType(cardNumber: string): string {
   const cleanNumber = cardNumber.replace(/\D/g, '');
   
+  // Improved card type detection
   if (/^4/.test(cleanNumber)) return 'visa';
-  if (/^5[1-5]/.test(cleanNumber)) return 'master';
-  if (/^3[47]/.test(cleanNumber)) return 'amex';
-  if (/^6(?:011|5)/.test(cleanNumber)) return 'discover';
-  if (/^(60|65)/.test(cleanNumber)) return 'elo';
+  if (/^(5[1-5])/.test(cleanNumber)) return 'master';
+  if (/^(34|37)/.test(cleanNumber)) return 'amex';
+  if (/^(60|65|6[8-9])/.test(cleanNumber)) return 'elo'; 
   if (/^(36|38|30[0-5])/.test(cleanNumber)) return 'diners';
-  if (/^(606282|3841|637095)/.test(cleanNumber)) return 'hipercard';
+  if (/^(606282|3841|603493|637095|637599|637609|637612)/.test(cleanNumber)) return 'hipercard';
   if (/^50[0-9]/.test(cleanNumber)) return 'aura';
-  if (/^(2131|1800|35\d{3})/.test(cleanNumber)) return 'jcb';
-  if (/^(5067|4576|4011)/.test(cleanNumber)) return 'mastercard';
+  if (/^(2131|1800|35)/.test(cleanNumber)) return 'jcb';
+  if (/^(6011|622|64|65)/.test(cleanNumber)) return 'discover';
   
   // Default to visa if can't determine
   console.log('Card type not recognized, defaulting to visa');
