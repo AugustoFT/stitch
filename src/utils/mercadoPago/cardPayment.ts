@@ -37,33 +37,38 @@ export const processCardPayment = async (cardData: any, formData: any, installme
     
     console.log('Processing direct card payment with MercadoPago');
     
-    // For direct card processing, we need to create a card token first
-    const mp = new window.MercadoPago(mercadoPagoPublicKey);
-    
-    // Format expiration month and year from MM/YY format
-    const [expirationMonth, expirationYear] = cardData.expirationDate.split('/');
-    
-    // Format CPF properly
-    const cpf = formData.cpf.replace(/\D/g, '');
-    
-    // Create a card token using the MercadoPago SDK
-    const cardTokenData = {
-      cardNumber: cardData.cardNumber.replace(/\s+/g, ''),
-      cardholderName: cardData.cardholderName,
-      cardExpirationMonth: expirationMonth,
-      cardExpirationYear: `20${expirationYear}`, // Add '20' prefix to make it 4 digits
-      securityCode: cardData.securityCode,
-      identificationType: 'CPF',
-      identificationNumber: cpf
-    };
-    
-    console.log('Creating card token with data:', {
-      ...cardTokenData,
-      cardNumber: cardTokenData.cardNumber.slice(0, 4) + '******' + cardTokenData.cardNumber.slice(-4), // Mask card number for logs
-      securityCode: '***' // Mask security code
-    });
-    
     try {
+      // For direct card processing, we need to create a card token first
+      const mp = new window.MercadoPago(mercadoPagoPublicKey);
+      
+      // Format expiration month and year from MM/YY format
+      const [expirationMonth, expirationYear] = cardData.expirationDate.split('/');
+      
+      // Format CPF properly
+      const cpf = formData.cpf.replace(/\D/g, '');
+      
+      // Create a card token using the MercadoPago SDK
+      const cardTokenData = {
+        cardNumber: cardData.cardNumber.replace(/\s+/g, ''),
+        cardholderName: cardData.cardholderName,
+        cardExpirationMonth: expirationMonth,
+        cardExpirationYear: `20${expirationYear}`, // Add '20' prefix to make it 4 digits
+        securityCode: cardData.securityCode,
+        identificationType: 'CPF',
+        identificationNumber: cpf
+      };
+      
+      console.log('Creating card token with data:', {
+        ...cardTokenData,
+        cardNumber: cardTokenData.cardNumber.slice(0, 4) + '******' + cardTokenData.cardNumber.slice(-4), // Mask card number for logs
+        securityCode: '***' // Mask security code
+      });
+      
+      // Test card for successful payment: 5031 4332 1540 6351
+      // Test expiration: Any future date in MM/YY format
+      // Test CVV: 123
+      // Test Name: Any name
+      
       const cardToken = await mp.createCardToken(cardTokenData);
       console.log('Card token created:', cardToken);
       
@@ -102,8 +107,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
         token: '********' // Mask token for logs
       });
       
-      // In a real implementation, this would be a server-side call
-      // For demonstration, we're doing it client-side (not recommended for production)
+      // Creating payment with MercadoPago
       const payment = await paymentClient.create({ body: paymentData });
       
       console.log('Payment response:', payment);
@@ -114,7 +118,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
         status_detail: payment.status_detail,
         message: getPaymentStatusMessage(payment.status)
       };
-    } catch (tokenError) {
+    } catch (tokenError: any) {
       console.error('Error creating card token or processing payment:', tokenError);
       
       // Extract the specific error message from Mercado Pago response if available
@@ -131,7 +135,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
         message: errorMessage
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error processing direct card payment:', error);
     return {
       status: 'error',

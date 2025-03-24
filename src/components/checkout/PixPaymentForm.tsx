@@ -20,7 +20,7 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
   selectedProducts = [],
   totalAmount = 139.99
 }) => {
-  const [pixData, setPixData] = React.useState<{ qr_code?: string; qr_code_base64?: string } | null>(null);
+  const [pixData, setPixData] = React.useState<{ qr_code?: string; qr_code_base64?: string; id?: string } | null>(null);
   const [formErrors, setFormErrors] = React.useState<string[]>([]);
   const [pixError, setPixError] = React.useState<string | null>(null);
 
@@ -89,6 +89,13 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
       // Save customer info to localStorage
       localStorage.setItem('customerInfo', JSON.stringify(formData));
       
+      console.log('Creating PIX payment with data:', {
+        ...formData,
+        cpf: formData.cpf.replace(/\D/g, '').slice(0, 3) + '***' + formData.cpf.replace(/\D/g, '').slice(-2)
+      });
+      console.log('Amount:', totalAmount);
+      console.log('Description:', getProductDescription());
+      
       // Create PIX payment with dynamic amount and description
       const pixResult = await createPixPayment(
         formData,
@@ -96,12 +103,15 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
         getProductDescription()
       );
       
+      console.log('PIX payment result:', pixResult);
+      
       if (pixResult && (pixResult.qr_code || pixResult.qr_code_base64)) {
         setPixData(pixResult);
         toast.success("QR Code PIX gerado com sucesso! Escaneie para pagar.");
       } else {
         setPixError("Erro ao gerar QR Code PIX. Verifique suas informações e tente novamente.");
         toast.error("Erro ao gerar QR Code PIX. Tente novamente.");
+        console.error('Invalid PIX result:', pixResult);
       }
     } catch (error: any) {
       console.error("Erro ao processar pagamento PIX:", error);
@@ -172,6 +182,10 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
           
           <p className="text-xs text-gray-600 text-center mt-2">Após o pagamento, você receberá a confirmação por email</p>
           <p className="text-sm font-medium text-stitch-blue mt-3">Valor a pagar: R$ {totalAmount.toFixed(2).replace('.', ',')}</p>
+          
+          {pixData.id && (
+            <p className="text-xs text-gray-500 mt-2">ID da transação: {pixData.id}</p>
+          )}
         </motion.div>
       ) : (
         <motion.button 
@@ -182,7 +196,12 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
           disabled={isSubmitting}
           onClick={handlePixPayment}
         >
-          {isSubmitting ? "Gerando PIX..." : "Gerar QR Code PIX"}
+          {isSubmitting ? "Gerando PIX..." : (
+            <span className="flex items-center justify-center gap-2">
+              <QrCode className="h-4 w-4" />
+              Gerar QR Code PIX
+            </span>
+          )}
         </motion.button>
       )}
     </motion.div>

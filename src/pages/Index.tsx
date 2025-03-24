@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -82,7 +81,7 @@ const Index: React.FC = () => {
     }, 0);
     
     setTotalAmount(total);
-  }, [selectedProductIds, products]);
+  }, [selectedProductIds]);
 
   const [timeLeft, setTimeLeft] = useState({
     days: 1,
@@ -150,29 +149,11 @@ const Index: React.FC = () => {
   };
   
   const handleQuantityChange = (productId: number, quantity: number) => {
-    const updatedProducts = [...products];
-    const productIndex = updatedProducts.findIndex(p => p.id === productId);
-    
-    if (productIndex !== -1) {
-      updatedProducts[productIndex] = {
-        ...updatedProducts[productIndex],
-        quantity
-      };
-    }
-    
-    if (selectedProductIds.includes(productId)) {
-      const selectedProducts = updatedProducts
-        .filter(product => selectedProductIds.includes(product.id));
-      
-      setProductsWithQuantity(selectedProducts);
-      
-      const total = selectedProducts.reduce((sum, product) => {
-        const price = parseFloat(product.price.replace('R$ ', '').replace(',', '.'));
-        return sum + (price * product.quantity);
-      }, 0);
-      
-      setTotalAmount(total);
-    }
+    setProductsWithQuantity(prev => {
+      return prev.map(product => 
+        product.id === productId ? { ...product, quantity } : product
+      );
+    });
   };
 
   return (

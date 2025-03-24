@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -56,14 +57,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   const [productsWithQuantity, setProductsWithQuantity] = useState<ProductWithQuantity[]>([]);
   const [calculatedTotal, setCalculatedTotal] = useState(totalAmount);
   
-  // Refs for the Mercado Pago SDK
+  // Refs for tracking initialization state
   const mercadoPagoRef = useRef<any>(null);
   const productsProcessed = useRef(false);
   const customerInfoLoaded = useRef(false);
+  const scriptLoaded = useRef(false);
 
   // Process selectedProducts to include quantities - fixing dependency array issues
   useEffect(() => {
-    // Skip if already processed or no products
     if (productsProcessed.current || !selectedProducts || selectedProducts.length === 0) {
       return;
     }
@@ -116,15 +117,17 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     customerInfoLoaded.current = true;
   }, []);
 
-  // Load MercadoPago SDK only once on mount
+  // Load MercadoPago SDK
   useEffect(() => {
     const loadMercadoPagoScript = () => {
+      if (scriptLoaded.current) return;
+      
       if (window.MercadoPago) {
-        // SDK already loaded
+        console.log('MercadoPago SDK already loaded');
         const mp = new window.MercadoPago(initMercadoPago());
         mercadoPagoRef.current = mp;
         setMercadoPagoReady(true);
-        console.log('MercadoPago SDK already loaded');
+        scriptLoaded.current = true;
         return;
       }
 
@@ -132,11 +135,19 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       script.src = 'https://sdk.mercadopago.com/js/v2';
       script.type = 'text/javascript';
       script.onload = () => {
+        console.log('MercadoPago SDK loaded successfully');
         const mp = new window.MercadoPago(initMercadoPago());
         mercadoPagoRef.current = mp;
         setMercadoPagoReady(true);
-        console.log('MercadoPago SDK loaded successfully');
+        scriptLoaded.current = true;
       };
+      
+      script.onerror = () => {
+        console.error('Failed to load MercadoPago SDK');
+        toast.error("Falha ao carregar o processador de pagamento. Recarregue a página.");
+        scriptLoaded.current = true;
+      };
+      
       document.body.appendChild(script);
     };
 
