@@ -30,11 +30,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       transition={{ duration: 0.6 }}
       whileHover={{ y: -5 }}
     >
-      <div className="relative overflow-hidden rounded-lg mb-6 group">
+      <div className="relative overflow-hidden rounded-lg mb-6 group h-64">
         <motion.img 
           src={imageUrl} 
           alt={title}
-          className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
           initial={{ scale: 1.05 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5 }}

@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Star, Clock, Check, ShoppingBag, Gift, TruckIcon, Palmtree, Sun, Flower, Umbrella, Sailboat, Waves } from 'lucide-react';
@@ -8,7 +7,6 @@ import CheckoutForm from '../components/CheckoutForm';
 import Footer from '../components/Footer';
 
 const Index: React.FC = () => {
-  // Create refs and useInView hooks for each section
   const heroRef = useRef<HTMLDivElement>(null);
   const heroInView = useInView(heroRef, { once: true, margin: "-100px" });
   
@@ -27,7 +25,6 @@ const Index: React.FC = () => {
   const checkoutRef = useRef<HTMLDivElement>(null);
   const checkoutInView = useInView(checkoutRef, { once: true, margin: "-100px" });
 
-  // Countdown timer
   const [timeLeft, setTimeLeft] = useState({
     days: 2,
     hours: 12,
@@ -85,7 +82,6 @@ const Index: React.FC = () => {
     checkoutRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Hawaiian floral elements animation variants
   const floralVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 0.8, scale: 1, transition: { duration: 0.8 } }
@@ -93,7 +89,6 @@ const Index: React.FC = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Hawaiian themed decorative elements - background effect */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <motion.div 
           className="absolute top-0 left-0 w-full h-full opacity-[0.03]"
@@ -112,7 +107,6 @@ const Index: React.FC = () => {
         </motion.div>
       </div>
       
-      {/* Additional floating Hawaiian elements */}
       <motion.div 
         className="absolute top-20 left-0 text-stitch-teal/20 transform -rotate-12 z-0"
         variants={floralVariants}
@@ -145,7 +139,6 @@ const Index: React.FC = () => {
       <div className="bg-gradient-to-b from-stitch-blue/20 to-white">
         <Header />
         
-        {/* Hero Section */}
         <section 
           ref={heroRef}
           className="py-16 md:py-24 px-6 md:px-12 max-w-7xl mx-auto relative z-10"
@@ -231,7 +224,6 @@ const Index: React.FC = () => {
         </section>
       </div>
       
-      {/* Products Section */}
       <section 
         id="mochilas"
         ref={productRef}
@@ -251,7 +243,7 @@ const Index: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <ProductCard
-            title="Pelúcia Stitch Azul"
+            title="Pelúcia Stitch"
             price="R$ 89,90"
             description="Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs."
             imageUrl="/lovable-uploads/40cae4d9-52ec-403d-90b5-45ed1deb8250.png"
@@ -260,37 +252,37 @@ const Index: React.FC = () => {
           />
           
           <ProductCard
-            title="Óculos de Sol Stitch"
-            price="R$ 69,90"
-            description="Óculos de sol exclusivos do Stitch, modelagem divertida em formato do personagem. Proteção UV400 ideal para crianças e adultos."
+            title="Pelúcia + Óculos"
+            price="R$ 149,90"
+            description="Kit especial com pelúcia Stitch original e óculos de sol temáticos. Proteção UV400 ideal para crianças e adultos."
             imageUrl="/lovable-uploads/92a3210b-b591-4e35-8339-43775f776738.png"
             discount="10% OFF"
-            size="Tamanho único"
+            size="Kit Completo"
             onBuyClick={scrollToCheckout}
           />
           
           <ProductCard
-            title="Pelúcia de Costas Stitch"
-            price="R$ 89,90"
-            description="Versão especial da pelúcia Stitch, vista de costas. Pelúcia ultra macia com detalhes exclusivos da cauda e marcas nas costas."
+            title="Pelúcia + Garrafa"
+            price="R$ 159,90"
+            description="Kit especial com pelúcia Stitch original e garrafa térmica temática que mantém bebidas quentes ou frias por horas."
             imageUrl="/lovable-uploads/97c702ed-ef6b-446e-b6ae-48fabc0eb13c.png"
-            size="20 cm"
+            discount="15% OFF"
+            size="Kit Completo"
             onBuyClick={scrollToCheckout}
           />
           
           <ProductCard
-            title="Garrafa Térmica Stitch"
-            price="R$ 79,90"
-            discount="15% OFF"
-            description="Garrafa térmica temática do Stitch, mantém bebidas quentes ou frias por horas. Design exclusivo com personagens Stitch e Angel."
-            imageUrl="/lovable-uploads/92a3210b-b591-4e35-8339-43775f776738.png"
-            size="500ml"
+            title="Kit Completo Stitch"
+            price="R$ 199,90"
+            discount="20% OFF"
+            description="Kit completo com pelúcia Stitch, garrafa térmica e óculos de sol. O presente perfeito para os fãs de Lilo & Stitch."
+            imageUrl="/lovable-uploads/3603bda4-d7ec-411e-ad26-f2fc4f00a517.png"
+            size="Kit Completo"
             onBuyClick={scrollToCheckout}
           />
         </div>
       </section>
       
-      {/* Benefits Section */}
       <section 
         id="beneficios"
         ref={benefitsRef}
@@ -375,7 +367,6 @@ const Index: React.FC = () => {
         </div>
       </section>
       
-      {/* Features Section - com elementos havaianos */}
       <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <motion.div 
@@ -456,7 +447,6 @@ const Index: React.FC = () => {
         </div>
       </section>
       
-      {/* Testimonials Section */}
       <section 
         id="depoimentos"
         ref={testRef}
@@ -548,7 +538,6 @@ const Index: React.FC = () => {
         </div>
       </section>
       
-      {/* FAQ Section */}
       <section 
         id="faq"
         ref={faqRef}
@@ -629,7 +618,6 @@ const Index: React.FC = () => {
         </div>
       </section>
       
-      {/* CTA Section */}
       <section className="py-12 px-6 md:px-12 bg-gradient-to-r from-stitch-blue to-stitch-darkblue text-white relative z-10">
         <div className="max-w-5xl mx-auto text-center">
           <motion.h2 
@@ -663,7 +651,6 @@ const Index: React.FC = () => {
         </div>
       </section>
       
-      {/* Checkout Section */}
       <section 
         id="checkout"
         ref={checkoutRef}
@@ -690,3 +677,4 @@ const Index: React.FC = () => {
 };
 
 export default Index;
+
