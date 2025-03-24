@@ -1,7 +1,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Star, Clock, Check, ShoppingBag, Gift, TruckIcon } from 'lucide-react';
+import { Star, Clock, Check, ShoppingBag, Gift, TruckIcon, Palmtree, Sun, Flower } from 'lucide-react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import CheckoutForm from '../components/CheckoutForm';
@@ -85,15 +85,51 @@ const Index: React.FC = () => {
     checkoutRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Hawaiian floral elements animation variants
+  const floralVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { opacity: 0.8, scale: 1, transition: { duration: 0.8 } }
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Hawaiian themed decorative elements */}
+      <motion.div 
+        className="absolute top-20 left-0 text-stitch-teal/20 transform -rotate-12 z-0"
+        variants={floralVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <Palmtree size={120} />
+      </motion.div>
+      
+      <motion.div 
+        className="absolute top-40 right-0 text-stitch-yellow/20 transform rotate-12 z-0"
+        variants={floralVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.3 }}
+      >
+        <Sun size={100} />
+      </motion.div>
+      
+      <motion.div 
+        className="absolute bottom-40 left-10 text-stitch-pink/20 transform -rotate-6 z-0"
+        variants={floralVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.5 }}
+      >
+        <Flower size={80} />
+      </motion.div>
+      
       <div className="bg-gradient-to-b from-stitch-blue/20 to-white">
         <Header />
         
         {/* Hero Section */}
         <section 
           ref={heroRef}
-          className="py-16 md:py-24 px-6 md:px-12 max-w-7xl mx-auto"
+          className="py-16 md:py-24 px-6 md:px-12 max-w-7xl mx-auto relative z-10"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
             <motion.div
@@ -180,7 +216,7 @@ const Index: React.FC = () => {
       <section 
         id="mochilas"
         ref={productRef}
-        className="py-16 px-6 md:px-12 max-w-7xl mx-auto"
+        className="py-16 px-6 md:px-12 max-w-7xl mx-auto relative z-10"
       >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -228,7 +264,7 @@ const Index: React.FC = () => {
             price="R$ 129,90"
             discount="15% OFF"
             description="Kit exclusivo com pelúcia Stitch e garrafa temática. Presente perfeito para fãs de todas as idades."
-            imageUrl="/lovable-uploads/96d43dbe-a13c-4f0f-a78d-59bd7e466261.png"
+            imageUrl="/lovable-uploads/a1485e45-0342-49b4-a3d1-703082f7d7eb.png"
             size="Pelúcia 20cm + Garrafa 500ml"
             onBuyClick={scrollToCheckout}
           />
@@ -239,7 +275,7 @@ const Index: React.FC = () => {
       <section 
         id="beneficios"
         ref={benefitsRef}
-        className="py-16 px-6 md:px-12 bg-gradient-to-b from-white to-stitch-light/50"
+        className="py-16 px-6 md:px-12 bg-gradient-to-b from-white to-stitch-light/50 relative z-10"
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -320,16 +356,19 @@ const Index: React.FC = () => {
         </div>
       </section>
       
-      {/* Features Section */}
-      <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto">
+      {/* Features Section - com elementos havaianos */}
+      <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <motion.div 
-            className="glass-card p-6 rounded-xl text-center"
+            className="glass-card p-6 rounded-xl text-center relative overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             whileHover={{ y: -5 }}
           >
+            <div className="absolute top-2 right-2 text-stitch-teal/20">
+              <Flower size={24} />
+            </div>
             <div className="w-16 h-16 bg-stitch-blue/10 text-stitch-blue rounded-full flex items-center justify-center mx-auto mb-4">
               <ShoppingBag className="h-8 w-8" />
             </div>
@@ -340,28 +379,34 @@ const Index: React.FC = () => {
           </motion.div>
           
           <motion.div 
-            className="glass-card p-6 rounded-xl text-center"
+            className="glass-card p-6 rounded-xl text-center relative overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             whileHover={{ y: -5 }}
           >
+            <div className="absolute top-2 right-2 text-stitch-pink/20">
+              <Palmtree size={24} />
+            </div>
             <div className="w-16 h-16 bg-stitch-pink/10 text-stitch-pink rounded-full flex items-center justify-center mx-auto mb-4">
               <Gift className="h-8 w-8" />
             </div>
-            <h3 className="text-xl font-medium mb-2">Brinde Exclusivo</h3>
+            <h3 className="text-xl font-medium mb-2">Edição Especial</h3>
             <p className="text-gray-600">
-              Ganhe um adesivo exclusivo do Stitch em cada compra realizada.
+              Modelos exclusivos inspirados no clima tropical do Havaí.
             </p>
           </motion.div>
           
           <motion.div 
-            className="glass-card p-6 rounded-xl text-center"
+            className="glass-card p-6 rounded-xl text-center relative overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             whileHover={{ y: -5 }}
           >
+            <div className="absolute top-2 right-2 text-stitch-yellow/20">
+              <Sun size={24} />
+            </div>
             <div className="w-16 h-16 bg-stitch-teal/10 text-stitch-teal rounded-full flex items-center justify-center mx-auto mb-4">
               <TruckIcon className="h-8 w-8" />
             </div>
@@ -372,12 +417,15 @@ const Index: React.FC = () => {
           </motion.div>
           
           <motion.div 
-            className="glass-card p-6 rounded-xl text-center"
+            className="glass-card p-6 rounded-xl text-center relative overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
             whileHover={{ y: -5 }}
           >
+            <div className="absolute top-2 right-2 text-stitch-blue/20">
+              <Flower size={24} strokeWidth={1} />
+            </div>
             <div className="w-16 h-16 bg-stitch-yellow/10 text-stitch-yellow rounded-full flex items-center justify-center mx-auto mb-4">
               <Clock className="h-8 w-8" />
             </div>
@@ -393,7 +441,7 @@ const Index: React.FC = () => {
       <section 
         id="depoimentos"
         ref={testRef}
-        className="py-16 px-6 md:px-12 bg-gradient-to-b from-stitch-light/50 to-white"
+        className="py-16 px-6 md:px-12 bg-gradient-to-b from-stitch-light/50 to-white relative z-10"
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -404,69 +452,78 @@ const Index: React.FC = () => {
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">O que nossos clientes dizem</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Veja os depoimentos de quem já garantiu sua mochila do Stitch e está encantado com a qualidade.
+              Veja os depoimentos de quem já garantiu sua pelúcia do Stitch e está encantado com a qualidade.
             </p>
           </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <motion.div 
-              className="bg-white p-6 rounded-xl shadow-md"
+              className="bg-white p-6 rounded-xl shadow-md relative overflow-hidden"
               initial={{ opacity: 0, y: 30 }}
               animate={testInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <div className="flex items-center mb-4">
+              <div className="absolute -top-10 -right-10 text-stitch-teal/10">
+                <Palmtree size={80} />
+              </div>
+              <div className="flex items-center mb-4 relative z-10">
                 <div className="text-stitch-yellow flex">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 fill-current" />
                   ))}
                 </div>
               </div>
-              <p className="text-gray-600 mb-4">
-                "Minha filha amou a mochila do Stitch! A qualidade é impressionante, super macia e os detalhes são perfeitos. Já estamos de olho nos outros modelos!"
+              <p className="text-gray-600 mb-4 relative z-10">
+                "Minha filha amou a pelúcia do Stitch! A qualidade é impressionante, super macia e os detalhes são perfeitos. Já estamos de olho nos outros modelos!"
               </p>
-              <div className="font-medium">Camila R.</div>
-              <div className="text-sm text-gray-500">São Paulo, SP</div>
+              <div className="font-medium relative z-10">Camila R.</div>
+              <div className="text-sm text-gray-500 relative z-10">São Paulo, SP</div>
             </motion.div>
             
             <motion.div 
-              className="bg-white p-6 rounded-xl shadow-md"
+              className="bg-white p-6 rounded-xl shadow-md relative overflow-hidden"
               initial={{ opacity: 0, y: 30 }}
               animate={testInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <div className="flex items-center mb-4">
+              <div className="absolute -top-10 -right-10 text-stitch-pink/10">
+                <Flower size={80} />
+              </div>
+              <div className="flex items-center mb-4 relative z-10">
                 <div className="text-stitch-yellow flex">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 fill-current" />
                   ))}
                 </div>
               </div>
-              <p className="text-gray-600 mb-4">
-                "Comprei para o meu sobrinho e ele não larga mais! Além de linda, é bem espaçosa e resistente. A entrega foi super rápida e o atendimento excelente!"
+              <p className="text-gray-600 mb-4 relative z-10">
+                "Comprei para o meu sobrinho e ele não larga mais! Além de linda, é super macia e resistente. A entrega foi super rápida e o atendimento excelente!"
               </p>
-              <div className="font-medium">Pedro M.</div>
-              <div className="text-sm text-gray-500">Rio de Janeiro, RJ</div>
+              <div className="font-medium relative z-10">Pedro M.</div>
+              <div className="text-sm text-gray-500 relative z-10">Rio de Janeiro, RJ</div>
             </motion.div>
             
             <motion.div 
-              className="bg-white p-6 rounded-xl shadow-md"
+              className="bg-white p-6 rounded-xl shadow-md relative overflow-hidden"
               initial={{ opacity: 0, y: 30 }}
               animate={testInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <div className="flex items-center mb-4">
+              <div className="absolute -top-10 -right-10 text-stitch-blue/10">
+                <Sun size={80} />
+              </div>
+              <div className="flex items-center mb-4 relative z-10">
                 <div className="text-stitch-yellow flex">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 fill-current" />
                   ))}
                 </div>
               </div>
-              <p className="text-gray-600 mb-4">
-                "Sou fã de Lilo & Stitch e essa mochila superou minhas expectativas! O material é de ótima qualidade e chama atenção por onde passo. Recomendo demais!"
+              <p className="text-gray-600 mb-4 relative z-10">
+                "Sou fã de Lilo & Stitch e essa pelúcia superou minhas expectativas! O material é de ótima qualidade e chama atenção por onde passo. Recomendo demais!"
               </p>
-              <div className="font-medium">Juliana T.</div>
-              <div className="text-sm text-gray-500">Curitiba, PR</div>
+              <div className="font-medium relative z-10">Juliana T.</div>
+              <div className="text-sm text-gray-500 relative z-10">Curitiba, PR</div>
             </motion.div>
           </div>
         </div>
@@ -476,7 +533,7 @@ const Index: React.FC = () => {
       <section 
         id="faq"
         ref={faqRef}
-        className="py-16 px-6 md:px-12 max-w-7xl mx-auto"
+        className="py-16 px-6 md:px-12 max-w-7xl mx-auto relative z-10"
       >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -495,8 +552,9 @@ const Index: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={faqInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.1 }}
+            className="glass-card p-6 rounded-xl"
           >
-            <h3 className="text-xl font-bold text-stitch-blue mb-2">As mochilas são originais Disney?</h3>
+            <h3 className="text-xl font-bold text-stitch-blue mb-2">As pelúcias são originais Disney?</h3>
             <p className="text-gray-600">Sim, todos os nossos produtos são originais e licenciados oficialmente pela Disney Store, garantindo qualidade e autenticidade.</p>
           </motion.div>
           
@@ -504,6 +562,7 @@ const Index: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={faqInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.2 }}
+            className="glass-card p-6 rounded-xl"
           >
             <h3 className="text-xl font-bold text-stitch-blue mb-2">Qual o prazo de entrega?</h3>
             <p className="text-gray-600">O prazo médio de entrega é de 3 a 7 dias úteis, dependendo da sua localização. Para capitais, costuma chegar em até 3 dias úteis.</p>
@@ -513,8 +572,9 @@ const Index: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={faqInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.3 }}
+            className="glass-card p-6 rounded-xl"
           >
-            <h3 className="text-xl font-bold text-stitch-blue mb-2">Como faço para limpar a mochila?</h3>
+            <h3 className="text-xl font-bold text-stitch-blue mb-2">Como faço para limpar a pelúcia?</h3>
             <p className="text-gray-600">Recomendamos a limpeza a seco ou com pano levemente umedecido. Não recomendamos máquina de lavar para preservar a pelúcia e os detalhes.</p>
           </motion.div>
           
@@ -522,6 +582,7 @@ const Index: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={faqInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.4 }}
+            className="glass-card p-6 rounded-xl"
           >
             <h3 className="text-xl font-bold text-stitch-blue mb-2">Quais formas de pagamento são aceitas?</h3>
             <p className="text-gray-600">Aceitamos cartões de crédito, boleto bancário, transferência via PIX e PayPal. Parcelamos em até 12x com juros no cartão.</p>
@@ -531,6 +592,7 @@ const Index: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={faqInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.5 }}
+            className="glass-card p-6 rounded-xl"
           >
             <h3 className="text-xl font-bold text-stitch-blue mb-2">É possível trocar o produto?</h3>
             <p className="text-gray-600">Sim, oferecemos prazo de 7 dias para troca ou devolução caso o produto apresente algum defeito ou não atenda às suas expectativas.</p>
@@ -540,6 +602,7 @@ const Index: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={faqInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.6 }}
+            className="glass-card p-6 rounded-xl"
           >
             <h3 className="text-xl font-bold text-stitch-blue mb-2">Há outros modelos disponíveis?</h3>
             <p className="text-gray-600">Sim, além dos modelos exibidos no site, temos outras opções de personagens Disney. Entre em contato conosco para mais informações.</p>
@@ -548,7 +611,7 @@ const Index: React.FC = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-12 px-6 md:px-12 bg-gradient-to-r from-stitch-blue to-stitch-darkblue text-white">
+      <section className="py-12 px-6 md:px-12 bg-gradient-to-r from-stitch-blue to-stitch-darkblue text-white relative z-10">
         <div className="max-w-5xl mx-auto text-center">
           <motion.h2 
             className="text-3xl md:text-4xl font-display font-bold mb-6"
@@ -564,7 +627,7 @@ const Index: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Adquira sua pelúcia oficial do Stitch hoje mesmo e ganhe um adesivo exclusivo da Disney.
+            Adquira sua pelúcia oficial do Stitch hoje mesmo e leve um pedacinho do Havaí para sua casa.
             <span className="block mt-2 text-stitch-yellow font-bold">Frete grátis para todo o Brasil!</span>
           </motion.p>
           <motion.button 
@@ -585,7 +648,7 @@ const Index: React.FC = () => {
       <section 
         id="checkout"
         ref={checkoutRef}
-        className="py-16 px-6 md:px-12 max-w-7xl mx-auto"
+        className="py-16 px-6 md:px-12 max-w-7xl mx-auto relative z-10"
       >
         <motion.div
           initial={{ opacity: 0, y: 30 }}

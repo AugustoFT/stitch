@@ -65,7 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <Gift className="h-4 w-4 text-stitch-pink" />
-          <span>Adesivo grátis na primeira compra</span>
+          <span>Produto oficial Disney</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <TruckIcon className="h-4 w-4 text-stitch-teal" />

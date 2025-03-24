@@ -19,7 +19,7 @@ const Header: React.FC = () => {
           alt="Stitch Logo" 
           className="h-12 w-auto animate-float"
         />
-        <div className="font-display text-xl text-stitch-blue font-semibold">Ohana Shop</div>
+        <div className="font-display text-xl text-stitch-blue font-semibold">Lilo e Stitch</div>
       </div>
       
       <div className="flex items-center gap-4">
