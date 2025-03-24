@@ -1,9 +1,21 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { CreditCard } from 'lucide-react';
-import { createPreference, redirectToMercadoPagoCheckout } from '../utils/mercadoPago';
+import { CreditCard, QrCode } from 'lucide-react';
+import { 
+  createPreference, 
+  createPixPayment, 
+  processCardPayment,
+  initMercadoPago
+} from '../utils/mercadoPago';
+
+// Declare MercadoPago in the window object
+declare global {
+  interface Window {
+    MercadoPago: any;
+  }
+}
 
 const CheckoutForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -17,31 +29,184 @@ const CheckoutForm: React.FC = () => {
     estado: '',
     cep: '',
     formaPagamento: 'cartao',
+    cpf: '',
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pixData, setPixData] = useState<{ qr_code?: string; qr_code_base64?: string } | null>(null);
+  const [cardFormVisible, setCardFormVisible] = useState(true);
+  const [mercadoPagoReady, setMercadoPagoReady] = useState(false);
+
+  // Card state
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardholderName, setCardholderName] = useState('');
+  const [expirationDate, setExpirationDate] = useState('');
+  const [securityCode, setSecurityCode] = useState('');
+  const [cardToken, setCardToken] = useState('');
+  const [identificationNumber, setIdentificationNumber] = useState('');
+  const [paymentMethodId, setPaymentMethodId] = useState('');
+  const [cardPaymentStatus, setCardPaymentStatus] = useState<string | null>(null);
+
+  // Load MercadoPago SDK
+  useEffect(() => {
+    const loadMercadoPagoScript = () => {
+      const script = document.createElement('script');
+      script.src = 'https://sdk.mercadopago.com/js/v2';
+      script.type = 'text/javascript';
+      script.onload = () => {
+        const mp = new window.MercadoPago(initMercadoPago());
+        setMercadoPagoReady(true);
+        console.log('MercadoPago SDK loaded successfully');
+      };
+      document.body.appendChild(script);
+    };
+
+    loadMercadoPagoScript();
+  }, []);
+
+  // Handle form payment method change
+  useEffect(() => {
+    // Reset PIX data when switching payment methods
+    if (formData.formaPagamento !== 'pix') {
+      setPixData(null);
+    }
+    
+    // Show card form only when card is selected
+    setCardFormVisible(formData.formaPagamento === 'cartao');
+  }, [formData.formaPagamento]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Format credit card inputs
+  const formatCardNumber = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    let formatted = '';
+    
+    for (let i = 0; i < cleaned.length; i++) {
+      if (i > 0 && i % 4 === 0) {
+        formatted += ' ';
+      }
+      formatted += cleaned[i];
+    }
+    
+    return formatted.slice(0, 19); // 16 digits + 3 spaces
+  };
+
+  const formatExpirationDate = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    let formatted = cleaned;
+    
+    if (cleaned.length > 2) {
+      formatted = cleaned.slice(0, 2) + '/' + cleaned.slice(2);
+    }
+    
+    return formatted.slice(0, 5); // MM/YY format
+  };
+
+  // Handle card input changes
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatCardNumber(e.target.value);
+    setCardNumber(formattedValue);
+    
+    // Determine card type
+    const cardNumber = formattedValue.replace(/\D/g, '');
+    let paymentMethodId = '';
+    
+    if (/^5[1-5]/.test(cardNumber)) paymentMethodId = 'master';
+    else if (/^4/.test(cardNumber)) paymentMethodId = 'visa';
+    else if (/^3[47]/.test(cardNumber)) paymentMethodId = 'amex';
+    else if (/^(50|60|65)/.test(cardNumber)) paymentMethodId = 'elo';
+    
+    setPaymentMethodId(paymentMethodId);
+  };
+
+  const handleExpirationDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setExpirationDate(formatExpirationDate(e.target.value));
+  };
+
+  const handleSecurityCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSecurityCode(e.target.value.replace(/\D/g, '').slice(0, 4));
+  };
+
+  // Process PIX payment
+  const handlePixPayment = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      toast.info("Gerando QR Code PIX, aguarde...");
+      
+      // Create PIX payment
+      const pixResult = await createPixPayment(formData);
+      
+      if (pixResult && (pixResult.qr_code || pixResult.qr_code_base64)) {
+        setPixData(pixResult);
+        toast.success("QR Code PIX gerado com sucesso! Escaneie para pagar.");
+      } else {
+        toast.error("Erro ao gerar QR Code PIX. Tente novamente.");
+      }
+    } catch (error) {
+      console.error("Erro ao processar pagamento PIX:", error);
+      toast.error("Houve um erro ao gerar o pagamento PIX. Por favor, tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Process card payment
+  const handleCardPayment = async () => {
+    if (!mercadoPagoReady) {
+      toast.error("O sistema de pagamento ainda não foi carregado. Aguarde alguns segundos.");
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
       toast.info("Processando pagamento, aguarde...");
-      // Create a preference with MercadoPago
-      const preferenceResult: any = await createPreference(formData);
       
-      // Redirect to MercadoPago checkout
-      redirectToMercadoPagoCheckout(preferenceResult.id);
+      // In a real implementation, you would use MercadoPago SDK to create token
+      // For this demo, we'll simulate a successful token creation
+      const cardData = {
+        token: "TEST-TOKEN-" + Date.now(),
+        paymentMethodId,
+        installments: 1,
+        identificationNumber
+      };
       
+      // Process the payment
+      const paymentResult = await processCardPayment(cardData, formData);
+      
+      if (paymentResult && paymentResult.status) {
+        setCardPaymentStatus(paymentResult.status);
+        
+        if (paymentResult.status === 'approved') {
+          toast.success("Pagamento aprovado com sucesso!");
+        } else if (paymentResult.status === 'in_process') {
+          toast.info("Pagamento em processamento. Você receberá uma confirmação em breve.");
+        } else {
+          toast.warning(`Status do pagamento: ${paymentResult.status}. ${paymentResult.status_detail || ''}`);
+        }
+      } else {
+        toast.error("Erro ao processar pagamento. Verifique os dados do cartão.");
+      }
     } catch (error) {
-      console.error("Erro ao processar pagamento:", error);
-      toast.error("Houve um erro ao processar seu pagamento. Por favor, tente novamente.");
+      console.error("Erro ao processar pagamento com cartão:", error);
+      toast.error("Houve um erro ao processar seu pagamento. Por favor, verifique os dados e tente novamente.");
+    } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (formData.formaPagamento === 'pix') {
+      await handlePixPayment();
+    } else {
+      await handleCardPayment();
     }
   };
 
@@ -112,6 +277,22 @@ const CheckoutForm: React.FC = () => {
         </div>
         
         <div>
+          <label htmlFor="cpf" className="block text-sm font-medium text-gray-700 mb-1">
+            CPF*
+          </label>
+          <input
+            type="text"
+            id="cpf"
+            name="cpf"
+            required
+            value={formData.cpf}
+            onChange={handleChange}
+            className="stitch-input"
+            placeholder="000.000.000-00"
+          />
+        </div>
+        
+        <div>
           <label htmlFor="endereco" className="block text-sm font-medium text-gray-700 mb-1">
             Endereço*
           </label>
@@ -139,21 +320,6 @@ const CheckoutForm: React.FC = () => {
             onChange={handleChange}
             className="stitch-input"
             placeholder="Apartamento, bloco, etc"
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="complemento2" className="block text-sm font-medium text-gray-700 mb-1">
-            Complemento 2
-          </label>
-          <input
-            type="text"
-            id="complemento2"
-            name="complemento2"
-            value={formData.complemento2}
-            onChange={handleChange}
-            className="stitch-input"
-            placeholder="Referência, ponto de entrega, etc"
           />
         </div>
         
@@ -233,22 +399,181 @@ const CheckoutForm: React.FC = () => {
           />
         </div>
         
-        <div>
-          <label htmlFor="formaPagamento" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mt-6">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
             Forma de Pagamento*
           </label>
-          <select
-            id="formaPagamento"
-            name="formaPagamento"
-            required
-            value={formData.formaPagamento}
-            onChange={handleChange}
-            className="stitch-select"
-          >
-            <option value="cartao">Cartão de Crédito</option>
-            <option value="pix">PIX</option>
-          </select>
+          
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div 
+              className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
+                formData.formaPagamento === 'cartao' 
+                  ? 'border-stitch-blue bg-stitch-blue/10' 
+                  : 'border-gray-300 hover:border-stitch-blue/50'
+              }`}
+              onClick={() => setFormData({...formData, formaPagamento: 'cartao'})}
+            >
+              <input 
+                type="radio" 
+                id="cartao" 
+                name="formaPagamento" 
+                value="cartao"
+                checked={formData.formaPagamento === 'cartao'}
+                onChange={handleChange}
+                className="sr-only"
+              />
+              <CreditCard className={`h-5 w-5 ${formData.formaPagamento === 'cartao' ? 'text-stitch-blue' : 'text-gray-500'}`} />
+              <label htmlFor="cartao" className="cursor-pointer font-medium">Cartão</label>
+            </div>
+            
+            <div 
+              className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
+                formData.formaPagamento === 'pix' 
+                  ? 'border-stitch-blue bg-stitch-blue/10' 
+                  : 'border-gray-300 hover:border-stitch-blue/50'
+              }`}
+              onClick={() => setFormData({...formData, formaPagamento: 'pix'})}
+            >
+              <input 
+                type="radio" 
+                id="pix" 
+                name="formaPagamento" 
+                value="pix"
+                checked={formData.formaPagamento === 'pix'}
+                onChange={handleChange}
+                className="sr-only"
+              />
+              <QrCode className={`h-5 w-5 ${formData.formaPagamento === 'pix' ? 'text-stitch-blue' : 'text-gray-500'}`} />
+              <label htmlFor="pix" className="cursor-pointer font-medium">PIX</label>
+            </div>
+          </div>
         </div>
+        
+        {/* Form fields for credit card payment */}
+        {cardFormVisible && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-4 border-t pt-4"
+          >
+            <div>
+              <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                Número do Cartão*
+              </label>
+              <input
+                type="text"
+                id="cardNumber"
+                value={cardNumber}
+                onChange={handleCardNumberChange}
+                className="stitch-input"
+                placeholder="0000 0000 0000 0000"
+                required={formData.formaPagamento === 'cartao'}
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="cardholderName" className="block text-sm font-medium text-gray-700 mb-1">
+                Nome no Cartão*
+              </label>
+              <input
+                type="text"
+                id="cardholderName"
+                value={cardholderName}
+                onChange={(e) => setCardholderName(e.target.value.toUpperCase())}
+                className="stitch-input"
+                placeholder="NOME COMO ESTÁ NO CARTÃO"
+                required={formData.formaPagamento === 'cartao'}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="expirationDate" className="block text-sm font-medium text-gray-700 mb-1">
+                  Validade*
+                </label>
+                <input
+                  type="text"
+                  id="expirationDate"
+                  value={expirationDate}
+                  onChange={handleExpirationDateChange}
+                  className="stitch-input"
+                  placeholder="MM/AA"
+                  required={formData.formaPagamento === 'cartao'}
+                />
+              </div>
+              <div>
+                <label htmlFor="securityCode" className="block text-sm font-medium text-gray-700 mb-1">
+                  CVV*
+                </label>
+                <input
+                  type="text"
+                  id="securityCode"
+                  value={securityCode}
+                  onChange={handleSecurityCodeChange}
+                  className="stitch-input"
+                  placeholder="123"
+                  required={formData.formaPagamento === 'cartao'}
+                />
+              </div>
+            </div>
+
+            <div className="p-3 bg-gray-50 rounded-lg text-sm">
+              <p className="font-semibold text-gray-800 mb-1">Cartões de teste disponíveis:</p>
+              <p className="text-gray-600">VISA: 4235 6477 2802 5682</p>
+              <p className="text-gray-600">MASTERCARD: 5031 4332 1540 6351</p>
+              <p className="text-gray-600">AMEX: 3753 651535 56885</p>
+              <p className="text-gray-600">Para todos: CVV 123, Validade: 11/30</p>
+            </div>
+          </motion.div>
+        )}
+        
+        {/* Show PIX QR code if generated */}
+        {formData.formaPagamento === 'pix' && pixData && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="flex flex-col items-center justify-center p-4 border rounded-lg bg-gray-50"
+          >
+            <p className="font-medium mb-3 text-center">Escaneie o QR Code para pagar</p>
+            
+            {pixData.qr_code_base64 ? (
+              <img 
+                src={`data:image/png;base64,${pixData.qr_code_base64}`} 
+                alt="QR Code PIX" 
+                className="w-48 h-48 mb-2"
+              />
+            ) : pixData.qr_code ? (
+              <div className="text-center p-3 bg-white rounded border mb-2">
+                <QrCode className="w-36 h-36 mx-auto text-stitch-blue" />
+                <p className="text-xs text-gray-500 mt-2">QR Code PIX</p>
+              </div>
+            ) : null}
+            
+            <p className="text-sm text-gray-600 text-center mt-2">Após o pagamento, você receberá a confirmação por email</p>
+          </motion.div>
+        )}
+        
+        {/* Payment status message */}
+        {cardPaymentStatus && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`p-3 rounded-lg text-center ${
+              cardPaymentStatus === 'approved' 
+                ? 'bg-green-100 text-green-800' 
+                : cardPaymentStatus === 'in_process'
+                ? 'bg-yellow-100 text-yellow-800'
+                : 'bg-red-100 text-red-800'
+            }`}
+          >
+            {cardPaymentStatus === 'approved' && "Pagamento aprovado com sucesso!"}
+            {cardPaymentStatus === 'in_process' && "Pagamento em processamento. Aguarde a confirmação."}
+            {cardPaymentStatus !== 'approved' && cardPaymentStatus !== 'in_process' && `Pagamento ${cardPaymentStatus}. Verifique os dados.`}
+          </motion.div>
+        )}
         
         <motion.button 
           type="submit"
