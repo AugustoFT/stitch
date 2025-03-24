@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -17,7 +16,15 @@ declare global {
   }
 }
 
-const CheckoutForm: React.FC = () => {
+interface CheckoutFormProps {
+  selectedProducts?: any[];
+  totalAmount?: number;
+}
+
+const CheckoutForm: React.FC<CheckoutFormProps> = ({ 
+  selectedProducts = [], 
+  totalAmount = 139.99 
+}) => {
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -40,6 +47,24 @@ const CheckoutForm: React.FC = () => {
   
   // Refs for the Mercado Pago SDK
   const mercadoPagoRef = useRef<any>(null);
+
+  // Load customer data from localStorage on component mount
+  useEffect(() => {
+    const savedCustomerInfo = localStorage.getItem('customerInfo');
+    if (savedCustomerInfo) {
+      try {
+        const parsedData = JSON.parse(savedCustomerInfo);
+        setFormData(prevData => ({
+          ...prevData,
+          ...parsedData,
+          // Keep current payment method
+          formaPagamento: prevData.formaPagamento
+        }));
+      } catch (e) {
+        console.error('Error parsing saved customer data', e);
+      }
+    }
+  }, []);
 
   // Load MercadoPago SDK
   useEffect(() => {
@@ -78,6 +103,13 @@ const CheckoutForm: React.FC = () => {
     setCardPaymentStatus(null);
   }, [formData.formaPagamento]);
 
+  // Save form data to localStorage when it changes
+  useEffect(() => {
+    if (formData.nome && formData.email) {
+      localStorage.setItem('customerInfo', JSON.stringify(formData));
+    }
+  }, [formData]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -109,6 +141,34 @@ const CheckoutForm: React.FC = () => {
     // Form submission now handled by the respective payment components
   };
 
+  // Show product summary
+  const renderProductSummary = () => {
+    if (!selectedProducts || selectedProducts.length === 0) {
+      return (
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+          <p className="text-sm text-blue-800 font-medium">Pelúcia Stitch</p>
+          <p className="text-sm text-blue-700">R$ {totalAmount.toFixed(2).replace('.', ',')}</p>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+        <h3 className="font-medium text-blue-800 mb-2">Resumo do pedido</h3>
+        {selectedProducts.map((product, index) => (
+          <div key={index} className="flex justify-between text-sm mb-1">
+            <span className="text-blue-800">{product.title}</span>
+            <span className="text-blue-700">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+          </div>
+        ))}
+        <div className="mt-2 pt-2 border-t border-blue-100 flex justify-between font-medium">
+          <span className="text-blue-800">Total:</span>
+          <span className="text-blue-800">R$ {totalAmount.toFixed(2).replace('.', ',')}</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <motion.div 
       className="glass-card p-6 rounded-xl max-w-md mx-auto"
@@ -125,6 +185,9 @@ const CheckoutForm: React.FC = () => {
           Promoção por tempo limitado!
         </div>
       </div>
+      
+      {/* Show order summary */}
+      {renderProductSummary()}
       
       {/* Show success message if payment is approved */}
       <PaymentSuccessMessage paymentResult={paymentResult} />
@@ -156,6 +219,8 @@ const CheckoutForm: React.FC = () => {
               setIsSubmitting={setIsSubmitting}
               setPaymentResult={setPaymentResult}
               setCardPaymentStatus={setCardPaymentStatus}
+              selectedProducts={selectedProducts}
+              totalAmount={totalAmount}
             />
           )}
           
@@ -164,6 +229,8 @@ const CheckoutForm: React.FC = () => {
               formData={formData}
               isSubmitting={isSubmitting}
               setIsSubmitting={setIsSubmitting}
+              selectedProducts={selectedProducts}
+              totalAmount={totalAmount}
             />
           )}
           

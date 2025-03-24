@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { QrCode } from 'lucide-react';
@@ -9,23 +9,88 @@ interface PixPaymentFormProps {
   formData: any;
   isSubmitting: boolean;
   setIsSubmitting: (value: boolean) => void;
+  selectedProducts?: any[];
+  totalAmount?: number;
 }
 
 const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
   formData,
   isSubmitting,
-  setIsSubmitting
+  setIsSubmitting,
+  selectedProducts = [],
+  totalAmount = 139.99
 }) => {
   const [pixData, setPixData] = React.useState<{ qr_code?: string; qr_code_base64?: string } | null>(null);
+  const [formErrors, setFormErrors] = React.useState<string[]>([]);
+
+  // Validate customer information before generating PIX
+  const validateCustomerInfo = () => {
+    const errors = [];
+    
+    if (!formData.nome || formData.nome.length < 3) {
+      errors.push('Nome completo é obrigatório');
+    }
+    
+    if (!formData.email || !formData.email.includes('@')) {
+      errors.push('Email válido é obrigatório');
+    }
+    
+    if (!formData.cpf || formData.cpf.replace(/\D/g, '').length !== 11) {
+      errors.push('CPF válido é obrigatório');
+    }
+    
+    if (!formData.endereco) {
+      errors.push('Endereço é obrigatório');
+    }
+    
+    if (!formData.cidade) {
+      errors.push('Cidade é obrigatória');
+    }
+    
+    if (!formData.estado) {
+      errors.push('Estado é obrigatório');
+    }
+    
+    if (!formData.cep || formData.cep.replace(/\D/g, '').length !== 8) {
+      errors.push('CEP válido é obrigatório');
+    }
+    
+    setFormErrors(errors);
+    return errors.length === 0;
+  };
+
+  const getProductDescription = () => {
+    if (!selectedProducts || selectedProducts.length === 0) {
+      return 'Pelúcia Stitch';
+    }
+    
+    if (selectedProducts.length === 1) {
+      return selectedProducts[0].title;
+    }
+    
+    return `Compra Stitch (${selectedProducts.length} itens)`;
+  };
 
   const handlePixPayment = async () => {
+    if (!validateCustomerInfo()) {
+      toast.error("Por favor, preencha todos os campos obrigatórios corretamente");
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
       toast.info("Gerando QR Code PIX, aguarde...");
       
-      // Create PIX payment
-      const pixResult = await createPixPayment(formData);
+      // Save customer info to localStorage
+      localStorage.setItem('customerInfo', JSON.stringify(formData));
+      
+      // Create PIX payment with dynamic amount and description
+      const pixResult = await createPixPayment(
+        formData,
+        totalAmount,
+        getProductDescription()
+      );
       
       if (pixResult && (pixResult.qr_code || pixResult.qr_code_base64)) {
         setPixData(pixResult);
@@ -43,6 +108,22 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Display form validation errors */}
+      {formErrors.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="bg-red-50 border border-red-200 rounded-lg p-3"
+        >
+          <p className="text-red-700 font-medium mb-1">Por favor, corrija os seguintes erros:</p>
+          <ul className="text-red-600 text-sm list-disc pl-5">
+            {formErrors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </motion.div>
+      )}
+      
       {/* Show PIX QR code if generated */}
       {pixData ? (
         <motion.div
@@ -67,6 +148,7 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
           ) : null}
           
           <p className="text-sm text-gray-600 text-center mt-2">Após o pagamento, você receberá a confirmação por email</p>
+          <p className="text-sm font-medium text-stitch-blue mt-4">Valor a pagar: R$ {totalAmount.toFixed(2).replace('.', ',')}</p>
         </motion.div>
       ) : (
         <motion.button 

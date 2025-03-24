@@ -2,7 +2,7 @@
 import { paymentClient, determineCardType, getPaymentStatusMessage, mercadoPagoPublicKey } from './config';
 
 // Function to directly process a card payment without redirection
-export const processCardPayment = async (cardData: any, formData: any, installments: number = 1) => {
+export const processCardPayment = async (cardData: any, formData: any, installments: number = 1, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
   try {
     if (!window.MercadoPago) {
       throw new Error('MercadoPago SDK not loaded');
@@ -41,9 +41,9 @@ export const processCardPayment = async (cardData: any, formData: any, installme
     
     // Process the payment using the token
     const paymentData = {
-      transaction_amount: 139.99,
+      transaction_amount: amount,
       token: cardToken.id,
-      description: 'Pelúcia Stitch',
+      description: description,
       installments: installments,
       payment_method_id: determineCardType(cardData.cardNumber),
       payer: {

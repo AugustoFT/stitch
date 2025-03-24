@@ -2,17 +2,17 @@
 import { preferenceClient, ExtendedPreferenceResponse } from './config';
 
 // Function specifically for creating PIX payments
-export const createPixPayment = async (formData: any) => {
+export const createPixPayment = async (formData: any, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
   try {
     // Create the preference for PIX
     const preferenceData = {
       items: [
         {
           id: 'pelucia-stitch',
-          title: 'Pelúcia Stitch',
+          title: description,
           quantity: 1,
           currency_id: 'BRL',
-          unit_price: 139.99
+          unit_price: amount
         }
       ],
       payer: {
@@ -37,14 +37,11 @@ export const createPixPayment = async (formData: any) => {
     // Let's handle this more safely by checking the structure
     console.log('PIX preference response:', response);
     
-    // Return a mock QR code for testing if the real one is not available
-    // In production, you'd need to properly handle this with a server-side component
     return {
       id: response.id,
       // Safely access nested properties using optional chaining
       qr_code_base64: response.point_of_interaction?.transaction_data?.qr_code_base64 || null,
-      qr_code: response.point_of_interaction?.transaction_data?.qr_code || 
-               'mockPixQrCode12345' // Fallback for testing
+      qr_code: response.point_of_interaction?.transaction_data?.qr_code || 'mockPixQrCode12345' // Fallback for testing
     };
   } catch (error) {
     console.error('Error creating MercadoPago PIX payment:', error);

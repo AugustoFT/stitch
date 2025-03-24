@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { processCardPayment } from '../../utils/mercadoPago';
@@ -12,6 +12,8 @@ interface CreditCardFormProps {
   setIsSubmitting: (value: boolean) => void;
   setPaymentResult: (value: any) => void;
   setCardPaymentStatus: (value: string | null) => void;
+  selectedProducts?: any[];
+  totalAmount?: number;
 }
 
 interface CardData {
@@ -27,7 +29,9 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   mercadoPagoReady,
   setIsSubmitting,
   setPaymentResult,
-  setCardPaymentStatus
+  setCardPaymentStatus,
+  selectedProducts = [],
+  totalAmount = 139.99
 }) => {
   const [cardNumber, setCardNumber] = React.useState('');
   const [cardholderName, setCardholderName] = React.useState('');
@@ -36,6 +40,31 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   const [installments, setInstallments] = React.useState(1);
   const [paymentResult, setLocalPaymentResult] = React.useState<any>(null);
   const [cardPaymentStatus, setLocalCardPaymentStatus] = React.useState<string | null>(null);
+  const [errors, setErrors] = React.useState<{[key: string]: string}>({});
+  
+  // Restore form data from localStorage if available
+  useEffect(() => {
+    const savedCardData = localStorage.getItem('cardFormData');
+    if (savedCardData) {
+      try {
+        const parsedData = JSON.parse(savedCardData);
+        setCardNumber(parsedData.cardNumber || '');
+        setCardholderName(parsedData.cardholderName || '');
+        // Don't restore sensitive data like CVV
+      } catch (e) {
+        console.error('Error parsing saved card data', e);
+      }
+    }
+  }, []);
+  
+  // Save non-sensitive card data to localStorage
+  const saveFormData = () => {
+    const dataToSave = {
+      cardNumber,
+      cardholderName
+    };
+    localStorage.setItem('cardFormData', JSON.stringify(dataToSave));
+  };
   
   // Format credit card inputs
   const formatCardNumber = (value: string) => {
@@ -67,19 +96,117 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatCardNumber(e.target.value);
     setCardNumber(formattedValue);
+    validateField('cardNumber', formattedValue);
   };
 
   const handleExpirationDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setExpirationDate(formatExpirationDate(e.target.value));
+    const formattedValue = formatExpirationDate(e.target.value);
+    setExpirationDate(formattedValue);
+    validateField('expirationDate', formattedValue);
   };
 
   const handleSecurityCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSecurityCode(e.target.value.replace(/\D/g, '').slice(0, 4));
+    const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+    setSecurityCode(value);
+    validateField('securityCode', value);
+  };
+  
+  const validateField = (field: string, value: string) => {
+    let newErrors = { ...errors };
+    
+    switch (field) {
+      case 'cardNumber':
+        if (!value) {
+          newErrors.cardNumber = 'Número do cartão é obrigatório';
+        } else if (value.replace(/\s/g, '').length < 16) {
+          newErrors.cardNumber = 'Número do cartão inválido';
+        } else {
+          delete newErrors.cardNumber;
+        }
+        break;
+        
+      case 'cardholderName':
+        if (!value) {
+          newErrors.cardholderName = 'Nome no cartão é obrigatório';
+        } else if (value.length < 3) {
+          newErrors.cardholderName = 'Nome muito curto';
+        } else {
+          delete newErrors.cardholderName;
+        }
+        break;
+        
+      case 'expirationDate':
+        if (!value) {
+          newErrors.expirationDate = 'Data de validade é obrigatória';
+        } else if (value.length < 5) {
+          newErrors.expirationDate = 'Data incompleta';
+        } else {
+          const [month, year] = value.split('/');
+          const currentYear = new Date().getFullYear() % 100;
+          const currentMonth = new Date().getMonth() + 1;
+          
+          if (parseInt(month) < 1 || parseInt(month) > 12) {
+            newErrors.expirationDate = 'Mês inválido';
+          } else if (parseInt(year) < currentYear || 
+                    (parseInt(year) === currentYear && parseInt(month) < currentMonth)) {
+            newErrors.expirationDate = 'Cartão expirado';
+          } else {
+            delete newErrors.expirationDate;
+          }
+        }
+        break;
+        
+      case 'securityCode':
+        if (!value) {
+          newErrors.securityCode = 'CVV é obrigatório';
+        } else if (value.length < 3) {
+          newErrors.securityCode = 'CVV inválido';
+        } else {
+          delete newErrors.securityCode;
+        }
+        break;
+        
+      default:
+        break;
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const validateAllFields = () => {
+    validateField('cardNumber', cardNumber);
+    validateField('cardholderName', cardholderName);
+    validateField('expirationDate', expirationDate);
+    validateField('securityCode', securityCode);
+    
+    return Object.keys(errors).length === 0;
+  };
+  
+  const getProductDescription = () => {
+    if (!selectedProducts || selectedProducts.length === 0) {
+      return 'Pelúcia Stitch';
+    }
+    
+    if (selectedProducts.length === 1) {
+      return selectedProducts[0].title;
+    }
+    
+    return `Compra Stitch (${selectedProducts.length} itens)`;
   };
   
   const handleCardPayment = async () => {
     if (!mercadoPagoReady) {
       toast.error("O sistema de pagamento ainda não foi carregado. Aguarde alguns segundos.");
+      return;
+    }
+    
+    // Save non-sensitive form data
+    saveFormData();
+    
+    // Validate all fields
+    if (!validateAllFields()) {
+      toast.error("Por favor, corrija os erros no formulário antes de continuar.");
       return;
     }
     
@@ -97,12 +224,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         return;
       }
       
-      if (!cardNumber || !cardholderName || !expirationDate || !securityCode) {
-        toast.error("Por favor, preencha todos os dados do cartão.");
-        setIsSubmitting(false);
-        return;
-      }
-      
       // Get card data and process payment
       const cardData: CardData = {
         cardNumber,
@@ -116,11 +237,19 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         email: formData.email,
         cpf: formData.cpf.replace(/\D/g, ''),
         cartao: cardData.cardNumber.slice(0, 4) + '******' + cardData.cardNumber.slice(-4),
-        parcelas: installments
+        parcelas: installments,
+        valor: totalAmount,
+        produtos: selectedProducts?.map(p => p.title).join(', ') || 'Pelúcia Stitch'
       });
       
       // Process the payment directly with installments
-      const result = await processCardPayment(cardData, formData, installments);
+      const result = await processCardPayment(
+        cardData, 
+        formData, 
+        installments, 
+        totalAmount, 
+        getProductDescription()
+      );
       
       console.log("Resultado do pagamento:", result);
       
@@ -194,10 +323,13 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
               id="cardNumber"
               value={cardNumber}
               onChange={handleCardNumberChange}
-              className="stitch-input"
+              className={`stitch-input ${errors.cardNumber ? 'border-red-500' : ''}`}
               placeholder="0000 0000 0000 0000"
               required
             />
+            {errors.cardNumber && (
+              <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>
+            )}
           </div>
           
           <div>
@@ -208,11 +340,18 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
               type="text"
               id="cardholderName"
               value={cardholderName}
-              onChange={(e) => setCardholderName(e.target.value.toUpperCase())}
-              className="stitch-input"
+              onChange={(e) => {
+                const value = e.target.value.toUpperCase();
+                setCardholderName(value);
+                validateField('cardholderName', value);
+              }}
+              className={`stitch-input ${errors.cardholderName ? 'border-red-500' : ''}`}
               placeholder="NOME COMO ESTÁ NO CARTÃO"
               required
             />
+            {errors.cardholderName && (
+              <p className="text-red-500 text-xs mt-1">{errors.cardholderName}</p>
+            )}
           </div>
           
           <div className="grid grid-cols-2 gap-4">
@@ -225,10 +364,13 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
                 id="expirationDate"
                 value={expirationDate}
                 onChange={handleExpirationDateChange}
-                className="stitch-input"
+                className={`stitch-input ${errors.expirationDate ? 'border-red-500' : ''}`}
                 placeholder="MM/AA"
                 required
               />
+              {errors.expirationDate && (
+                <p className="text-red-500 text-xs mt-1">{errors.expirationDate}</p>
+              )}
             </div>
             <div>
               <label htmlFor="securityCode" className="block text-sm font-medium text-gray-700 mb-1">
@@ -239,10 +381,13 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
                 id="securityCode"
                 value={securityCode}
                 onChange={handleSecurityCodeChange}
-                className="stitch-input"
+                className={`stitch-input ${errors.securityCode ? 'border-red-500' : ''}`}
                 placeholder="123"
                 required
               />
+              {errors.securityCode && (
+                <p className="text-red-500 text-xs mt-1">{errors.securityCode}</p>
+              )}
             </div>
           </div>
           
@@ -257,11 +402,11 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
               className="stitch-input"
               required
             >
-              <option value={1}>1x de R$ 139,99 sem juros</option>
-              <option value={2}>2x de R$ 70,00 sem juros</option>
-              <option value={3}>3x de R$ 46,66 sem juros</option>
-              <option value={6}>6x de R$ 23,33 sem juros</option>
-              <option value={12}>12x de R$ 11,67 sem juros</option>
+              <option value={1}>1x de R$ {(totalAmount).toFixed(2).replace('.', ',')} sem juros</option>
+              <option value={2}>2x de R$ {(totalAmount / 2).toFixed(2).replace('.', ',')} sem juros</option>
+              <option value={3}>3x de R$ {(totalAmount / 3).toFixed(2).replace('.', ',')} sem juros</option>
+              <option value={6}>6x de R$ {(totalAmount / 6).toFixed(2).replace('.', ',')} sem juros</option>
+              <option value={12}>12x de R$ {(totalAmount / 12).toFixed(2).replace('.', ',')} sem juros</option>
             </select>
           </div>
           
