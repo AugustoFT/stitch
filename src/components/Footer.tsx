@@ -7,8 +7,7 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0">
-            <h3 className="text-xl font-display font-bold mb-2 text-stitch-blue">Ohana Shop</h3>
-            <p className="text-sm text-gray-300">"Ohana significa família. Família significa que ninguém é deixado para trás."</p>
+            <h3 className="text-xl font-display font-bold mb-2 text-stitch-blue">Lilo & Stitch</h3>
           </div>
           
           <div className="flex flex-col md:flex-row gap-6 md:gap-12">
@@ -35,7 +34,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
-          <p>© {new Date().getFullYear()} Ohana Shop. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Lilo & Stitch. Todos os direitos reservados.</p>
           <p className="mt-2">Esta é uma loja fictícia inspirada no filme Lilo & Stitch. Todos os personagens pertencem à Disney.</p>
         </div>
       </div>

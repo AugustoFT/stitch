@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -35,7 +35,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 196 80% 50%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -78,6 +78,7 @@
   body {
     @apply bg-background text-foreground font-sans;
     overflow-x: hidden;
+    background: linear-gradient(to bottom, #F2F7FF, #fff);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -87,15 +88,15 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-md;
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-md rounded-2xl;
   }
   
   .btn-primary {
-    @apply bg-stitch-pink text-white font-medium px-6 py-3 rounded-md shadow-lg transition-all duration-300 hover:shadow-xl hover:translate-y-[-2px] active:translate-y-0 active:shadow-md;
+    @apply bg-gradient-to-r from-stitch-pink to-stitch-coral text-white font-medium px-6 py-3 rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:translate-y-[-2px] active:translate-y-0 active:shadow-md;
   }
   
   .stitch-input {
-    @apply bg-white border border-gray-200 rounded-md py-2 px-4 w-full focus:outline-none focus:ring-2 focus:ring-stitch-blue transition-all duration-300;
+    @apply bg-white border border-gray-200 rounded-full py-2 px-4 w-full focus:outline-none focus:ring-2 focus:ring-stitch-blue transition-all duration-300;
   }
 
   .stitch-select {
@@ -134,5 +135,23 @@
     @apply absolute inset-0 opacity-30;
     background-image: radial-gradient(white 1px, transparent 1px);
     background-size: 50px 50px;
+  }
+  
+  .bubble-button {
+    @apply relative overflow-hidden rounded-full bg-gradient-to-r from-stitch-blue to-stitch-teal text-white py-3 px-6 transition-all duration-300;
+  }
+  
+  .bubble-button::after {
+    content: "";
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+  }
+  
+  .bubble-button:hover::after {
+    @apply opacity-100;
+  }
+  
+  .soft-shadow {
+    box-shadow: 0 5px 20px -5px rgba(0, 0, 0, 0.1);
   }
 }

@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Star, Clock, Check, ShoppingBag, Gift, TruckIcon, Palmtree, Sun, Flower, Umbrella, Sailboat, Waves } from 'lucide-react';
@@ -235,28 +236,20 @@ const Index: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Nossos Produtos Exclusivos</h2>
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-stitch-blue">Nossos Produtos Exclusivos</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Escolha seus produtos favoritos do Stitch e leve este amiguinho fofo para todos os lugares. Cada modelo é oficial da Disney e feito com materiais de altíssima qualidade.
           </p>
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Rearranged products according to request */}
           <ProductCard
-            title="Pelúcia Stitch"
-            price="R$ 89,90"
-            description="Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs."
-            imageUrl="/lovable-uploads/40cae4d9-52ec-403d-90b5-45ed1deb8250.png"
-            size="20 cm"
-            onBuyClick={scrollToCheckout}
-          />
-          
-          <ProductCard
-            title="Pelúcia + Óculos"
-            price="R$ 149,90"
-            description="Kit especial com pelúcia Stitch original e óculos de sol temáticos. Proteção UV400 ideal para crianças e adultos."
-            imageUrl="/lovable-uploads/92a3210b-b591-4e35-8339-43775f776738.png"
-            discount="10% OFF"
+            title="Kit Completo Stitch"
+            price="R$ 199,90"
+            discount="20% OFF"
+            description="Kit completo com pelúcia Stitch, garrafa térmica e óculos de sol. O presente perfeito para os fãs de Lilo & Stitch."
+            imageUrl="/lovable-uploads/3603bda4-d7ec-411e-ad26-f2fc4f00a517.png"
             size="Kit Completo"
             onBuyClick={scrollToCheckout}
           />
@@ -272,11 +265,20 @@ const Index: React.FC = () => {
           />
           
           <ProductCard
-            title="Kit Completo Stitch"
-            price="R$ 199,90"
-            discount="20% OFF"
-            description="Kit completo com pelúcia Stitch, garrafa térmica e óculos de sol. O presente perfeito para os fãs de Lilo & Stitch."
-            imageUrl="/lovable-uploads/3603bda4-d7ec-411e-ad26-f2fc4f00a517.png"
+            title="Pelúcia Stitch"
+            price="R$ 89,90"
+            description="Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs."
+            imageUrl="/lovable-uploads/40cae4d9-52ec-403d-90b5-45ed1deb8250.png"
+            size="20 cm"
+            onBuyClick={scrollToCheckout}
+          />
+          
+          <ProductCard
+            title="Pelúcia + Óculos"
+            price="R$ 149,90"
+            description="Kit especial com pelúcia Stitch original e óculos de sol temáticos. Proteção UV400 ideal para crianças e adultos."
+            imageUrl="/lovable-uploads/92a3210b-b591-4e35-8339-43775f776738.png"
+            discount="10% OFF"
             size="Kit Completo"
             onBuyClick={scrollToCheckout}
           />
@@ -677,4 +679,3 @@ const Index: React.FC = () => {
 };
 
 export default Index;
-

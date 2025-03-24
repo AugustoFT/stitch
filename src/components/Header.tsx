@@ -15,9 +15,9 @@ const Header: React.FC = () => {
     >
       <div className="flex items-center gap-2">
         <img 
-          src="/lovable-uploads/be4eeb13-1ca3-4176-ac10-9c6064fedf07.png" 
-          alt="Stitch Logo" 
-          className="h-12 w-auto animate-float"
+          src="/lovable-uploads/40cae4d9-52ec-403d-90b5-45ed1deb8250.png" 
+          alt="Stitch Character" 
+          className="h-12 w-auto"
         />
         <div className="font-display text-xl text-stitch-blue font-semibold">Lilo e Stitch</div>
       </div>
