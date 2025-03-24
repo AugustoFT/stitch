@@ -118,19 +118,9 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       // Extract the specific error message from Mercado Pago response if available
       let errorMessage = 'Erro nos dados do cartão. Verifique o número, data de validade e CVV.';
       
-      if (tokenError.cause && tokenError.cause.length > 0) {
-        const causeCode = tokenError.cause[0].code;
-        
-        // Map common error codes to user-friendly messages
-        if (causeCode === 'E301') {
-          errorMessage = 'Número do cartão inválido. Verifique e tente novamente.';
-        } else if (causeCode === 'E302') {
-          errorMessage = 'Verifique o código de segurança (CVV) do cartão.';
-        } else if (causeCode === '316' || causeCode === 'E316') {
-          errorMessage = 'Nome do titular do cartão inválido. Use o nome exatamente como está no cartão.';
-        } else if (causeCode === '324' || causeCode === 'E324') {
-          errorMessage = 'Verifique a data de validade do cartão.';
-        }
+      if (tokenError.cause) {
+        console.error('Token error cause:', tokenError.cause);
+        errorMessage = 'Falha ao processar pagamento: ' + (tokenError.message || tokenError.toString());
       }
       
       return {
