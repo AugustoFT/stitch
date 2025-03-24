@@ -159,6 +159,28 @@ const Index: React.FC = () => {
                 Adquira sua pelúcia oficial da Disney e leve o carismático Stitch para todas as suas aventuras. Design único, qualidade premium e muita fofura!
               </p>
               
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={heroInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="mb-8"
+              >
+                <div className="relative">
+                  <img 
+                    src="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
+                    alt="Pelúcia Stitch" 
+                    className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
+                  />
+                  <motion.div 
+                    className="absolute -right-10 top-10 bg-stitch-yellow text-stitch-dark p-3 rounded-full shadow-lg font-bold text-lg transform rotate-12"
+                    animate={{ rotate: [12, 16, 12] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    30% OFF
+                  </motion.div>
+                </div>
+              </motion.div>
+              
               <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg mb-8 border border-stitch-blue/20">
                 <p className="text-stitch-blue font-bold mb-2">Oferta por tempo limitado:</p>
                 <div className="flex gap-2">
@@ -203,21 +225,14 @@ const Index: React.FC = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={heroInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex justify-center"
+              className="hidden md:block"
             >
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
-                  alt="Coleção Stitch" 
+                  src="/lovable-uploads/6f89d2fc-034b-404b-8125-04eff3980aac.png" 
+                  alt="Óculos Stitch" 
                   className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
                 />
-                <motion.div 
-                  className="absolute -right-10 top-10 bg-stitch-yellow text-stitch-dark p-3 rounded-full shadow-lg font-bold text-lg transform rotate-12"
-                  animate={{ rotate: [12, 16, 12] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  30% OFF
-                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -289,6 +304,7 @@ const Index: React.FC = () => {
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Por que você vai amar</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Nossos produtos do Stitch combinam fofura, qualidade e o carisma do personagem mais amado da Disney.
+              Com pelúcia premium, cores vibrantes, materiais não tóxicos e certificações internacionais, são perfeitos para fãs exigentes e seguros para crianças.
             </p>
           </motion.div>
           
@@ -473,6 +489,13 @@ const Index: React.FC = () => {
                   ))}
                 </div>
               </div>
+              <div className="mb-4 relative z-10 rounded-lg overflow-hidden">
+                <img 
+                  src="/lovable-uploads/3f8bc711-03a4-4b64-9298-553d2710a716.png" 
+                  alt="Cliente satisfeito com pelúcia Stitch"
+                  className="w-full h-auto object-cover rounded-lg"
+                />
+              </div>
               <p className="text-gray-600 mb-4 relative z-10">
                 "Minha filha amou a pelúcia do Stitch! A qualidade é impressionante, super macia e os detalhes são perfeitos. Já estamos de olho nos outros modelos!"
               </p>
@@ -496,8 +519,15 @@ const Index: React.FC = () => {
                   ))}
                 </div>
               </div>
+              <div className="mb-4 relative z-10 rounded-lg overflow-hidden">
+                <img 
+                  src="/lovable-uploads/a19ba89d-4c87-4583-8a57-6208b098c742.png" 
+                  alt="Cliente com garrafa térmica Stitch"
+                  className="w-full h-auto object-cover rounded-lg"
+                />
+              </div>
               <p className="text-gray-600 mb-4 relative z-10">
-                "Comprei os óculos do Stitch para meu sobrinho e ele não larga mais! Além de lindos, são super resistentes. A entrega foi rápida e o atendimento excelente!"
+                "A garrafa térmica do Stitch superou todas as expectativas! Mantém a bebida na temperatura ideal por horas e o design é lindo. Todo mundo pergunta onde comprei!"
               </p>
               <div className="font-medium relative z-10">Pedro M.</div>
               <div className="text-sm text-gray-500 relative z-10">Rio de Janeiro, RJ</div>
@@ -519,8 +549,15 @@ const Index: React.FC = () => {
                   ))}
                 </div>
               </div>
+              <div className="mb-4 relative z-10 rounded-lg overflow-hidden">
+                <img 
+                  src="/lovable-uploads/25c2d5df-68d4-423b-8a2d-d1388932e879.png" 
+                  alt="Criança com óculos do Stitch"
+                  className="w-full h-auto object-cover rounded-lg"
+                />
+              </div>
               <p className="text-gray-600 mb-4 relative z-10">
-                "Sou fã de Lilo & Stitch e a garrafa térmica superou minhas expectativas! O material é de ótima qualidade e chama atenção por onde passo. Recomendo demais!"
+                "Minha filha não tira os óculos do Stitch! São muito divertidos e de ótima qualidade. Ela adora brincar de ser o Stitch e faz todos rirem. Valeu cada centavo!"
               </p>
               <div className="font-medium relative z-10">Juliana T.</div>
               <div className="text-sm text-gray-500 relative z-10">Curitiba, PR</div>
@@ -668,3 +705,4 @@ const Index: React.FC = () => {
 };
 
 export default Index;
+
