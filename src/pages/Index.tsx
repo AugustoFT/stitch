@@ -214,8 +214,8 @@ const Index: React.FC = () => {
             >
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/a1485e45-0342-49b4-a3d1-703082f7d7eb.png" 
-                  alt="Kit Stitch + Garrafa" 
+                  src="/lovable-uploads/3603bda4-d7ec-411e-ad26-f2fc4f00a517.png" 
+                  alt="Coleção Stitch" 
                   className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
                 />
                 <motion.div 
@@ -243,9 +243,9 @@ const Index: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Nossos Modelos Exclusivos</h2>
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Nossos Produtos Exclusivos</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Escolha sua pelúcia favorita do Stitch e leve este amiguinho fofo para todos os lugares. Cada modelo é oficial da Disney e feito com materiais de altíssima qualidade.
+            Escolha seus produtos favoritos do Stitch e leve este amiguinho fofo para todos os lugares. Cada modelo é oficial da Disney e feito com materiais de altíssima qualidade.
           </p>
         </motion.div>
         
@@ -254,37 +254,37 @@ const Index: React.FC = () => {
             title="Pelúcia Stitch Azul"
             price="R$ 89,90"
             description="Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs."
-            imageUrl="/lovable-uploads/bbc9006b-6167-400a-94f8-5d99417fc057.png"
+            imageUrl="/lovable-uploads/40cae4d9-52ec-403d-90b5-45ed1deb8250.png"
             size="20 cm"
             onBuyClick={scrollToCheckout}
           />
           
           <ProductCard
-            title="Pelúcia Angel Rosa"
-            price="R$ 89,90"
-            description="Pelúcia da Angel (Experimento 624) em rosa vibrante. A namorada do Stitch com acabamento premium e super fofa."
-            imageUrl="/lovable-uploads/2b760e1c-3171-4717-8279-70def31836e0.png"
-            size="20 cm"
-            onBuyClick={scrollToCheckout}
-          />
-          
-          <ProductCard
-            title="Kit Stitch e Angel"
-            price="R$ 159,90"
+            title="Óculos de Sol Stitch"
+            price="R$ 69,90"
+            description="Óculos de sol exclusivos do Stitch, modelagem divertida em formato do personagem. Proteção UV400 ideal para crianças e adultos."
+            imageUrl="/lovable-uploads/92a3210b-b591-4e35-8339-43775f776738.png"
             discount="10% OFF"
-            description="Kit com 2 pelúcias oficiais Disney: Stitch azul e Angel rosa. Perfeitos para colecionar ou presentear. Economize comprando o par!"
-            imageUrl="/lovable-uploads/ae6c99e3-646e-4355-a86a-5ff5d98cd627.png"
-            size="20 cm cada"
+            size="Tamanho único"
             onBuyClick={scrollToCheckout}
           />
           
           <ProductCard
-            title="Kit Stitch + Garrafa"
-            price="R$ 129,90"
+            title="Pelúcia de Costas Stitch"
+            price="R$ 89,90"
+            description="Versão especial da pelúcia Stitch, vista de costas. Pelúcia ultra macia com detalhes exclusivos da cauda e marcas nas costas."
+            imageUrl="/lovable-uploads/97c702ed-ef6b-446e-b6ae-48fabc0eb13c.png"
+            size="20 cm"
+            onBuyClick={scrollToCheckout}
+          />
+          
+          <ProductCard
+            title="Garrafa Térmica Stitch"
+            price="R$ 79,90"
             discount="15% OFF"
-            description="Kit exclusivo com pelúcia Stitch e garrafa temática. Presente perfeito para fãs de todas as idades."
-            imageUrl="/lovable-uploads/b48af9f4-c146-40c7-8d7f-da5fd6dbe04c.png"
-            size="Pelúcia 20cm + Garrafa 500ml"
+            description="Garrafa térmica temática do Stitch, mantém bebidas quentes ou frias por horas. Design exclusivo com personagens Stitch e Angel."
+            imageUrl="/lovable-uploads/92a3210b-b591-4e35-8339-43775f776738.png"
+            size="500ml"
             onBuyClick={scrollToCheckout}
           />
         </div>
@@ -305,7 +305,7 @@ const Index: React.FC = () => {
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Por que você vai amar</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Nossas pelúcias do Stitch combinam fofura, qualidade e o carisma do personagem mais amado da Disney.
+              Nossos produtos do Stitch combinam fofura, qualidade e o carisma do personagem mais amado da Disney.
             </p>
           </motion.div>
           
@@ -317,8 +317,8 @@ const Index: React.FC = () => {
             >
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <img 
-                  src="/lovable-uploads/ae6c99e3-646e-4355-a86a-5ff5d98cd627.png" 
-                  alt="Pelúcias Stitch e Angel" 
+                  src="/lovable-uploads/3603bda4-d7ec-411e-ad26-f2fc4f00a517.png" 
+                  alt="Coleção Stitch" 
                   className="w-full h-auto"
                 />
               </div>
@@ -471,7 +471,7 @@ const Index: React.FC = () => {
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">O que nossos clientes dizem</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Veja os depoimentos de quem já garantiu sua pelúcia do Stitch e está encantado com a qualidade.
+              Veja os depoimentos de quem já garantiu seus produtos do Stitch e está encantado com a qualidade.
             </p>
           </motion.div>
           
@@ -516,7 +516,7 @@ const Index: React.FC = () => {
                 </div>
               </div>
               <p className="text-gray-600 mb-4 relative z-10">
-                "Comprei para o meu sobrinho e ele não larga mais! Além de linda, é super macia e resistente. A entrega foi super rápida e o atendimento excelente!"
+                "Comprei os óculos do Stitch para meu sobrinho e ele não larga mais! Além de lindos, são super resistentes. A entrega foi rápida e o atendimento excelente!"
               </p>
               <div className="font-medium relative z-10">Pedro M.</div>
               <div className="text-sm text-gray-500 relative z-10">Rio de Janeiro, RJ</div>
@@ -539,7 +539,7 @@ const Index: React.FC = () => {
                 </div>
               </div>
               <p className="text-gray-600 mb-4 relative z-10">
-                "Sou fã de Lilo & Stitch e essa pelúcia superou minhas expectativas! O material é de ótima qualidade e chama atenção por onde passo. Recomendo demais!"
+                "Sou fã de Lilo & Stitch e a garrafa térmica superou minhas expectativas! O material é de ótima qualidade e chama atenção por onde passo. Recomendo demais!"
               </p>
               <div className="font-medium relative z-10">Juliana T.</div>
               <div className="text-sm text-gray-500 relative z-10">Curitiba, PR</div>
@@ -573,7 +573,7 @@ const Index: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="glass-card p-6 rounded-xl"
           >
-            <h3 className="text-xl font-bold text-stitch-blue mb-2">As pelúcias são originais Disney?</h3>
+            <h3 className="text-xl font-bold text-stitch-blue mb-2">Os produtos são originais Disney?</h3>
             <p className="text-gray-600">Sim, todos os nossos produtos são originais e licenciados oficialmente pela Disney Store, garantindo qualidade e autenticidade.</p>
           </motion.div>
           
@@ -646,7 +646,7 @@ const Index: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Adquira sua pelúcia oficial do Stitch hoje mesmo e leve um pedacinho do Havaí para sua casa.
+            Adquira seus produtos oficiais do Stitch hoje mesmo e leve um pedacinho do Havaí para sua casa.
             <span className="block mt-2 text-stitch-yellow font-bold">Frete grátis para todo o Brasil!</span>
           </motion.p>
           <motion.button 
@@ -675,7 +675,7 @@ const Index: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Garanta sua Pelúcia Stitch</h2>
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Garanta seus Produtos Stitch</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Preencha o formulário abaixo para realizar seu pedido. Estoque limitado!
           </p>
