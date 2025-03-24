@@ -154,7 +154,7 @@ const CheckoutForm: React.FC = () => {
     }
   };
 
-  // Process card payment
+  // Process card payment using the full Mercado Pago checkout
   const handleCardPayment = async () => {
     if (!mercadoPagoReady) {
       toast.error("O sistema de pagamento ainda não foi carregado. Aguarde alguns segundos.");
@@ -164,52 +164,45 @@ const CheckoutForm: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      toast.info("Processando pagamento em ambiente de produção, aguarde...");
+      toast.info("Iniciando checkout do Mercado Pago, aguarde...");
       
-      // Get the cleaned card number (VISA test card)
-      const cleanedCardNumber = cardNumber.replace(/\s/g, '');
+      // Validate form data before proceeding
+      if (!formData.nome || !formData.email || !formData.cpf || !formData.endereco || !formData.cep) {
+        toast.error("Por favor, preencha todos os campos obrigatórios.");
+        setIsSubmitting(false);
+        return;
+      }
       
-      // Determine card type (very basic detection)
-      let detectedPaymentMethodId = '';
-      if (cleanedCardNumber.startsWith('4')) detectedPaymentMethodId = 'visa';
-      else if (cleanedCardNumber.startsWith('5')) detectedPaymentMethodId = 'master';
-      else if (cleanedCardNumber.startsWith('3')) detectedPaymentMethodId = 'amex';
-      else detectedPaymentMethodId = 'other';
-      
-      // In a real production environment, you would generate a token from the card
-      // For this test implementation, we'll simulate it
+      // Get card data and create checkout
       const cardData = {
-        token: "PROD-TOKEN-" + Date.now(),
-        paymentMethodId: detectedPaymentMethodId,
-        installments: 1,
-        identificationNumber: formData.cpf,
-        cardNumber: cleanedCardNumber  // Add this to help our test function
+        paymentMethodId: 'visa', // Default to visa, but the checkout will offer all options
+        installments: 1
       };
       
-      console.log("Processing payment in production environment with card data:", {
-        type: detectedPaymentMethodId,
-        cardNumber: cardNumber.substring(0, 4) + '********' + cardNumber.slice(-4)
+      console.log("Iniciando checkout do Mercado Pago com os dados:", {
+        nome: formData.nome,
+        email: formData.email,
+        cpf: formData.cpf.replace(/\D/g, '')
       });
       
-      // Process the payment
-      const paymentResult = await processCardPayment(cardData, formData);
+      // Create a checkout preference and redirect to Mercado Pago
+      const checkoutResult = await processCardPayment(cardData, formData);
       
-      if (paymentResult && paymentResult.status) {
-        setCardPaymentStatus(paymentResult.status);
-        
-        if (paymentResult.status === 'approved') {
-          toast.success("Pagamento aprovado com sucesso!");
-        } else if (paymentResult.status === 'in_process') {
-          toast.info("Pagamento em processamento. Você receberá uma confirmação em breve.");
-        } else {
-          toast.warning(`Status do pagamento: ${paymentResult.status}. ${paymentResult.status_detail || ''}`);
-        }
+      if (checkoutResult && checkoutResult.status === 'redirect' && checkoutResult.redirect_url) {
+        // Redirect to Mercado Pago checkout
+        toast.success("Redirecionando para o checkout do Mercado Pago...");
+        window.location.href = checkoutResult.redirect_url;
+      } else if (checkoutResult && checkoutResult.init_point) {
+        // Alternative redirect if the status field is not present
+        toast.success("Redirecionando para o checkout do Mercado Pago...");
+        window.location.href = checkoutResult.init_point;
       } else {
-        toast.error("Erro ao processar pagamento. Verifique os dados do cartão.");
+        // Handle unexpected response format
+        toast.error("Erro ao iniciar o checkout. Por favor, tente novamente.");
       }
     } catch (error) {
       console.error("Erro ao processar pagamento com cartão:", error);
-      toast.error("Houve um erro ao processar seu pagamento. Por favor, verifique os dados e tente novamente.");
+      toast.error("Houve um erro ao iniciar o checkout. Por favor, verifique os dados e tente novamente.");
     } finally {
       setIsSubmitting(false);
     }

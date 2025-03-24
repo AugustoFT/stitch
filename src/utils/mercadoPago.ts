@@ -140,81 +140,77 @@ export const createPixPayment = async (formData: any) => {
   }
 };
 
-// This function processes credit card payments in real production environment
+// Function to perform a real credit card payment using Mercado Pago
 export const processCardPayment = async (cardData: any, formData: any) => {
   try {
-    // For real production test, we'll use actual MercadoPago SDK
-    console.log('Processing real payment with card data:', {
-      type: cardData.paymentMethodId,
-      cardNumber: cardData.cardNumber.substring(0, 4) + '********' + cardData.cardNumber.slice(-4)
-    });
+    // Implement real MercadoPago checkout using the MercadoPago.js SDK
+    // This function assumes MercadoPago.js is loaded and cardData contains a valid token
     
-    // Create the payment data object
-    const paymentData = {
-      transaction_amount: 139.99,
-      token: cardData.token,
-      description: 'Pelúcia Stitch',
-      installments: cardData.installments || 1,
-      payment_method_id: cardData.paymentMethodId,
+    if (!window.MercadoPago) {
+      throw new Error('MercadoPago SDK not loaded');
+    }
+    
+    console.log('Processing real MercadoPago payment:', {
+      type: cardData.paymentMethodId,
+      cardNumber: cardData.cardNumber ? cardData.cardNumber.substring(0, 4) + '********' + cardData.cardNumber.slice(-4) : 'No card number'
+    });
+
+    // Instead of creating a payment directly, let's redirect to Mercado Pago checkout
+    const preferenceData = {
+      items: [
+        {
+          id: 'pelucia-stitch',
+          title: 'Pelúcia Stitch',
+          quantity: 1,
+          currency_id: 'BRL',
+          unit_price: 139.99
+        }
+      ],
       payer: {
+        name: formData.nome,
         email: formData.email,
+        phone: {
+          area_code: formData.telefone.substring(0, 2),
+          number: formData.telefone.substring(2).replace(/\D/g, '')
+        },
+        address: {
+          street_name: formData.endereco,
+          street_number: '',
+          zip_code: formData.cep.replace(/\D/g, '')
+        },
         identification: {
           type: 'CPF',
           number: formData.cpf || '00000000000'
         }
-      }
+      },
+      payment_methods: {
+        excluded_payment_types: [],
+        installments: 12,
+        default_payment_method_id: cardData.paymentMethodId
+      },
+      back_urls: {
+        success: window.location.origin,
+        failure: window.location.origin,
+        pending: window.location.origin
+      },
+      auto_return: 'approved'
     };
     
-    console.log('Sending payment data to MercadoPago:', JSON.stringify(paymentData, null, 2));
+    console.log('Creating checkout preference:', preferenceData);
     
-    // For testing purposes, we'll continue simulating the response
-    // But structure it like a real production response would be
+    // Create a preference to start the checkout flow
+    const response = await preferenceClient.create({ body: preferenceData });
     
-    // Determine response based on test card
-    let status = 'approved';
-    let status_detail = 'accredited';
+    console.log('Checkout preference created:', response);
     
-    if (cardData.cardNumber) {
-      const cardNumber = cardData.cardNumber.replace(/\s/g, '');
-      
-      if (cardNumber.startsWith('4235')) {
-        // VISA test card - success
-        status = 'approved';
-        status_detail = 'accredited';
-      } else if (cardNumber.startsWith('5031')) {
-        // MASTERCARD test card - pending
-        status = 'in_process';
-        status_detail = 'pending_contingency';
-      } else if (cardNumber.startsWith('3753')) {
-        // AMEX test card - approved
-        status = 'approved';
-        status_detail = 'accredited';
-      } else {
-        // Unknown card - rejected
-        status = 'rejected';
-        status_detail = 'cc_rejected_other_reason';
-      }
-    }
-    
-    console.log(`Production test payment result: status=${status}, detail=${status_detail}`);
-    
-    return {
-      id: 'prod-payment-' + Date.now(),
-      status: status,
-      status_detail: status_detail
-    };
-    
-    /* 
-    In a complete real-world implementation, you would uncomment this code 
-    and integrate with the real API endpoint:
-    
-    const response = await paymentClient.create({ body: paymentData });
+    // Return the checkout URL that will redirect to Mercado Pago's checkout page
     return {
       id: response.id,
-      status: response.status,
-      status_detail: response.status_detail
+      init_point: response.init_point,
+      status: 'redirect',
+      redirect_url: response.init_point
     };
-    */
+    
   } catch (error) {
     console.error('Error processing MercadoPago card payment:', error);
     throw new Error('Falha ao processar o pagamento com cartão. Por favor, verifique os dados e tente novamente.');
