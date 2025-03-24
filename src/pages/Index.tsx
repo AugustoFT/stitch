@@ -521,7 +521,7 @@ const Index: React.FC = () => {
               </div>
               <div className="mb-4 relative z-10 rounded-lg overflow-hidden">
                 <img 
-                  src="/lovable-uploads/433e0ab9-42ce-4be3-82cb-272c7a786e17.png" 
+                  src="/lovable-uploads/da253e30-338b-416d-8205-d33fcc612e0e.png" 
                   alt="Cliente satisfeito com pelúcia Stitch"
                   className="w-full h-auto object-cover rounded-lg"
                 />
