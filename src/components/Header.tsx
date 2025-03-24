@@ -14,11 +14,6 @@ const Header: React.FC = () => {
       transition={{ duration: 0.5 }}
     >
       <div className="flex items-center gap-2">
-        <img 
-          src="/lovable-uploads/40cae4d9-52ec-403d-90b5-45ed1deb8250.png" 
-          alt="Stitch Character" 
-          className="h-12 w-auto"
-        />
         <div className="font-display text-xl text-stitch-blue font-semibold">Lilo e Stitch</div>
       </div>
       

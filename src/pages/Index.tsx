@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Star, Clock, Check, ShoppingBag, Gift, TruckIcon, Palmtree, Sun, Flower, Umbrella, Sailboat, Waves } from 'lucide-react';
@@ -208,7 +207,7 @@ const Index: React.FC = () => {
             >
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/3603bda4-d7ec-411e-ad26-f2fc4f00a517.png" 
+                  src="/lovable-uploads/ccc2d3fc-dacf-4b85-bf81-37933e9ed300.png" 
                   alt="Coleção Stitch" 
                   className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
                 />
@@ -217,7 +216,7 @@ const Index: React.FC = () => {
                   animate={{ rotate: [12, 16, 12] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  20% OFF
+                  30% OFF
                 </motion.div>
               </div>
             </motion.div>
@@ -242,43 +241,33 @@ const Index: React.FC = () => {
           </p>
         </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Rearranged products according to request */}
-          <ProductCard
-            title="Kit Completo Stitch"
-            price="R$ 199,90"
-            discount="20% OFF"
-            description="Kit completo com pelúcia Stitch, garrafa térmica e óculos de sol. O presente perfeito para os fãs de Lilo & Stitch."
-            imageUrl="/lovable-uploads/3603bda4-d7ec-411e-ad26-f2fc4f00a517.png"
-            size="Kit Completo"
-            onBuyClick={scrollToCheckout}
-          />
-          
-          <ProductCard
-            title="Pelúcia + Garrafa"
-            price="R$ 159,90"
-            description="Kit especial com pelúcia Stitch original e garrafa térmica temática que mantém bebidas quentes ou frias por horas."
-            imageUrl="/lovable-uploads/97c702ed-ef6b-446e-b6ae-48fabc0eb13c.png"
-            discount="15% OFF"
-            size="Kit Completo"
-            onBuyClick={scrollToCheckout}
-          />
-          
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <ProductCard
             title="Pelúcia Stitch"
-            price="R$ 89,90"
+            price="R$ 139,99"
+            discount="30% OFF"
             description="Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs."
-            imageUrl="/lovable-uploads/40cae4d9-52ec-403d-90b5-45ed1deb8250.png"
+            imageUrl="/lovable-uploads/ce0fa5c9-d164-4d24-bfcf-88d34c3ab37c.png"
             size="20 cm"
             onBuyClick={scrollToCheckout}
           />
           
           <ProductCard
-            title="Pelúcia + Óculos"
-            price="R$ 149,90"
-            description="Kit especial com pelúcia Stitch original e óculos de sol temáticos. Proteção UV400 ideal para crianças e adultos."
-            imageUrl="/lovable-uploads/92a3210b-b591-4e35-8339-43775f776738.png"
-            discount="10% OFF"
+            title="Óculos Stitch"
+            price="R$ 129,99"
+            description="Óculos de sol temáticos do Stitch com proteção UV400. Design exclusivo e divertido para todas as idades."
+            imageUrl="/lovable-uploads/6f89d2fc-034b-404b-8125-04eff3980aac.png"
+            discount="30% OFF"
+            size="Infantil"
+            onBuyClick={scrollToCheckout}
+          />
+          
+          <ProductCard
+            title="Kit Completo Stitch"
+            price="R$ 399,98"
+            description="Kit completo com pelúcia Stitch, garrafa térmica e óculos de sol. O presente perfeito para os fãs de Lilo & Stitch."
+            imageUrl="/lovable-uploads/ccc2d3fc-dacf-4b85-bf81-37933e9ed300.png"
+            discount="30% OFF"
             size="Kit Completo"
             onBuyClick={scrollToCheckout}
           />
@@ -311,7 +300,7 @@ const Index: React.FC = () => {
             >
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <img 
-                  src="/lovable-uploads/3603bda4-d7ec-411e-ad26-f2fc4f00a517.png" 
+                  src="/lovable-uploads/ccc2d3fc-dacf-4b85-bf81-37933e9ed300.png" 
                   alt="Coleção Stitch" 
                   className="w-full h-auto"
                 />

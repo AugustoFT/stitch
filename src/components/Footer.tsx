@@ -35,7 +35,6 @@ const Footer: React.FC = () => {
         
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
           <p>© {new Date().getFullYear()} Lilo & Stitch. Todos os direitos reservados.</p>
-          <p className="mt-2">Esta é uma loja fictícia inspirada no filme Lilo & Stitch. Todos os personagens pertencem à Disney.</p>
         </div>
       </div>
     </footer>

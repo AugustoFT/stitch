@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Gift, Clock, TruckIcon } from 'lucide-react';
+import { Gift, Clock, TruckIcon, BadgePercent } from 'lucide-react';
 
 interface ProductCardProps {
   title: string;
@@ -30,7 +30,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       transition={{ duration: 0.6 }}
       whileHover={{ y: -5 }}
     >
-      <div className="relative overflow-hidden rounded-xl mb-6 group h-72">
+      <div className="relative overflow-hidden rounded-xl mb-6 group h-80">
         <motion.img 
           src={imageUrl} 
           alt={title}
@@ -43,9 +43,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {price}
         </div>
         {discount && (
-          <div className="absolute top-3 left-3 bg-stitch-pink text-white font-bold py-1 px-3 rounded-full text-sm shadow-md">
+          <motion.div 
+            className="absolute top-3 left-3 bg-stitch-pink text-white font-bold py-2 px-4 rounded-full text-sm shadow-md flex items-center gap-1"
+            animate={{ rotate: [0, -5, 5, -5, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+          >
+            <BadgePercent className="h-4 w-4" />
             {discount}
-          </div>
+          </motion.div>
         )}
         {size && (
           <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm text-stitch-dark font-medium py-1 px-3 rounded-full text-xs shadow-sm">
