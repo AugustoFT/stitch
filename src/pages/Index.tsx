@@ -580,11 +580,11 @@ const Index: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="mb-3 relative z-10 rounded-lg overflow-hidden">
+              <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48">
                 <img 
-                  src="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
-                  alt="Cliente satisfeito com pelúcia Stitch"
-                  className="w-full h-auto object-cover rounded-lg"
+                  src="/lovable-uploads/8cfc64db-41d0-48e4-b488-c2dfabcbc412.png" 
+                  alt="Cliente com pelúcia Stitch e rosas"
+                  className="w-full h-full object-cover rounded-lg"
                 />
               </div>
               <p className="text-gray-600 mb-3 relative z-10 text-sm">
@@ -610,15 +610,15 @@ const Index: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="mb-3 relative z-10 rounded-lg overflow-hidden">
+              <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48">
                 <img 
-                  src="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
-                  alt="Cliente com pelúcia Stitch"
-                  className="w-full h-auto object-cover rounded-lg"
+                  src="/lovable-uploads/2ef0eeb8-09ff-4314-a10e-794186e3aaab.png" 
+                  alt="Garrafa térmica Stitch"
+                  className="w-full h-full object-cover rounded-lg"
                 />
               </div>
               <p className="text-gray-600 mb-3 relative z-10 text-sm">
-                "A pelúcia do Stitch superou todas as expectativas! O material é de altíssima qualidade e o design é incrível. Todo mundo pergunta onde comprei!"
+                "A garrafa térmica do Stitch é maravilhosa! O design é único e a qualidade é excepcional. Mantém minha bebida quente por horas e todos perguntam onde comprei!"
               </p>
               <div className="font-medium relative z-10 text-sm">Pedro M.</div>
               <div className="text-xs text-gray-500 relative z-10">Rio de Janeiro, RJ</div>
@@ -640,15 +640,15 @@ const Index: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="mb-3 relative z-10 rounded-lg overflow-hidden">
+              <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48">
                 <img 
-                  src="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
-                  alt="Criança com pelúcia Stitch"
-                  className="w-full h-auto object-cover rounded-lg"
+                  src="/lovable-uploads/86397c2f-c5df-4f68-b96a-85761e499eee.png" 
+                  alt="Criança usando óculos do Stitch"
+                  className="w-full h-full object-cover rounded-lg"
                 />
               </div>
               <p className="text-gray-600 mb-3 relative z-10 text-sm">
-                "Meu filho não larga a pelúcia do Stitch! É muito fofa e de ótima qualidade. Ele adora brincar e dormir abraçado com ela. Valeu cada centavo!"
+                "Minha filha adora os óculos do Stitch! Ela não tira por nada e fica super fofa com eles. A qualidade é excelente e dura bastante mesmo com o uso diário!"
               </p>
               <div className="font-medium relative z-10 text-sm">Juliana T.</div>
               <div className="text-xs text-gray-500 relative z-10">Curitiba, PR</div>
@@ -799,3 +799,4 @@ const Index: React.FC = () => {
 };
 
 export default Index;
+
