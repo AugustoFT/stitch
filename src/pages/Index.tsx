@@ -30,12 +30,12 @@ const Index: React.FC = () => {
     {
       id: 0,
       title: "Pelúcia Stitch",
-      price: "R$ 139,99",
+      price: "R$ 0,99",
       originalPrice: "R$ 199,99",
       description: "Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs.",
       imageUrl: "/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png",
       size: "20 cm",
-      discount: "30% OFF"
+      discount: "99% OFF"
     },
     {
       id: 1,
@@ -50,7 +50,7 @@ const Index: React.FC = () => {
     {
       id: 2,
       title: "Kit Completo Stitch",
-      price: "R$ 399,98",
+      price: "R$ 399,99",
       originalPrice: "R$ 571,40",
       description: "Kit completo com pelúcia Stitch, garrafa térmica e óculos de sol. O presente perfeito para os fãs de Lilo & Stitch.",
       imageUrl: "/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png",
