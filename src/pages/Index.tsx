@@ -207,7 +207,7 @@ const Index: React.FC = () => {
             >
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/ccc2d3fc-dacf-4b85-bf81-37933e9ed300.png" 
+                  src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
                   alt="Coleção Stitch" 
                   className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
                 />
@@ -247,7 +247,7 @@ const Index: React.FC = () => {
             price="R$ 139,99"
             discount="30% OFF"
             description="Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs."
-            imageUrl="/lovable-uploads/ce0fa5c9-d164-4d24-bfcf-88d34c3ab37c.png"
+            imageUrl="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png"
             size="20 cm"
             onBuyClick={scrollToCheckout}
           />
@@ -258,7 +258,7 @@ const Index: React.FC = () => {
             description="Óculos de sol temáticos do Stitch com proteção UV400. Design exclusivo e divertido para todas as idades."
             imageUrl="/lovable-uploads/6f89d2fc-034b-404b-8125-04eff3980aac.png"
             discount="30% OFF"
-            size="Infantil"
+            size="1 unidade"
             onBuyClick={scrollToCheckout}
           />
           
@@ -266,7 +266,7 @@ const Index: React.FC = () => {
             title="Kit Completo Stitch"
             price="R$ 399,98"
             description="Kit completo com pelúcia Stitch, garrafa térmica e óculos de sol. O presente perfeito para os fãs de Lilo & Stitch."
-            imageUrl="/lovable-uploads/ccc2d3fc-dacf-4b85-bf81-37933e9ed300.png"
+            imageUrl="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png"
             discount="30% OFF"
             size="Kit Completo"
             onBuyClick={scrollToCheckout}
@@ -300,7 +300,7 @@ const Index: React.FC = () => {
             >
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <img 
-                  src="/lovable-uploads/ccc2d3fc-dacf-4b85-bf81-37933e9ed300.png" 
+                  src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
                   alt="Coleção Stitch" 
                   className="w-full h-auto"
                 />

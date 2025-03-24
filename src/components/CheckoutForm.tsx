@@ -9,6 +9,7 @@ const CheckoutForm: React.FC = () => {
     email: '',
     telefone: '',
     endereco: '',
+    complemento: '',
     cidade: '',
     estado: '',
     cep: '',
@@ -28,6 +29,7 @@ const CheckoutForm: React.FC = () => {
       email: '',
       telefone: '',
       endereco: '',
+      complemento: '',
       cidade: '',
       estado: '',
       cep: '',
@@ -113,7 +115,22 @@ const CheckoutForm: React.FC = () => {
             value={formData.endereco}
             onChange={handleChange}
             className="stitch-input"
-            placeholder="Rua, número, complemento"
+            placeholder="Rua, número"
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="complemento" className="block text-sm font-medium text-gray-700 mb-1">
+            Complemento
+          </label>
+          <input
+            type="text"
+            id="complemento"
+            name="complemento"
+            value={formData.complemento}
+            onChange={handleChange}
+            className="stitch-input"
+            placeholder="Apartamento, bloco, etc"
           />
         </div>
         
@@ -206,7 +223,6 @@ const CheckoutForm: React.FC = () => {
             className="stitch-select"
           >
             <option value="cartao">Cartão de Crédito</option>
-            <option value="boleto">Boleto Bancário</option>
             <option value="pix">PIX</option>
           </select>
         </div>

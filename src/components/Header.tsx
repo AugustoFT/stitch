@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Menu, X } from 'lucide-react';
+import { ShoppingBag, Menu, X, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,6 +28,11 @@ const Header: React.FC = () => {
           <span className="absolute -top-2 -right-2 bg-stitch-pink text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
         </motion.div>
         
+        <Link to="/admin" className="hidden md:flex items-center text-stitch-blue hover:text-stitch-pink transition-colors">
+          <Lock className="h-5 w-5 mr-1" />
+          <span className="text-sm">Admin</span>
+        </Link>
+        
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="md:hidden text-stitch-blue"
@@ -41,6 +47,10 @@ const Header: React.FC = () => {
         <a href="#depoimentos" className="text-foreground hover:text-stitch-blue transition-colors">Depoimentos</a>
         <a href="#faq" className="text-foreground hover:text-stitch-blue transition-colors">FAQ</a>
         <a href="#checkout" className="btn-primary py-2 px-4 md:ml-4">Comprar</a>
+        <Link to="/admin" className="md:hidden flex items-center text-stitch-blue hover:text-stitch-pink transition-colors">
+          <Lock className="h-5 w-5 mr-1" />
+          <span>Admin</span>
+        </Link>
       </nav>
     </motion.header>
   );
