@@ -3,7 +3,11 @@ import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { processCardPayment } from '../../utils/mercadoPago';
-import { Check } from 'lucide-react';
+import CardPaymentSuccess from './CardPaymentSuccess';
+import CardInputs from './CardInputs';
+import InstallmentSelector from './InstallmentSelector';
+import PaymentStatusIndicator from './PaymentStatusIndicator';
+import { validateCardField } from './CardFormatters';
 
 interface CreditCardFormProps {
   formData: any;
@@ -66,112 +70,21 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     localStorage.setItem('cardFormData', JSON.stringify(dataToSave));
   };
   
-  // Format credit card inputs
-  const formatCardNumber = (value: string) => {
-    const cleaned = value.replace(/\D/g, '');
-    let formatted = '';
-    
-    for (let i = 0; i < cleaned.length; i++) {
-      if (i > 0 && i % 4 === 0) {
-        formatted += ' ';
-      }
-      formatted += cleaned[i];
-    }
-    
-    return formatted.slice(0, 19); // 16 digits + 3 spaces
-  };
-
-  const formatExpirationDate = (value: string) => {
-    const cleaned = value.replace(/\D/g, '');
-    let formatted = cleaned;
-    
-    if (cleaned.length > 2) {
-      formatted = cleaned.slice(0, 2) + '/' + cleaned.slice(2);
-    }
-    
-    return formatted.slice(0, 5); // MM/YY format
-  };
-
-  // Handle card input changes
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatCardNumber(e.target.value);
-    setCardNumber(formattedValue);
-    validateField('cardNumber', formattedValue);
-  };
-
-  const handleExpirationDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatExpirationDate(e.target.value);
-    setExpirationDate(formattedValue);
-    validateField('expirationDate', formattedValue);
-  };
-
-  const handleSecurityCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 4);
-    setSecurityCode(value);
-    validateField('securityCode', value);
-  };
-  
+  // Validate field and update errors state
   const validateField = (field: string, value: string) => {
-    let newErrors = { ...errors };
+    const errorMessage = validateCardField(field, value);
     
-    switch (field) {
-      case 'cardNumber':
-        if (!value) {
-          newErrors.cardNumber = 'Número do cartão é obrigatório';
-        } else if (value.replace(/\s/g, '').length < 16) {
-          newErrors.cardNumber = 'Número do cartão inválido';
-        } else {
-          delete newErrors.cardNumber;
-        }
-        break;
-        
-      case 'cardholderName':
-        if (!value) {
-          newErrors.cardholderName = 'Nome no cartão é obrigatório';
-        } else if (value.length < 3) {
-          newErrors.cardholderName = 'Nome muito curto';
-        } else {
-          delete newErrors.cardholderName;
-        }
-        break;
-        
-      case 'expirationDate':
-        if (!value) {
-          newErrors.expirationDate = 'Data de validade é obrigatória';
-        } else if (value.length < 5) {
-          newErrors.expirationDate = 'Data incompleta';
-        } else {
-          const [month, year] = value.split('/');
-          const currentYear = new Date().getFullYear() % 100;
-          const currentMonth = new Date().getMonth() + 1;
-          
-          if (parseInt(month) < 1 || parseInt(month) > 12) {
-            newErrors.expirationDate = 'Mês inválido';
-          } else if (parseInt(year) < currentYear || 
-                    (parseInt(year) === currentYear && parseInt(month) < currentMonth)) {
-            newErrors.expirationDate = 'Cartão expirado';
-          } else {
-            delete newErrors.expirationDate;
-          }
-        }
-        break;
-        
-      case 'securityCode':
-        if (!value) {
-          newErrors.securityCode = 'CVV é obrigatório';
-        } else if (value.length < 3) {
-          newErrors.securityCode = 'CVV inválido';
-        } else {
-          delete newErrors.securityCode;
-        }
-        break;
-        
-      default:
-        break;
+    if (errorMessage) {
+      setErrors(prev => ({ ...prev, [field]: errorMessage }));
+      return false;
+    } else {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+      return true;
     }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
   
   const validateAllFields = () => {
@@ -275,33 +188,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     }
   };
 
-  // Render payment success message
-  const renderPaymentSuccess = () => {
-    if (!paymentResult || paymentResult.status !== 'approved') return null;
-    
-    return (
-      <motion.div
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: 'auto' }}
-        transition={{ duration: 0.4 }}
-        className="bg-green-50 border border-green-200 rounded-lg p-4 flex flex-col items-center"
-      >
-        <div className="bg-green-100 p-3 rounded-full mb-3">
-          <Check className="h-6 w-6 text-green-600" />
-        </div>
-        <h3 className="text-green-800 font-semibold text-lg mb-1">Pagamento Aprovado!</h3>
-        <p className="text-green-700 text-center">
-          Sua compra foi processada com sucesso. Você receberá um e-mail com os detalhes.
-        </p>
-        {paymentResult.id && (
-          <p className="text-xs text-green-600 mt-2">
-            ID da transação: {paymentResult.id}
-          </p>
-        )}
-      </motion.div>
-    );
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, height: 0 }}
@@ -310,122 +196,33 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       transition={{ duration: 0.3 }}
       className="space-y-4 border-t pt-4"
     >
-      {renderPaymentSuccess()}
+      <CardPaymentSuccess paymentResult={paymentResult} />
       
       {(!paymentResult || paymentResult.status !== 'approved') && (
         <>
-          <div>
-            <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">
-              Número do Cartão*
-            </label>
-            <input
-              type="text"
-              id="cardNumber"
-              value={cardNumber}
-              onChange={handleCardNumberChange}
-              className={`stitch-input ${errors.cardNumber ? 'border-red-500' : ''}`}
-              placeholder="0000 0000 0000 0000"
-              required
-            />
-            {errors.cardNumber && (
-              <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>
-            )}
-          </div>
+          <CardInputs
+            cardNumber={cardNumber}
+            cardholderName={cardholderName}
+            expirationDate={expirationDate}
+            securityCode={securityCode}
+            errors={errors}
+            setCardNumber={setCardNumber}
+            setCardholderName={setCardholderName}
+            setExpirationDate={setExpirationDate}
+            setSecurityCode={setSecurityCode}
+            validateField={validateField}
+          />
           
-          <div>
-            <label htmlFor="cardholderName" className="block text-sm font-medium text-gray-700 mb-1">
-              Nome no Cartão*
-            </label>
-            <input
-              type="text"
-              id="cardholderName"
-              value={cardholderName}
-              onChange={(e) => {
-                const value = e.target.value.toUpperCase();
-                setCardholderName(value);
-                validateField('cardholderName', value);
-              }}
-              className={`stitch-input ${errors.cardholderName ? 'border-red-500' : ''}`}
-              placeholder="NOME COMO ESTÁ NO CARTÃO"
-              required
-            />
-            {errors.cardholderName && (
-              <p className="text-red-500 text-xs mt-1">{errors.cardholderName}</p>
-            )}
-          </div>
+          <InstallmentSelector
+            installments={installments}
+            setInstallments={setInstallments}
+            totalAmount={totalAmount}
+          />
           
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="expirationDate" className="block text-sm font-medium text-gray-700 mb-1">
-                Validade*
-              </label>
-              <input
-                type="text"
-                id="expirationDate"
-                value={expirationDate}
-                onChange={handleExpirationDateChange}
-                className={`stitch-input ${errors.expirationDate ? 'border-red-500' : ''}`}
-                placeholder="MM/AA"
-                required
-              />
-              {errors.expirationDate && (
-                <p className="text-red-500 text-xs mt-1">{errors.expirationDate}</p>
-              )}
-            </div>
-            <div>
-              <label htmlFor="securityCode" className="block text-sm font-medium text-gray-700 mb-1">
-                CVV*
-              </label>
-              <input
-                type="text"
-                id="securityCode"
-                value={securityCode}
-                onChange={handleSecurityCodeChange}
-                className={`stitch-input ${errors.securityCode ? 'border-red-500' : ''}`}
-                placeholder="123"
-                required
-              />
-              {errors.securityCode && (
-                <p className="text-red-500 text-xs mt-1">{errors.securityCode}</p>
-              )}
-            </div>
-          </div>
-          
-          <div>
-            <label htmlFor="installments" className="block text-sm font-medium text-gray-700 mb-1">
-              Parcelamento*
-            </label>
-            <select
-              id="installments"
-              value={installments}
-              onChange={(e) => setInstallments(parseInt(e.target.value))}
-              className="stitch-input"
-              required
-            >
-              <option value={1}>1x de R$ {(totalAmount).toFixed(2).replace('.', ',')} sem juros</option>
-              <option value={2}>2x de R$ {(totalAmount / 2).toFixed(2).replace('.', ',')} sem juros</option>
-              <option value={3}>3x de R$ {(totalAmount / 3).toFixed(2).replace('.', ',')} sem juros</option>
-              <option value={6}>6x de R$ {(totalAmount / 6).toFixed(2).replace('.', ',')} sem juros</option>
-              <option value={12}>12x de R$ {(totalAmount / 12).toFixed(2).replace('.', ',')} sem juros</option>
-            </select>
-          </div>
-          
-          {/* Show payment status if available */}
-          {cardPaymentStatus && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className={`p-3 rounded-lg text-center ${
-                cardPaymentStatus === 'approved' 
-                  ? 'bg-green-100 text-green-800' 
-                  : cardPaymentStatus === 'in_process' || cardPaymentStatus === 'pending'
-                  ? 'bg-yellow-100 text-yellow-800'
-                  : 'bg-red-100 text-red-800'
-              }`}
-            >
-              {paymentResult && paymentResult.message}
-            </motion.div>
-          )}
+          <PaymentStatusIndicator
+            paymentStatus={cardPaymentStatus}
+            paymentResult={paymentResult}
+          />
           
           <motion.button 
             type="button"
