@@ -59,14 +59,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   
   // Refs for the Mercado Pago SDK
   const mercadoPagoRef = useRef<any>(null);
+  const productsProcessed = useRef(false);
 
-  // Process selectedProducts to include quantities - fixing dependency array
+  // Process selectedProducts to include quantities - fixing dependency array issues
   useEffect(() => {
-    if (selectedProducts && selectedProducts.length > 0) {
+    // Skip if already processed or no products
+    if (productsProcessed.current || !selectedProducts || selectedProducts.length === 0) {
+      return;
+    }
+    
+    try {
       const processedProducts = selectedProducts.map(product => ({
         id: product.id,
         title: product.title,
-        price: parseFloat(product.price.replace('R$ ', '').replace(',', '.')),
+        price: typeof product.price === 'string' 
+          ? parseFloat(product.price.replace('R$ ', '').replace(',', '.'))
+          : product.price,
         imageUrl: product.imageUrl,
         quantity: product.quantity || 1
       }));
@@ -80,6 +88,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       );
       
       setCalculatedTotal(newTotal);
+      productsProcessed.current = true;
+    } catch (error) {
+      console.error('Error processing products:', error);
     }
   }, [selectedProducts]);
 
@@ -139,16 +150,39 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   }, [formData.formaPagamento]);
 
   // Save form data to localStorage when it changes - with proper dependency tracking
-  useEffect(() => {
+  // Using a more targeted approach to avoid loops
+  const saveCustomerInfo = () => {
     if (formData.nome && formData.email) {
-      localStorage.setItem('customerInfo', JSON.stringify(formData));
+      const dataToSave = {
+        nome: formData.nome,
+        email: formData.email,
+        cpf: formData.cpf,
+        telefone: formData.telefone,
+        endereco: formData.endereco,
+        complemento: formData.complemento,
+        complemento2: formData.complemento2,
+        cidade: formData.cidade,
+        estado: formData.estado,
+        cep: formData.cep
+      };
+      localStorage.setItem('customerInfo', JSON.stringify(dataToSave));
     }
-  }, [formData.nome, formData.email, formData.cpf, formData.telefone, formData.endereco, 
-      formData.complemento, formData.complemento2, formData.cidade, formData.estado, formData.cep]);
+  };
 
+  // Save customer data only when relevant fields change
+  useEffect(() => {
+    saveCustomerInfo();
+  }, [formData.nome, formData.email]);
+
+  // This will NOT cause infinite loops as it's only triggered by specific events
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Some fields we want to save immediately
+    if (name === 'nome' || name === 'email') {
+      setTimeout(saveCustomerInfo, 500);
+    }
   };
 
   // Handle formatted input changes

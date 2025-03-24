@@ -38,11 +38,16 @@ export function determineCardType(cardNumber: string): string {
   if (/^4/.test(cleanNumber)) return 'visa';
   if (/^5[1-5]/.test(cleanNumber)) return 'master';
   if (/^3[47]/.test(cleanNumber)) return 'amex';
+  if (/^6(?:011|5)/.test(cleanNumber)) return 'discover';
   if (/^(60|65)/.test(cleanNumber)) return 'elo';
   if (/^(36|38|30[0-5])/.test(cleanNumber)) return 'diners';
-  if (/^(606282|3841)/.test(cleanNumber)) return 'hipercard';
+  if (/^(606282|3841|637095)/.test(cleanNumber)) return 'hipercard';
+  if (/^50[0-9]/.test(cleanNumber)) return 'aura';
+  if (/^(2131|1800|35\d{3})/.test(cleanNumber)) return 'jcb';
+  if (/^(5067|4576|4011)/.test(cleanNumber)) return 'mastercard';
   
   // Default to visa if can't determine
+  console.log('Card type not recognized, defaulting to visa');
   return 'visa';
 }
 

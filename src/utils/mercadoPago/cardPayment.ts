@@ -4,9 +4,35 @@ import { paymentClient, determineCardType, getPaymentStatusMessage, mercadoPagoP
 // Function to directly process a card payment without redirection
 export const processCardPayment = async (cardData: any, formData: any, installments: number = 1, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
   try {
+    console.log('Processing credit card payment with amount:', amount, 'and description:', description);
+    
     if (!window.MercadoPago) {
       console.error('MercadoPago SDK not loaded');
-      throw new Error('MercadoPago SDK not loaded');
+      return {
+        status: 'error',
+        status_detail: 'MercadoPago SDK not loaded',
+        message: 'Erro ao carregar o processador de pagamentos. Recarregue a página e tente novamente.'
+      };
+    }
+    
+    // Validate form data
+    if (!formData.nome || !formData.email || !formData.cpf) {
+      console.error('Missing required form data for card payment');
+      return {
+        status: 'error',
+        status_detail: 'Missing required form data',
+        message: 'Dados incompletos. Por favor, preencha todos os campos obrigatórios.'
+      };
+    }
+    
+    // Validate card data
+    if (!cardData.cardNumber || !cardData.cardholderName || !cardData.expirationDate || !cardData.securityCode) {
+      console.error('Missing required card data');
+      return {
+        status: 'error',
+        status_detail: 'Missing required card data',
+        message: 'Dados do cartão incompletos. Por favor, preencha todos os campos do cartão.'
+      };
     }
     
     console.log('Processing direct card payment with MercadoPago');
@@ -17,6 +43,9 @@ export const processCardPayment = async (cardData: any, formData: any, installme
     // Format expiration month and year from MM/YY format
     const [expirationMonth, expirationYear] = cardData.expirationDate.split('/');
     
+    // Format CPF properly
+    const cpf = formData.cpf.replace(/\D/g, '');
+    
     // Create a card token using the MercadoPago SDK
     const cardTokenData = {
       cardNumber: cardData.cardNumber.replace(/\s+/g, ''),
@@ -25,12 +54,13 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       cardExpirationYear: `20${expirationYear}`, // Add '20' prefix to make it 4 digits
       securityCode: cardData.securityCode,
       identificationType: 'CPF',
-      identificationNumber: formData.cpf.replace(/\D/g, '')
+      identificationNumber: cpf
     };
     
     console.log('Creating card token with data:', {
       ...cardTokenData,
-      cardNumber: cardTokenData.cardNumber.slice(0, 4) + '******' + cardTokenData.cardNumber.slice(-4) // Mask card number for logs
+      cardNumber: cardTokenData.cardNumber.slice(0, 4) + '******' + cardTokenData.cardNumber.slice(-4), // Mask card number for logs
+      securityCode: '***' // Mask security code
     });
     
     try {
@@ -38,7 +68,12 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       console.log('Card token created:', cardToken);
       
       if (!cardToken || !cardToken.id) {
-        throw new Error('Failed to create card token');
+        console.error('Failed to create card token');
+        return {
+          status: 'rejected',
+          status_detail: 'token_creation_error',
+          message: 'Erro nos dados do cartão. Verifique o número, data de validade e CVV.'
+        };
       }
       
       // Process the payment using the token
@@ -55,7 +90,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
           email: formData.email,
           identification: {
             type: 'CPF',
-            number: formData.cpf.replace(/\D/g, '')
+            number: cpf
           }
         }
       };
@@ -77,12 +112,31 @@ export const processCardPayment = async (cardData: any, formData: any, installme
         status_detail: payment.status_detail,
         message: getPaymentStatusMessage(payment.status)
       };
-    } catch (tokenError) {
-      console.error('Error creating card token:', tokenError);
+    } catch (tokenError: any) {
+      console.error('Error creating card token or processing payment:', tokenError);
+      
+      // Extract the specific error message from Mercado Pago response if available
+      let errorMessage = 'Erro nos dados do cartão. Verifique o número, data de validade e CVV.';
+      
+      if (tokenError.cause && tokenError.cause.length > 0) {
+        const causeCode = tokenError.cause[0].code;
+        
+        // Map common error codes to user-friendly messages
+        if (causeCode === 'E301') {
+          errorMessage = 'Número do cartão inválido. Verifique e tente novamente.';
+        } else if (causeCode === 'E302') {
+          errorMessage = 'Verifique o código de segurança (CVV) do cartão.';
+        } else if (causeCode === '316' || causeCode === 'E316') {
+          errorMessage = 'Nome do titular do cartão inválido. Use o nome exatamente como está no cartão.';
+        } else if (causeCode === '324' || causeCode === 'E324') {
+          errorMessage = 'Verifique a data de validade do cartão.';
+        }
+      }
+      
       return {
         status: 'rejected',
-        status_detail: 'Erro nos dados do cartão. Verifique o número, data de validade e CVV.',
-        message: 'Erro nos dados do cartão. Verifique o número, data de validade e CVV.'
+        status_detail: tokenError.message || 'card_error',
+        message: errorMessage
       };
     }
   } catch (error: any) {

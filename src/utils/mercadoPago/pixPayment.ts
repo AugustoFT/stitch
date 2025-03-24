@@ -4,6 +4,21 @@ import { preferenceClient, ExtendedPreferenceResponse } from './config';
 // Function specifically for creating PIX payments
 export const createPixPayment = async (formData: any, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
   try {
+    console.log('Creating PIX payment with amount:', amount, 'and description:', description);
+    
+    // Validate form data
+    if (!formData.nome || !formData.email || !formData.cpf) {
+      console.error('Missing required form data for PIX payment');
+      throw new Error('Dados incompletos. Por favor, preencha todos os campos obrigatórios.');
+    }
+    
+    // Format CPF properly
+    const cpf = formData.cpf.replace(/\D/g, '');
+    if (cpf.length !== 11) {
+      console.error('Invalid CPF length:', cpf.length);
+      throw new Error('CPF inválido. Por favor, verifique o número do CPF.');
+    }
+    
     // Create the preference for PIX
     const preferenceData = {
       items: [
@@ -20,31 +35,55 @@ export const createPixPayment = async (formData: any, amount: number = 139.99, d
         email: formData.email,
         identification: {
           type: 'CPF',
-          number: formData.cpf || '00000000000' // Default for testing
+          number: cpf
         }
       },
       payment_methods: {
-        default_payment_method_id: 'pix'
+        default_payment_method_id: 'pix',
+        excluded_payment_types: [
+          { id: 'credit_card' },
+          { id: 'debit_card' },
+          { id: 'ticket' }
+        ]
       }
     };
     
-    console.log('Creating PIX preference with data:', preferenceData);
+    console.log('Creating PIX preference with data:', JSON.stringify(preferenceData));
     
     // Create the preference using MercadoPago
     const response = await preferenceClient.create({ body: preferenceData }) as ExtendedPreferenceResponse;
     
-    // The response from the API might not include point_of_interaction directly
-    // Let's handle this more safely by checking the structure
-    console.log('PIX preference response:', response);
+    console.log('PIX preference response:', JSON.stringify(response));
+    
+    // Check if PIX data was received correctly
+    if (!response.id) {
+      console.error('No preference ID returned from MercadoPago');
+      throw new Error('Falha ao gerar código PIX. Resposta inválida do servidor de pagamento.');
+    }
+    
+    // If point_of_interaction is not available, try to access it via any available property
+    const transactionData = response.point_of_interaction?.transaction_data;
+    
+    if (!transactionData || (!transactionData.qr_code && !transactionData.qr_code_base64)) {
+      console.error('PIX code not found in response', response);
+      
+      // Return a valid response object even without QR code for debugging
+      return {
+        id: response.id,
+        qr_code_base64: null,
+        qr_code: null,
+        error: 'QR code not found in response',
+        fullResponse: JSON.stringify(response)
+      };
+    }
     
     return {
       id: response.id,
-      // Safely access nested properties using optional chaining
-      qr_code_base64: response.point_of_interaction?.transaction_data?.qr_code_base64 || null,
-      qr_code: response.point_of_interaction?.transaction_data?.qr_code || 'mockPixQrCode12345' // Fallback for testing
+      qr_code_base64: transactionData.qr_code_base64 || null,
+      qr_code: transactionData.qr_code || null
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating MercadoPago PIX payment:', error);
-    throw new Error('Falha ao gerar o pagamento PIX. Por favor, tente novamente.');
+    throw new Error(error.message || 'Falha ao gerar o pagamento PIX. Por favor, tente novamente.');
   }
 };
