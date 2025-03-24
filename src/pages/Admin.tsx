@@ -55,7 +55,7 @@ const Admin: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'admin' && password === 'stitch123') {
+    if (username === 'admin' && password === '@bright011') {
       setIsAuthenticated(true);
       toast.success('Login realizado com sucesso!');
     } else {
@@ -188,11 +188,6 @@ const Admin: React.FC = () => {
                 Entrar
               </motion.button>
             </form>
-            
-            <div className="mt-6 text-center text-sm text-gray-500">
-              <p>Para fins de demonstração, use:</p>
-              <p className="font-medium">Usuário: admin / Senha: stitch123</p>
-            </div>
           </motion.div>
         ) : (
           <motion.div

@@ -207,7 +207,7 @@ const Index: React.FC = () => {
             >
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
+                  src="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
                   alt="Coleção Stitch" 
                   className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
                 />
@@ -247,7 +247,7 @@ const Index: React.FC = () => {
             price="R$ 139,99"
             discount="30% OFF"
             description="Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs."
-            imageUrl="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png"
+            imageUrl="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png"
             size="20 cm"
             onBuyClick={scrollToCheckout}
           />

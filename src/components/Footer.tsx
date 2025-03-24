@@ -1,5 +1,7 @@
 
 import React from 'react';
+import { Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   return (
@@ -35,6 +37,16 @@ const Footer: React.FC = () => {
         
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
           <p>© {new Date().getFullYear()} Lilo & Stitch. Todos os direitos reservados.</p>
+          
+          <div className="flex justify-center mt-4">
+            <Link 
+              to="/admin" 
+              className="text-gray-500 hover:text-stitch-blue transition-colors p-2"
+              title="Área de Administração"
+            >
+              <Lock size={16} />
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
