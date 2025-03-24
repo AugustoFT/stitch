@@ -140,79 +140,104 @@ export const createPixPayment = async (formData: any) => {
   }
 };
 
-// Function to perform a real credit card payment using Mercado Pago
+// Function to directly process a card payment without redirection
 export const processCardPayment = async (cardData: any, formData: any) => {
   try {
-    // Implement real MercadoPago checkout using the MercadoPago.js SDK
-    // This function assumes MercadoPago.js is loaded and cardData contains a valid token
-    
     if (!window.MercadoPago) {
       throw new Error('MercadoPago SDK not loaded');
     }
     
-    console.log('Processing real MercadoPago payment:', {
-      type: cardData.paymentMethodId,
-      cardNumber: cardData.cardNumber ? cardData.cardNumber.substring(0, 4) + '********' + cardData.cardNumber.slice(-4) : 'No card number'
+    console.log('Processing direct card payment with MercadoPago');
+    
+    // For direct card processing, we need to create a card token first
+    const mp = new window.MercadoPago(mercadoPagoPublicKey);
+    
+    // Format expiration month and year from MM/YY format
+    const [expirationMonth, expirationYear] = cardData.expirationDate.split('/');
+    
+    // Create a card token using the MercadoPago SDK
+    const cardTokenData = {
+      cardNumber: cardData.cardNumber.replace(/\s+/g, ''),
+      cardholderName: cardData.cardholderName,
+      cardExpirationMonth: expirationMonth,
+      cardExpirationYear: `20${expirationYear}`, // Add '20' prefix to make it 4 digits
+      securityCode: cardData.securityCode,
+      identificationType: 'CPF',
+      identificationNumber: formData.cpf.replace(/\D/g, '')
+    };
+    
+    console.log('Creating card token with data:', {
+      ...cardTokenData,
+      cardNumber: cardTokenData.cardNumber.slice(0, 4) + '******' + cardTokenData.cardNumber.slice(-4) // Mask card number for logs
     });
-
-    // Instead of creating a payment directly, let's redirect to Mercado Pago checkout
-    const preferenceData = {
-      items: [
-        {
-          id: 'pelucia-stitch',
-          title: 'Pelúcia Stitch',
-          quantity: 1,
-          currency_id: 'BRL',
-          unit_price: 139.99
-        }
-      ],
+    
+    const cardToken = await mp.createCardToken(cardTokenData);
+    console.log('Card token created:', cardToken);
+    
+    if (!cardToken || !cardToken.id) {
+      throw new Error('Failed to create card token');
+    }
+    
+    // Process the payment using the token
+    const paymentData = {
+      transaction_amount: 139.99,
+      token: cardToken.id,
+      description: 'Pelúcia Stitch',
+      installments: 1,
+      payment_method_id: determineCardType(cardData.cardNumber),
       payer: {
-        name: formData.nome,
         email: formData.email,
-        phone: {
-          area_code: formData.telefone.substring(0, 2),
-          number: formData.telefone.substring(2).replace(/\D/g, '')
-        },
-        address: {
-          street_name: formData.endereco,
-          street_number: '',
-          zip_code: formData.cep.replace(/\D/g, '')
-        },
         identification: {
           type: 'CPF',
-          number: formData.cpf || '00000000000'
+          number: formData.cpf.replace(/\D/g, '')
         }
-      },
-      payment_methods: {
-        excluded_payment_types: [],
-        installments: 12,
-        default_payment_method_id: cardData.paymentMethodId
-      },
-      back_urls: {
-        success: window.location.origin,
-        failure: window.location.origin,
-        pending: window.location.origin
-      },
-      auto_return: 'approved'
+      }
     };
     
-    console.log('Creating checkout preference:', preferenceData);
+    console.log('Creating payment with data:', paymentData);
     
-    // Create a preference to start the checkout flow
-    const response = await preferenceClient.create({ body: preferenceData });
+    // In a real implementation, this would be a server-side call
+    // For demonstration, we're doing it client-side (not recommended for production)
+    const payment = await paymentClient.create({ body: paymentData });
     
-    console.log('Checkout preference created:', response);
+    console.log('Payment response:', payment);
     
-    // Return the checkout URL that will redirect to Mercado Pago's checkout page
     return {
-      id: response.id,
-      init_point: response.init_point,
-      status: 'redirect',
-      redirect_url: response.init_point
+      id: payment.id,
+      status: payment.status,
+      status_detail: payment.status_detail,
+      message: getPaymentStatusMessage(payment.status)
     };
-    
   } catch (error) {
-    console.error('Error processing MercadoPago card payment:', error);
-    throw new Error('Falha ao processar o pagamento com cartão. Por favor, verifique os dados e tente novamente.');
+    console.error('Error processing direct card payment:', error);
+    throw new Error('Falha ao processar o pagamento. Por favor, verifique os dados do cartão e tente novamente.');
   }
 };
+
+// Helper function to determine card type from card number
+function determineCardType(cardNumber: string): string {
+  const cleanNumber = cardNumber.replace(/\D/g, '');
+  
+  if (/^4/.test(cleanNumber)) return 'visa';
+  if (/^5[1-5]/.test(cleanNumber)) return 'master';
+  if (/^3[47]/.test(cleanNumber)) return 'amex';
+  if (/^(60|65)/.test(cleanNumber)) return 'elo';
+  
+  // Default to visa if can't determine
+  return 'visa';
+}
+
+// Helper function to get human-readable message for payment status
+function getPaymentStatusMessage(status: string): string {
+  switch (status) {
+    case 'approved':
+      return 'Pagamento aprovado com sucesso!';
+    case 'in_process':
+    case 'pending':
+      return 'Pagamento em processamento. Aguarde a confirmação.';
+    case 'rejected':
+      return 'Pagamento rejeitado. Verifique os dados do cartão.';
+    default:
+      return `Status do pagamento: ${status}`;
+  }
+}
