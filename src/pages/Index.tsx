@@ -1,7 +1,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Star, Clock, Check, ShoppingBag, Gift, TruckIcon, Palmtree, Sun, Flower } from 'lucide-react';
+import { Star, Clock, Check, ShoppingBag, Gift, TruckIcon, Palmtree, Sun, Flower, Umbrella, Sailboat, Waves } from 'lucide-react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import CheckoutForm from '../components/CheckoutForm';
@@ -93,7 +93,26 @@ const Index: React.FC = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Hawaiian themed decorative elements */}
+      {/* Hawaiian themed decorative elements - background effect */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <motion.div 
+          className="absolute top-0 left-0 w-full h-full opacity-[0.03]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.03 }}
+          transition={{ duration: 2 }}
+        >
+          <Palmtree className="absolute top-[10%] left-[5%] text-stitch-teal w-60 h-60" />
+          <Palmtree className="absolute top-[15%] right-[8%] text-stitch-teal w-40 h-40" />
+          <Sun className="absolute top-[30%] left-[20%] text-stitch-yellow w-32 h-32" />
+          <Umbrella className="absolute bottom-[20%] left-[15%] text-stitch-pink w-40 h-40" />
+          <Sailboat className="absolute bottom-[25%] right-[10%] text-stitch-blue w-48 h-48" />
+          <Waves className="absolute bottom-[5%] left-0 right-0 text-stitch-blue w-full h-24" />
+          <Flower className="absolute top-[40%] right-[25%] text-stitch-pink w-24 h-24" />
+          <Flower className="absolute bottom-[40%] left-[30%] text-stitch-yellow w-20 h-20" />
+        </motion.div>
+      </div>
+      
+      {/* Additional floating Hawaiian elements */}
       <motion.div 
         className="absolute top-20 left-0 text-stitch-teal/20 transform -rotate-12 z-0"
         variants={floralVariants}
@@ -195,8 +214,8 @@ const Index: React.FC = () => {
             >
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/bbc9006b-6167-400a-94f8-5d99417fc057.png" 
-                  alt="Pelúcia Stitch" 
+                  src="/lovable-uploads/a1485e45-0342-49b4-a3d1-703082f7d7eb.png" 
+                  alt="Kit Stitch + Garrafa" 
                   className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
                 />
                 <motion.div 
@@ -264,7 +283,7 @@ const Index: React.FC = () => {
             price="R$ 129,90"
             discount="15% OFF"
             description="Kit exclusivo com pelúcia Stitch e garrafa temática. Presente perfeito para fãs de todas as idades."
-            imageUrl="/lovable-uploads/a1485e45-0342-49b4-a3d1-703082f7d7eb.png"
+            imageUrl="/lovable-uploads/b48af9f4-c146-40c7-8d7f-da5fd6dbe04c.png"
             size="Pelúcia 20cm + Garrafa 500ml"
             onBuyClick={scrollToCheckout}
           />
