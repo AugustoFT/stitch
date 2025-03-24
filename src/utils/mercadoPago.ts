@@ -1,5 +1,5 @@
 
-import { MercadoPago } from 'mercadopago';
+import MercadoPago from 'mercadopago';
 
 // Initialize the MercadoPago client
 // Use 'TEST-' prefixed credentials for development and testing
