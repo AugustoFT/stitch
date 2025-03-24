@@ -1,5 +1,5 @@
 
-import { paymentClient, determineCardType, getPaymentStatusMessage } from './config';
+import { paymentClient, determineCardType, getPaymentStatusMessage, mercadoPagoPublicKey } from './config';
 
 // Function to directly process a card payment without redirection
 export const processCardPayment = async (cardData: any, formData: any) => {
@@ -11,7 +11,7 @@ export const processCardPayment = async (cardData: any, formData: any) => {
     console.log('Processing direct card payment with MercadoPago');
     
     // For direct card processing, we need to create a card token first
-    const mp = new window.MercadoPago(window.mercadoPagoPublicKey);
+    const mp = new window.MercadoPago(mercadoPagoPublicKey);
     
     // Format expiration month and year from MM/YY format
     const [expirationMonth, expirationYear] = cardData.expirationDate.split('/');
