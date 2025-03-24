@@ -22,6 +22,7 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
 }) => {
   const [pixData, setPixData] = React.useState<{ qr_code?: string; qr_code_base64?: string } | null>(null);
   const [formErrors, setFormErrors] = React.useState<string[]>([]);
+  const [pixError, setPixError] = React.useState<string | null>(null);
 
   // Validate customer information before generating PIX
   const validateCustomerInfo = () => {
@@ -72,6 +73,9 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
   };
 
   const handlePixPayment = async () => {
+    // Reset error state
+    setPixError(null);
+    
     if (!validateCustomerInfo()) {
       toast.error("Por favor, preencha todos os campos obrigatórios corretamente");
       return;
@@ -96,10 +100,12 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
         setPixData(pixResult);
         toast.success("QR Code PIX gerado com sucesso! Escaneie para pagar.");
       } else {
+        setPixError("Erro ao gerar QR Code PIX. Verifique suas informações e tente novamente.");
         toast.error("Erro ao gerar QR Code PIX. Tente novamente.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao processar pagamento PIX:", error);
+      setPixError(error.message || "Houve um erro ao gerar o pagamento PIX");
       toast.error("Houve um erro ao gerar o pagamento PIX. Por favor, tente novamente.");
     } finally {
       setIsSubmitting(false);
@@ -127,6 +133,17 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
               <li key={index}>{error}</li>
             ))}
           </ul>
+        </motion.div>
+      )}
+      
+      {/* Display PIX generation error */}
+      {pixError && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="bg-red-50 border border-red-200 rounded-lg p-3"
+        >
+          <p className="text-red-700 font-medium text-sm">{pixError}</p>
         </motion.div>
       )}
       

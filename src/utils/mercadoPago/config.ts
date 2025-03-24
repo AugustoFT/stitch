@@ -5,7 +5,6 @@ import { MercadoPagoConfig, Preference, Payment } from 'mercadopago';
 export const mercadoPagoPublicKey = 'APP_USR-46646251-3224-483c-b69d-85c5f8c96428';
 
 // Configure MercadoPago with access token - for server-side operations
-// In a real production app, this would typically be in a server environment
 export const client = new MercadoPagoConfig({ 
   accessToken: 'APP_USR-6405882494224029-030315-88737fea58568b8cc6d16c0be760c632-1082540248' 
 });
@@ -40,6 +39,8 @@ export function determineCardType(cardNumber: string): string {
   if (/^5[1-5]/.test(cleanNumber)) return 'master';
   if (/^3[47]/.test(cleanNumber)) return 'amex';
   if (/^(60|65)/.test(cleanNumber)) return 'elo';
+  if (/^(36|38|30[0-5])/.test(cleanNumber)) return 'diners';
+  if (/^(606282|3841)/.test(cleanNumber)) return 'hipercard';
   
   // Default to visa if can't determine
   return 'visa';

@@ -60,7 +60,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   // Refs for the Mercado Pago SDK
   const mercadoPagoRef = useRef<any>(null);
 
-  // Process selectedProducts to include quantities
+  // Process selectedProducts to include quantities - fixing dependency array
   useEffect(() => {
     if (selectedProducts && selectedProducts.length > 0) {
       const processedProducts = selectedProducts.map(product => ({
@@ -101,7 +101,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     }
   }, []);
 
-  // Load MercadoPago SDK
+  // Load MercadoPago SDK only once on mount
   useEffect(() => {
     const loadMercadoPagoScript = () => {
       if (window.MercadoPago) {
@@ -138,12 +138,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     setCardPaymentStatus(null);
   }, [formData.formaPagamento]);
 
-  // Save form data to localStorage when it changes
+  // Save form data to localStorage when it changes - with proper dependency tracking
   useEffect(() => {
     if (formData.nome && formData.email) {
       localStorage.setItem('customerInfo', JSON.stringify(formData));
     }
-  }, [formData]);
+  }, [formData.nome, formData.email, formData.cpf, formData.telefone, formData.endereco, 
+      formData.complemento, formData.complemento2, formData.cidade, formData.estado, formData.cep]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
