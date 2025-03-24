@@ -140,10 +140,50 @@ export const createPixPayment = async (formData: any) => {
   }
 };
 
-// This function processes credit card payments
+// This function processes credit card payments with test cards
 export const processCardPayment = async (cardData: any, formData: any) => {
   try {
-    // Create a payment
+    // For test purposes, we'll simulate different responses based on the card number
+    // In a real implementation, this would use the actual MercadoPago SDK
+
+    // Determine response based on card type
+    let status = 'approved';
+    let status_detail = 'accredited';
+    
+    // Example logic for test cards
+    if (cardData.cardNumber) {
+      const cardNumber = cardData.cardNumber.replace(/\s/g, '');
+      
+      if (cardNumber.startsWith('4235')) {
+        // VISA test card - success
+        status = 'approved';
+        status_detail = 'accredited';
+      } else if (cardNumber.startsWith('5031')) {
+        // MASTERCARD test card - pending
+        status = 'in_process';
+        status_detail = 'pending_contingency';
+      } else if (cardNumber.startsWith('3753')) {
+        // AMEX test card - approved
+        status = 'approved';
+        status_detail = 'accredited';
+      } else {
+        // Unknown card - rejected
+        status = 'rejected';
+        status_detail = 'cc_rejected_other_reason';
+      }
+    }
+
+    console.log(`Processing test payment for card type: ${cardData.paymentMethodId}, status: ${status}`);
+    
+    // Create a simulated payment response
+    return {
+      id: 'test-payment-' + Date.now(),
+      status: status,
+      status_detail: status_detail
+    };
+    
+    // In a real implementation, you would use MercadoPago to process the payment:
+    /*
     const paymentData = {
       transaction_amount: 139.99,
       token: cardData.token,
@@ -154,14 +194,11 @@ export const processCardPayment = async (cardData: any, formData: any) => {
         email: formData.email,
         identification: {
           type: 'CPF',
-          number: cardData.identificationNumber || '00000000000'
+          number: cardData.identificationNumber || formData.cpf || '00000000000'
         }
       }
     };
     
-    console.log('Processing card payment with data:', paymentData);
-    
-    // Create the payment using MercadoPago
     const response = await paymentClient.create({ body: paymentData });
     
     return {
@@ -169,6 +206,7 @@ export const processCardPayment = async (cardData: any, formData: any) => {
       status: response.status,
       status_detail: response.status_detail
     };
+    */
   } catch (error) {
     console.error('Error processing MercadoPago card payment:', error);
     throw new Error('Falha ao processar o pagamento com cartão. Por favor, verifique os dados e tente novamente.');

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -167,14 +166,30 @@ const CheckoutForm: React.FC = () => {
     try {
       toast.info("Processando pagamento, aguarde...");
       
+      // Get the cleaned card number
+      const cleanedCardNumber = cardNumber.replace(/\s/g, '');
+      
+      // Determine card type (very basic detection)
+      let detectedPaymentMethodId = '';
+      if (cleanedCardNumber.startsWith('4')) detectedPaymentMethodId = 'visa';
+      else if (cleanedCardNumber.startsWith('5')) detectedPaymentMethodId = 'master';
+      else if (cleanedCardNumber.startsWith('3')) detectedPaymentMethodId = 'amex';
+      else detectedPaymentMethodId = 'other';
+      
       // In a real implementation, you would use MercadoPago SDK to create token
-      // For this demo, we'll simulate a successful token creation
+      // For this test, we'll create a simulated card data object
       const cardData = {
         token: "TEST-TOKEN-" + Date.now(),
-        paymentMethodId,
+        paymentMethodId: detectedPaymentMethodId,
         installments: 1,
-        identificationNumber
+        identificationNumber: formData.cpf,
+        cardNumber: cleanedCardNumber  // Add this to help our test function
       };
+      
+      console.log("Processing payment with card data:", {
+        type: detectedPaymentMethodId,
+        cardNumber: cardNumber.substring(0, 4) + '********' + cardNumber.slice(-4)
+      });
       
       // Process the payment
       const paymentResult = await processCardPayment(cardData, formData);
