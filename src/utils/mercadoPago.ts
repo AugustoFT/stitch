@@ -1,75 +1,78 @@
 
 import MercadoPago from 'mercadopago';
 
-// Initialize the MercadoPago client
-// Use 'TEST-' prefixed credentials for development and testing
-const mercadoPagoPublicKey = 'TEST-c2385ca8-05f2-4d22-8d41-e46c1500b8c1'; // Replace with your actual public key
+// Initialize the MercadoPago client with production credentials
+const mercadoPagoPublicKey = 'APP_USR-46646251-3224-483c-b69d-85c5f8c96428';
 
-// This function creates a checkout preference (would typically be done server-side)
+// Configure MercadoPago with access token
+// This should ideally be done server-side, but for this implementation we'll use it here
+// In a real production app, this would be in a server environment
+MercadoPago.configure({
+  access_token: 'APP_USR-6405882494224029-030315-88737fea58568b8cc6d16c0be760c632-1082540248'
+});
+
+// This function creates a checkout preference
 export const createPreference = async (formData: any) => {
-  // In a real implementation, this would be a server call
-  // For demo purposes, we'll create a simple preference object
-  const preference = {
-    items: [
-      {
-        id: 'pelucia-stitch',
-        title: 'Pelúcia Stitch',
-        quantity: 1,
-        currency_id: 'BRL',
-        unit_price: 139.99
-      }
-    ],
-    payer: {
-      name: formData.nome,
-      email: formData.email,
-      address: {
-        street_name: formData.endereco,
-        street_number: '',
-        zip_code: formData.cep
-      }
-    },
-    back_urls: {
-      success: window.location.origin,
-      failure: window.location.origin,
-      pending: window.location.origin
-    },
-    auto_return: 'approved'
-  };
+  try {
+    // Create the preference structure
+    const preferenceData = {
+      items: [
+        {
+          id: 'pelucia-stitch',
+          title: 'Pelúcia Stitch',
+          quantity: 1,
+          currency_id: 'BRL',
+          unit_price: 139.99
+        }
+      ],
+      payer: {
+        name: formData.nome,
+        email: formData.email,
+        phone: {
+          area_code: formData.telefone.substring(0, 2),
+          number: formData.telefone.substring(2).replace(/\D/g, '')
+        },
+        address: {
+          street_name: formData.endereco,
+          street_number: '',
+          zip_code: formData.cep.replace(/\D/g, '')
+        }
+      },
+      back_urls: {
+        success: window.location.origin,
+        failure: window.location.origin,
+        pending: window.location.origin
+      },
+      auto_return: 'approved'
+    };
 
-  // In a real implementation, we would call the server to create the preference
-  // For now, we'll just return a mock preference ID
-  console.log('Creating preference with data:', preference);
-  
-  // Simulating API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        id: 'mock-preference-id-' + Date.now(),
-        init_point: 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=mock-preference-id'
-      });
-    }, 1000);
-  });
+    console.log('Creating preference with data:', preferenceData);
+    
+    // Create the preference using MercadoPago
+    const response = await MercadoPago.preferences.create(preferenceData);
+    
+    return {
+      id: response.body.id,
+      init_point: response.body.init_point
+    };
+  } catch (error) {
+    console.error('Error creating MercadoPago preference:', error);
+    throw new Error('Falha ao processar o pagamento. Por favor, tente novamente.');
+  }
 };
 
 // This function initializes the checkout
 export const initMercadoPago = () => {
-  // In a real implementation, we would use MercadoPago SDK
-  // For now, we're just logging that initialization would happen
-  console.log('MercadoPago would be initialized with public key:', mercadoPagoPublicKey);
-  
-  // Return null since we're not actually initializing the SDK in this demo
-  return null;
+  console.log('MercadoPago initialized with public key:', mercadoPagoPublicKey);
+  return mercadoPagoPublicKey;
 };
 
 // Function to redirect to MercadoPago checkout
 export const redirectToMercadoPagoCheckout = (preferenceId: string) => {
-  // In a production environment, we'd use the actual preference ID
+  // Get the checkout URL
   const checkoutUrl = `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${preferenceId}`;
   console.log('Redirecting to MercadoPago checkout:', checkoutUrl);
   
-  // For demo purposes, we'll show an alert instead of actually redirecting
-  alert('Em uma implementação real, você seria redirecionado para a página de pagamento do MercadoPago agora.');
-  
-  // In production, we would do:
-  // window.location.href = checkoutUrl;
+  // In production, we actually redirect
+  window.location.href = checkoutUrl;
 };

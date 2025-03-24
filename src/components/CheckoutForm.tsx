@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -16,10 +17,6 @@ const CheckoutForm: React.FC = () => {
     estado: '',
     cep: '',
     formaPagamento: 'cartao',
-    cardNumber: '',
-    cardName: '',
-    cardExpiry: '',
-    cardCvc: '',
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,36 +31,16 @@ const CheckoutForm: React.FC = () => {
     setIsSubmitting(true);
     
     try {
+      toast.info("Processando pagamento, aguarde...");
       // Create a preference with MercadoPago
       const preferenceResult: any = await createPreference(formData);
       
       // Redirect to MercadoPago checkout
       redirectToMercadoPagoCheckout(preferenceResult.id);
       
-      // Reset form (this would actually happen after returning from MercadoPago in production)
-      toast.success("Pedido iniciado! Você será redirecionado para a página de pagamento.");
-      
-      // Reset form
-      setFormData({
-        nome: '',
-        email: '',
-        telefone: '',
-        endereco: '',
-        complemento: '',
-        complemento2: '',
-        cidade: '',
-        estado: '',
-        cep: '',
-        formaPagamento: 'cartao',
-        cardNumber: '',
-        cardName: '',
-        cardExpiry: '',
-        cardCvc: '',
-      });
     } catch (error) {
       console.error("Erro ao processar pagamento:", error);
       toast.error("Houve um erro ao processar seu pagamento. Por favor, tente novamente.");
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -272,85 +249,6 @@ const CheckoutForm: React.FC = () => {
             <option value="pix">PIX</option>
           </select>
         </div>
-        
-        {formData.formaPagamento === 'cartao' && (
-          <motion.div 
-            className="space-y-4 border border-stitch-pink/20 p-4 rounded-lg mt-4 bg-white/50"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <CreditCard className="text-stitch-blue" size={20} />
-              <h3 className="font-medium text-stitch-blue">Dados do Cartão</h3>
-            </div>
-            
-            <div>
-              <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                Número do Cartão*
-              </label>
-              <input
-                type="text"
-                id="cardNumber"
-                name="cardNumber"
-                required={formData.formaPagamento === 'cartao'}
-                value={formData.cardNumber}
-                onChange={handleChange}
-                className="stitch-input"
-                placeholder="0000 0000 0000 0000"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="cardName" className="block text-sm font-medium text-gray-700 mb-1">
-                Nome no Cartão*
-              </label>
-              <input
-                type="text"
-                id="cardName"
-                name="cardName"
-                required={formData.formaPagamento === 'cartao'}
-                value={formData.cardName}
-                onChange={handleChange}
-                className="stitch-input"
-                placeholder="Nome como está no cartão"
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="cardExpiry" className="block text-sm font-medium text-gray-700 mb-1">
-                  Validade*
-                </label>
-                <input
-                  type="text"
-                  id="cardExpiry"
-                  name="cardExpiry"
-                  required={formData.formaPagamento === 'cartao'}
-                  value={formData.cardExpiry}
-                  onChange={handleChange}
-                  className="stitch-input"
-                  placeholder="MM/AA"
-                />
-              </div>
-              <div>
-                <label htmlFor="cardCvc" className="block text-sm font-medium text-gray-700 mb-1">
-                  CVC*
-                </label>
-                <input
-                  type="text"
-                  id="cardCvc"
-                  name="cardCvc"
-                  required={formData.formaPagamento === 'cartao'}
-                  value={formData.cardCvc}
-                  onChange={handleChange}
-                  className="stitch-input"
-                  placeholder="123"
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
         
         <motion.button 
           type="submit"
