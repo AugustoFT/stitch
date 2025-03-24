@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -60,6 +59,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   // Refs for the Mercado Pago SDK
   const mercadoPagoRef = useRef<any>(null);
   const productsProcessed = useRef(false);
+  const customerInfoLoaded = useRef(false);
 
   // Process selectedProducts to include quantities - fixing dependency array issues
   useEffect(() => {
@@ -96,6 +96,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
   // Load customer data from localStorage on component mount
   useEffect(() => {
+    if (customerInfoLoaded.current) return;
+    
     const savedCustomerInfo = localStorage.getItem('customerInfo');
     if (savedCustomerInfo) {
       try {
@@ -110,6 +112,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         console.error('Error parsing saved customer data', e);
       }
     }
+    
+    customerInfoLoaded.current = true;
   }, []);
 
   // Load MercadoPago SDK only once on mount
@@ -149,8 +153,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     setCardPaymentStatus(null);
   }, [formData.formaPagamento]);
 
-  // Save form data to localStorage when it changes - with proper dependency tracking
-  // Using a more targeted approach to avoid loops
+  // Save customer info to localStorage
   const saveCustomerInfo = () => {
     if (formData.nome && formData.email) {
       const dataToSave = {
@@ -169,20 +172,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     }
   };
 
-  // Save customer data only when relevant fields change
-  useEffect(() => {
-    saveCustomerInfo();
-  }, [formData.nome, formData.email]);
-
-  // This will NOT cause infinite loops as it's only triggered by specific events
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Some fields we want to save immediately
-    if (name === 'nome' || name === 'email') {
-      setTimeout(saveCustomerInfo, 500);
-    }
   };
 
   // Handle formatted input changes
@@ -208,6 +200,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Save customer info when submitting form
+    saveCustomerInfo();
     // Form submission now handled by the respective payment components
   };
 

@@ -112,7 +112,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
         status_detail: payment.status_detail,
         message: getPaymentStatusMessage(payment.status)
       };
-    } catch (tokenError: any) {
+    } catch (tokenError) {
       console.error('Error creating card token or processing payment:', tokenError);
       
       // Extract the specific error message from Mercado Pago response if available
@@ -129,7 +129,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
         message: errorMessage
       };
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error processing direct card payment:', error);
     return {
       status: 'error',

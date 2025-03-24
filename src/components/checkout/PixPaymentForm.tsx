@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { QrCode } from 'lucide-react';
@@ -106,7 +106,7 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
     } catch (error: any) {
       console.error("Erro ao processar pagamento PIX:", error);
       setPixError(error.message || "Houve um erro ao gerar o pagamento PIX");
-      toast.error("Houve um erro ao gerar o pagamento PIX. Por favor, tente novamente.");
+      toast.error(error.message || "Houve um erro ao gerar o pagamento PIX. Por favor, tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -165,8 +165,8 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
             />
           ) : pixData.qr_code ? (
             <div className="text-center p-3 bg-white rounded border mb-2">
-              <QrCode className="w-32 h-32 mx-auto text-stitch-blue" />
-              <p className="text-xs text-gray-500 mt-2">QR Code PIX</p>
+              <p className="text-xs font-mono overflow-auto whitespace-pre-wrap max-w-xs break-all">{pixData.qr_code}</p>
+              <p className="text-xs text-gray-500 mt-2">Copie este código para pagar</p>
             </div>
           ) : null}
           

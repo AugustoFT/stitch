@@ -166,9 +166,9 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       } else if (result.status === 'in_process' || result.status === 'pending') {
         toast.info("Pagamento em processamento. Aguarde a confirmação.");
       } else {
-        toast.error(`Pagamento ${result.status}. ${result.status_detail || 'Verifique os dados do cartão.'}`);
+        toast.error(`Pagamento ${result.status}. ${result.message || 'Verifique os dados do cartão.'}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao processar pagamento com cartão:", error);
       toast.error("Houve um erro ao processar o pagamento. Por favor, verifique os dados e tente novamente.");
     } finally {

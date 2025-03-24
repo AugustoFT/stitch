@@ -82,7 +82,7 @@ export const createPixPayment = async (formData: any, amount: number = 139.99, d
       qr_code_base64: transactionData.qr_code_base64 || null,
       qr_code: transactionData.qr_code || null
     };
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error creating MercadoPago PIX payment:', error);
     throw new Error(error.message || 'Falha ao gerar o pagamento PIX. Por favor, tente novamente.');
   }
