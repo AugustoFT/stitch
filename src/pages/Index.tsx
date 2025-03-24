@@ -25,10 +25,45 @@ const Index: React.FC = () => {
   const checkoutRef = useRef<HTMLDivElement>(null);
   const checkoutInView = useInView(checkoutRef, { once: true, margin: "-100px" });
 
+  const [selectedProducts, setSelectedProducts] = useState<number[]>([0]);
+  const products = [
+    {
+      id: 0,
+      title: "Pelúcia Stitch",
+      price: "R$ 139,99",
+      originalPrice: "R$ 199,99",
+      description: "Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs.",
+      imageUrl: "/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png",
+      size: "20 cm",
+      discount: "30% OFF"
+    },
+    {
+      id: 1,
+      title: "Óculos Stitch",
+      price: "R$ 129,99",
+      originalPrice: "R$ 185,70",
+      description: "Óculos de sol temáticos do Stitch com proteção UV400. Design exclusivo e divertido para todas as idades.",
+      imageUrl: "/lovable-uploads/6f89d2fc-034b-404b-8125-04eff3980aac.png",
+      size: "1 unidade",
+      discount: "30% OFF"
+    },
+    {
+      id: 2,
+      title: "Kit Completo Stitch",
+      price: "R$ 399,98",
+      originalPrice: "R$ 571,40",
+      description: "Kit completo com pelúcia Stitch, garrafa térmica e óculos de sol. O presente perfeito para os fãs de Lilo & Stitch.",
+      imageUrl: "/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png",
+      size: "Kit Completo",
+      discount: "30% OFF",
+      additionalInfo: "Contém 1 pelúcia, 1 óculos e 1 garrafa"
+    }
+  ];
+
   const [timeLeft, setTimeLeft] = useState({
-    days: 2,
-    hours: 12,
-    minutes: 30,
+    days: 1,
+    hours: 6,
+    minutes: 22,
     seconds: 0
   });
 
@@ -80,6 +115,14 @@ const Index: React.FC = () => {
 
   const scrollToCheckout = () => {
     checkoutRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const toggleProductSelection = (productId: number, selected: boolean) => {
+    if (selected) {
+      setSelectedProducts(prev => [...prev, productId]);
+    } else {
+      setSelectedProducts(prev => prev.filter(id => id !== productId));
+    }
   };
 
   const floralVariants = {
@@ -229,8 +272,8 @@ const Index: React.FC = () => {
             >
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/6f89d2fc-034b-404b-8125-04eff3980aac.png" 
-                  alt="Óculos Stitch" 
+                  src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
+                  alt="Kit Completo Stitch" 
                   className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
                 />
               </div>
@@ -242,13 +285,13 @@ const Index: React.FC = () => {
       <section 
         id="mochilas"
         ref={productRef}
-        className="py-16 px-6 md:px-12 max-w-7xl mx-auto relative z-10"
+        className="py-12 px-6 md:px-12 max-w-6xl mx-auto relative z-10"
       >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={productInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-12"
+          className="text-center mb-8"
         >
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-stitch-blue">Nossos Produtos Exclusivos</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
@@ -256,36 +299,23 @@ const Index: React.FC = () => {
           </p>
         </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <ProductCard
-            title="Pelúcia Stitch"
-            price="R$ 139,99"
-            discount="30% OFF"
-            description="Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs."
-            imageUrl="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png"
-            size="20 cm"
-            onBuyClick={scrollToCheckout}
-          />
-          
-          <ProductCard
-            title="Óculos Stitch"
-            price="R$ 129,99"
-            description="Óculos de sol temáticos do Stitch com proteção UV400. Design exclusivo e divertido para todas as idades."
-            imageUrl="/lovable-uploads/6f89d2fc-034b-404b-8125-04eff3980aac.png"
-            discount="30% OFF"
-            size="1 unidade"
-            onBuyClick={scrollToCheckout}
-          />
-          
-          <ProductCard
-            title="Kit Completo Stitch"
-            price="R$ 399,98"
-            description="Kit completo com pelúcia Stitch, garrafa térmica e óculos de sol. O presente perfeito para os fãs de Lilo & Stitch."
-            imageUrl="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png"
-            discount="30% OFF"
-            size="Kit Completo"
-            onBuyClick={scrollToCheckout}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              title={product.title}
+              price={product.price}
+              originalPrice={product.originalPrice}
+              description={product.description}
+              imageUrl={product.imageUrl}
+              size={product.size}
+              discount={product.discount}
+              additionalInfo={product.additionalInfo}
+              onBuyClick={scrollToCheckout}
+              onSelect={(selected) => toggleProductSelection(product.id, selected)}
+              isSelected={selectedProducts.includes(product.id)}
+            />
+          ))}
         </div>
       </section>
       
@@ -491,7 +521,7 @@ const Index: React.FC = () => {
               </div>
               <div className="mb-4 relative z-10 rounded-lg overflow-hidden">
                 <img 
-                  src="/lovable-uploads/3f8bc711-03a4-4b64-9298-553d2710a716.png" 
+                  src="/lovable-uploads/433e0ab9-42ce-4be3-82cb-272c7a786e17.png" 
                   alt="Cliente satisfeito com pelúcia Stitch"
                   className="w-full h-auto object-cover rounded-lg"
                 />
@@ -705,4 +735,3 @@ const Index: React.FC = () => {
 };
 
 export default Index;
-

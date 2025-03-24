@@ -33,6 +33,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   const [cardholderName, setCardholderName] = React.useState('');
   const [expirationDate, setExpirationDate] = React.useState('');
   const [securityCode, setSecurityCode] = React.useState('');
+  const [installments, setInstallments] = React.useState(1);
   const [paymentResult, setLocalPaymentResult] = React.useState<any>(null);
   const [cardPaymentStatus, setLocalCardPaymentStatus] = React.useState<string | null>(null);
   
@@ -114,11 +115,12 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         nome: formData.nome,
         email: formData.email,
         cpf: formData.cpf.replace(/\D/g, ''),
-        cartao: cardData.cardNumber.slice(0, 4) + '******' + cardData.cardNumber.slice(-4)
+        cartao: cardData.cardNumber.slice(0, 4) + '******' + cardData.cardNumber.slice(-4),
+        parcelas: installments
       });
       
-      // Process the payment directly
-      const result = await processCardPayment(cardData, formData);
+      // Process the payment directly with installments
+      const result = await processCardPayment(cardData, formData, installments);
       
       console.log("Resultado do pagamento:", result);
       
@@ -243,13 +245,24 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
               />
             </div>
           </div>
-
-          <div className="p-3 bg-gray-50 rounded-lg text-sm">
-            <p className="font-semibold text-gray-800 mb-1">Cartões de teste disponíveis:</p>
-            <p className="text-gray-600">VISA: 4235 6477 2802 5682</p>
-            <p className="text-gray-600">MASTERCARD: 5031 4332 1540 6351</p>
-            <p className="text-gray-600">AMEX: 3753 651535 56885</p>
-            <p className="text-gray-600">Para todos: CVV 123, Validade: 11/30</p>
+          
+          <div>
+            <label htmlFor="installments" className="block text-sm font-medium text-gray-700 mb-1">
+              Parcelamento*
+            </label>
+            <select
+              id="installments"
+              value={installments}
+              onChange={(e) => setInstallments(parseInt(e.target.value))}
+              className="stitch-input"
+              required
+            >
+              <option value={1}>1x de R$ 139,99 sem juros</option>
+              <option value={2}>2x de R$ 70,00 sem juros</option>
+              <option value={3}>3x de R$ 46,66 sem juros</option>
+              <option value={6}>6x de R$ 23,33 sem juros</option>
+              <option value={12}>12x de R$ 11,67 sem juros</option>
+            </select>
           </div>
           
           {/* Show payment status if available */}
