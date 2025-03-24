@@ -107,7 +107,13 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <motion.div 
+      className="space-y-4"
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Display form validation errors */}
       {formErrors.length > 0 && (
         <motion.div
@@ -115,8 +121,8 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
           animate={{ opacity: 1, height: 'auto' }}
           className="bg-red-50 border border-red-200 rounded-lg p-3"
         >
-          <p className="text-red-700 font-medium mb-1">Por favor, corrija os seguintes erros:</p>
-          <ul className="text-red-600 text-sm list-disc pl-5">
+          <p className="text-red-700 font-medium mb-1 text-sm">Por favor, corrija os seguintes erros:</p>
+          <ul className="text-red-600 text-xs list-disc pl-5">
             {formErrors.map((error, index) => (
               <li key={index}>{error}</li>
             ))}
@@ -132,28 +138,28 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
           transition={{ duration: 0.4 }}
           className="flex flex-col items-center justify-center p-4 border rounded-lg bg-gray-50"
         >
-          <p className="font-medium mb-3 text-center">Escaneie o QR Code para pagar</p>
+          <p className="font-medium mb-3 text-center text-sm">Escaneie o QR Code para pagar</p>
           
           {pixData.qr_code_base64 ? (
             <img 
               src={`data:image/png;base64,${pixData.qr_code_base64}`} 
               alt="QR Code PIX" 
-              className="w-48 h-48 mb-2"
+              className="w-40 h-40 mb-2"
             />
           ) : pixData.qr_code ? (
             <div className="text-center p-3 bg-white rounded border mb-2">
-              <QrCode className="w-36 h-36 mx-auto text-stitch-blue" />
+              <QrCode className="w-32 h-32 mx-auto text-stitch-blue" />
               <p className="text-xs text-gray-500 mt-2">QR Code PIX</p>
             </div>
           ) : null}
           
-          <p className="text-sm text-gray-600 text-center mt-2">Após o pagamento, você receberá a confirmação por email</p>
-          <p className="text-sm font-medium text-stitch-blue mt-4">Valor a pagar: R$ {totalAmount.toFixed(2).replace('.', ',')}</p>
+          <p className="text-xs text-gray-600 text-center mt-2">Após o pagamento, você receberá a confirmação por email</p>
+          <p className="text-sm font-medium text-stitch-blue mt-3">Valor a pagar: R$ {totalAmount.toFixed(2).replace('.', ',')}</p>
         </motion.div>
       ) : (
         <motion.button 
           type="button"
-          className="btn-primary w-full mt-6"
+          className="btn-primary w-full mt-4"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           disabled={isSubmitting}
@@ -162,7 +168,7 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
           {isSubmitting ? "Gerando PIX..." : "Gerar QR Code PIX"}
         </motion.button>
       )}
-    </div>
+    </motion.div>
   );
 };
 

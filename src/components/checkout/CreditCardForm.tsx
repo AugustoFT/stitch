@@ -88,12 +88,12 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   };
   
   const validateAllFields = () => {
-    validateField('cardNumber', cardNumber);
-    validateField('cardholderName', cardholderName);
-    validateField('expirationDate', expirationDate);
-    validateField('securityCode', securityCode);
+    const cardNumberValid = validateField('cardNumber', cardNumber);
+    const cardholderNameValid = validateField('cardholderName', cardholderName);
+    const expirationDateValid = validateField('expirationDate', expirationDate);
+    const securityCodeValid = validateField('securityCode', securityCode);
     
-    return Object.keys(errors).length === 0;
+    return cardNumberValid && cardholderNameValid && expirationDateValid && securityCodeValid;
   };
   
   const getProductDescription = () => {
@@ -145,16 +145,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         securityCode
       };
       
-      console.log("Processando pagamento com os dados:", {
-        nome: formData.nome,
-        email: formData.email,
-        cpf: formData.cpf.replace(/\D/g, ''),
-        cartao: cardData.cardNumber.slice(0, 4) + '******' + cardData.cardNumber.slice(-4),
-        parcelas: installments,
-        valor: totalAmount,
-        produtos: selectedProducts?.map(p => p.title).join(', ') || 'Pelúcia Stitch'
-      });
-      
       // Process the payment directly with installments
       const result = await processCardPayment(
         cardData, 
@@ -163,8 +153,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         totalAmount, 
         getProductDescription()
       );
-      
-      console.log("Resultado do pagamento:", result);
       
       setLocalPaymentResult(result);
       setLocalCardPaymentStatus(result.status);
@@ -226,7 +214,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
           
           <motion.button 
             type="button"
-            className="btn-primary w-full mt-6"
+            className="btn-primary w-full mt-4"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             disabled={isSubmitting}

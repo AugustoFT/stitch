@@ -1,20 +1,22 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Gift, Clock, TruckIcon, BadgePercent } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
+import ProductQuantitySelector from './ProductQuantitySelector';
 
 interface ProductCardProps {
   title: string;
   price: string;
-  originalPrice: string; // Added original price for strikethrough
+  originalPrice: string;
   description: string;
   imageUrl: string;
-  size?: string;
-  discount?: string;
+  size: string;
+  discount: string;
+  additionalInfo?: string;
   onBuyClick: () => void;
-  additionalInfo?: string; // For small prints like kit contents
-  onSelect?: (selected: boolean) => void; // Callback for selection
-  isSelected?: boolean; // Is the product selected
+  onSelect: (selected: boolean) => void;
+  onQuantityChange?: (quantity: number) => void;
+  isSelected: boolean;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -25,106 +27,118 @@ const ProductCard: React.FC<ProductCardProps> = ({
   imageUrl,
   size,
   discount,
-  onBuyClick,
   additionalInfo,
+  onBuyClick,
   onSelect,
-  isSelected = false
+  onQuantityChange,
+  isSelected
 }) => {
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (onSelect) {
-      onSelect(e.target.checked);
+  const [selected, setSelected] = useState(isSelected);
+  const [quantity, setQuantity] = useState(1);
+  
+  useEffect(() => {
+    setSelected(isSelected);
+  }, [isSelected]);
+  
+  const handleSelect = () => {
+    const newSelected = !selected;
+    setSelected(newSelected);
+    onSelect(newSelected);
+  };
+  
+  const handleQuantityChange = (newQuantity: number) => {
+    setQuantity(newQuantity);
+    if (onQuantityChange) {
+      onQuantityChange(newQuantity);
     }
   };
-
+  
+  // Convert price string to number (removing "R$ " and replacing comma with dot)
+  const priceNumber = parseFloat(price.replace('R$ ', '').replace(',', '.'));
+  const totalPrice = priceNumber * quantity;
+  
   return (
-    <motion.div 
-      className={`glass-card p-5 rounded-2xl mx-auto border-2 ${isSelected ? 'border-stitch-pink' : 'border-stitch-pink/20'} shadow-lg max-w-xs`}
+    <motion.div
+      className={`bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 ${
+        selected ? 'ring-2 ring-stitch-blue' : ''
+      }`}
+      whileHover={{ y: -5 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      whileHover={{ y: -5 }}
+      transition={{ duration: 0.3 }}
     >
-      {onSelect && (
-        <div className="flex justify-end mb-2">
-          <label className="flex items-center cursor-pointer">
-            <input 
-              type="checkbox" 
-              className="form-checkbox h-5 w-5 text-stitch-pink rounded border-gray-300 focus:ring-stitch-pink"
-              checked={isSelected}
-              onChange={handleCheckboxChange}
-            />
-            <span className="ml-2 text-sm font-medium text-gray-700">Selecionar</span>
-          </label>
-        </div>
-      )}
-      
-      <div className="relative overflow-hidden rounded-xl mb-4 group h-56">
-        <motion.img 
+      <div className="relative">
+        <img 
           src={imageUrl} 
-          alt={title}
-          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
-          initial={{ scale: 1.05 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.5 }}
+          alt={title} 
+          className="w-full h-48 object-contain p-4"
         />
-        <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-          <div className="bg-stitch-yellow text-stitch-dark font-bold py-1 px-3 rounded-full text-sm shadow-md">
-            {price}
-          </div>
-          {originalPrice && (
-            <div className="bg-white/80 text-gray-500 font-medium py-1 px-3 rounded-full text-xs shadow-md line-through">
-              {originalPrice}
-            </div>
+        <div className="absolute top-2 right-2 bg-stitch-pink text-white text-xs font-bold py-1 px-2 rounded-full">
+          {discount}
+        </div>
+      </div>
+      
+      <div className="p-4">
+        <h3 className="text-lg font-medium mb-1">{title}</h3>
+        <div className="flex items-center mb-2">
+          <p className="text-stitch-blue font-bold">{price}</p>
+          <p className="text-gray-400 text-sm line-through ml-2">{originalPrice}</p>
+        </div>
+        
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{description}</p>
+        
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs text-gray-500">{size}</span>
+          
+          {additionalInfo && (
+            <span className="text-xs text-stitch-pink">{additionalInfo}</span>
           )}
         </div>
-        {discount && (
-          <motion.div 
-            className="absolute top-3 left-3 bg-stitch-pink text-white font-bold py-2 px-4 rounded-full text-sm shadow-md flex items-center gap-1"
-            animate={{ rotate: [0, -5, 5, -5, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-          >
-            <BadgePercent className="h-4 w-4" />
-            {discount}
-          </motion.div>
-        )}
-        {size && (
-          <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm text-stitch-dark font-medium py-1 px-3 rounded-full text-xs shadow-sm">
-            {size}
+        
+        <div className="flex flex-col space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-gray-700">Quantidade:</label>
+            <ProductQuantitySelector 
+              quantity={quantity} 
+              onQuantityChange={handleQuantityChange} 
+            />
           </div>
-        )}
+          
+          <motion.div
+            key={totalPrice}
+            className="text-right font-bold text-stitch-blue"
+            initial={{ opacity: 0.7, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            Total: R$ {totalPrice.toFixed(2).replace('.', ',')}
+          </motion.div>
+          
+          <div className="flex items-center space-x-2">
+            <motion.button
+              className={`flex-1 py-2 px-3 rounded-md font-medium text-sm ${
+                selected 
+                  ? 'bg-gray-200 text-gray-700'
+                  : 'bg-stitch-light text-stitch-blue hover:bg-stitch-light/80'
+              }`}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleSelect}
+            >
+              {selected ? 'Selecionado' : 'Selecionar'}
+            </motion.button>
+            
+            <motion.button
+              className="flex-1 bg-stitch-blue text-white py-2 px-3 rounded-md font-medium text-sm hover:bg-stitch-blue/90 flex items-center justify-center"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={onBuyClick}
+            >
+              <ShoppingBag className="w-4 h-4 mr-1" />
+              Comprar
+            </motion.button>
+          </div>
+        </div>
       </div>
-      
-      <h2 className="text-xl font-display font-bold text-stitch-blue mb-2 drop-shadow-sm">{title}</h2>
-      
-      <p className="text-gray-600 mb-3 text-sm">{description}</p>
-      
-      {additionalInfo && (
-        <p className="text-gray-500 text-xs mb-3 italic">{additionalInfo}</p>
-      )}
-      
-      <div className="flex flex-col gap-1 mb-4">
-        <div className="flex items-center gap-2 text-xs text-gray-600">
-          <Clock className="h-3 w-3 text-stitch-blue" />
-          <span>Oferta por tempo limitado</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-gray-600">
-          <Gift className="h-3 w-3 text-stitch-pink" />
-          <span>Produto oficial Disney</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-gray-600">
-          <TruckIcon className="h-3 w-3 text-stitch-teal" />
-          <span>Frete grátis para todo o Brasil</span>
-        </div>
-      </div>
-      
-      <motion.button 
-        className="btn-primary w-full text-sm py-2"
-        onClick={onBuyClick}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        Comprar Agora
-      </motion.button>
     </motion.div>
   );
 };

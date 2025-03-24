@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -7,6 +8,7 @@ import PaymentMethodSelector from './checkout/PaymentMethodSelector';
 import CreditCardForm from './checkout/CreditCardForm';
 import PixPaymentForm from './checkout/PixPaymentForm';
 import PaymentSuccessMessage from './checkout/PaymentSuccessMessage';
+import OrderSummary from './checkout/OrderSummary';
 import { formatCPF, formatPhoneNumber, formatCEP } from './checkout/InputFormatters';
 
 // Declare MercadoPago in the window object
@@ -19,6 +21,14 @@ declare global {
 interface CheckoutFormProps {
   selectedProducts?: any[];
   totalAmount?: number;
+}
+
+interface ProductWithQuantity {
+  id: number;
+  title: string;
+  price: number;
+  imageUrl: string;
+  quantity: number;
 }
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({ 
@@ -44,9 +54,34 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   const [mercadoPagoReady, setMercadoPagoReady] = useState(false);
   const [paymentResult, setPaymentResult] = useState<any>(null);
   const [cardPaymentStatus, setCardPaymentStatus] = useState<string | null>(null);
+  const [productsWithQuantity, setProductsWithQuantity] = useState<ProductWithQuantity[]>([]);
+  const [calculatedTotal, setCalculatedTotal] = useState(totalAmount);
   
   // Refs for the Mercado Pago SDK
   const mercadoPagoRef = useRef<any>(null);
+
+  // Process selectedProducts to include quantities
+  useEffect(() => {
+    if (selectedProducts && selectedProducts.length > 0) {
+      const processedProducts = selectedProducts.map(product => ({
+        id: product.id,
+        title: product.title,
+        price: parseFloat(product.price.replace('R$ ', '').replace(',', '.')),
+        imageUrl: product.imageUrl,
+        quantity: product.quantity || 1
+      }));
+      
+      setProductsWithQuantity(processedProducts);
+      
+      // Calculate total based on products and quantities
+      const newTotal = processedProducts.reduce(
+        (sum, product) => sum + (product.price * product.quantity), 
+        0
+      );
+      
+      setCalculatedTotal(newTotal);
+    }
+  }, [selectedProducts]);
 
   // Load customer data from localStorage on component mount
   useEffect(() => {
@@ -141,60 +176,37 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     // Form submission now handled by the respective payment components
   };
 
-  // Show product summary
-  const renderProductSummary = () => {
-    if (!selectedProducts || selectedProducts.length === 0) {
-      return (
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-800 font-medium">Pelúcia Stitch</p>
-          <p className="text-sm text-blue-700">R$ {totalAmount.toFixed(2).replace('.', ',')}</p>
-        </div>
-      );
-    }
-    
-    return (
-      <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-        <h3 className="font-medium text-blue-800 mb-2">Resumo do pedido</h3>
-        {selectedProducts.map((product, index) => (
-          <div key={index} className="flex justify-between text-sm mb-1">
-            <span className="text-blue-800">{product.title}</span>
-            <span className="text-blue-700">R$ {product.price.toFixed(2).replace('.', ',')}</span>
-          </div>
-        ))}
-        <div className="mt-2 pt-2 border-t border-blue-100 flex justify-between font-medium">
-          <span className="text-blue-800">Total:</span>
-          <span className="text-blue-800">R$ {totalAmount.toFixed(2).replace('.', ',')}</span>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <motion.div 
-      className="glass-card p-6 rounded-xl max-w-md mx-auto"
+      className="glass-card p-5 rounded-xl max-w-md mx-auto"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
     >
-      <h2 className="text-2xl font-display font-bold text-stitch-pink mb-6 text-center">
+      <h2 className="text-xl font-display font-bold text-stitch-pink mb-4 text-center">
         Preencha para comprar
       </h2>
       
-      <div className="text-center mb-6">
-        <div className="inline-block bg-stitch-pink text-white text-sm font-bold py-1 px-4 rounded-full mb-2">
+      <div className="text-center mb-4">
+        <div className="inline-block bg-stitch-pink text-white text-xs font-bold py-1 px-3 rounded-full mb-2">
           Promoção por tempo limitado!
         </div>
       </div>
       
-      {/* Show order summary */}
-      {renderProductSummary()}
+      {/* Show order summary if there are products selected */}
+      {productsWithQuantity.length > 0 && (
+        <OrderSummary 
+          products={productsWithQuantity} 
+          totalAmount={calculatedTotal} 
+        />
+      )}
       
       {/* Show success message if payment is approved */}
       <PaymentSuccessMessage paymentResult={paymentResult} />
       
       {/* Don't show the form if payment was already approved */}
       {(!paymentResult || paymentResult.status !== 'approved') && (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {/* Customer information form */}
           <CustomerInfoForm 
             formData={formData}
@@ -219,8 +231,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
               setIsSubmitting={setIsSubmitting}
               setPaymentResult={setPaymentResult}
               setCardPaymentStatus={setCardPaymentStatus}
-              selectedProducts={selectedProducts}
-              totalAmount={totalAmount}
+              selectedProducts={productsWithQuantity}
+              totalAmount={calculatedTotal}
             />
           )}
           
@@ -229,12 +241,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
               formData={formData}
               isSubmitting={isSubmitting}
               setIsSubmitting={setIsSubmitting}
-              selectedProducts={selectedProducts}
-              totalAmount={totalAmount}
+              selectedProducts={productsWithQuantity}
+              totalAmount={calculatedTotal}
             />
           )}
           
-          <p className="text-xs text-center text-gray-500 mt-4">
+          <p className="text-xs text-center text-gray-500 mt-3">
             Ao clicar em "Finalizar Compra", você concorda com nossos termos e condições.
           </p>
         </form>
