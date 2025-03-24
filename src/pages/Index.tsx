@@ -580,11 +580,11 @@ const Index: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48">
+              <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48 flex items-center justify-center">
                 <img 
                   src="/lovable-uploads/8cfc64db-41d0-48e4-b488-c2dfabcbc412.png" 
                   alt="Cliente com pelúcia Stitch e rosas"
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-auto h-full object-contain mx-auto"
                 />
               </div>
               <p className="text-gray-600 mb-3 relative z-10 text-sm">
@@ -610,11 +610,11 @@ const Index: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48">
+              <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48 flex items-center justify-center">
                 <img 
                   src="/lovable-uploads/2ef0eeb8-09ff-4314-a10e-794186e3aaab.png" 
                   alt="Garrafa térmica Stitch"
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-auto h-full object-contain mx-auto"
                 />
               </div>
               <p className="text-gray-600 mb-3 relative z-10 text-sm">
@@ -640,11 +640,11 @@ const Index: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48">
+              <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48 flex items-center justify-center">
                 <img 
                   src="/lovable-uploads/86397c2f-c5df-4f68-b96a-85761e499eee.png" 
                   alt="Criança usando óculos do Stitch"
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-auto h-full object-contain mx-auto"
                 />
               </div>
               <p className="text-gray-600 mb-3 relative z-10 text-sm">
