@@ -1,15 +1,17 @@
 
-import MercadoPago from 'mercadopago';
+import { MercadoPagoConfig, Preference } from 'mercadopago';
 
 // Initialize the MercadoPago client with production credentials
 const mercadoPagoPublicKey = 'APP_USR-46646251-3224-483c-b69d-85c5f8c96428';
 
-// Configure MercadoPago with access token
-// This should ideally be done server-side, but for this implementation we'll use it here
-// In a real production app, this would be in a server environment
-MercadoPago.configure({
-  access_token: 'APP_USR-6405882494224029-030315-88737fea58568b8cc6d16c0be760c632-1082540248'
+// Configure MercadoPago with access token - for server-side operations
+// In a real production app, this would typically be in a server environment
+const client = new MercadoPagoConfig({ 
+  accessToken: 'APP_USR-6405882494224029-030315-88737fea58568b8cc6d16c0be760c632-1082540248' 
 });
+
+// Create an instance of the Preference client
+const preferenceClient = new Preference(client);
 
 // This function creates a checkout preference
 export const createPreference = async (formData: any) => {
@@ -49,11 +51,11 @@ export const createPreference = async (formData: any) => {
     console.log('Creating preference with data:', preferenceData);
     
     // Create the preference using MercadoPago
-    const response = await MercadoPago.preferences.create(preferenceData);
+    const response = await preferenceClient.create({ body: preferenceData });
     
     return {
-      id: response.body.id,
-      init_point: response.body.init_point
+      id: response.id,
+      init_point: response.init_point
     };
   } catch (error) {
     console.error('Error creating MercadoPago preference:', error);
