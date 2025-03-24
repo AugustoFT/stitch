@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Star, Clock, Check, ShoppingBag, Gift, TruckIcon } from 'lucide-react';
@@ -158,7 +159,7 @@ const Index: React.FC = () => {
             >
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/6f2fec12-1442-466f-9a02-b8a24dc751d4.png" 
+                  src="/lovable-uploads/bbc9006b-6167-400a-94f8-5d99417fc057.png" 
                   alt="Pelúcia Stitch" 
                   className="w-4/5 max-w-md mx-auto drop-shadow-xl animate-float"
                 />
@@ -193,12 +194,12 @@ const Index: React.FC = () => {
           </p>
         </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <ProductCard
             title="Pelúcia Stitch Azul"
             price="R$ 89,90"
             description="Pelúcia oficial Disney do Stitch em azul super macia. O famoso Experimento 626 com detalhes perfeitos para os fãs."
-            imageUrl="/lovable-uploads/01ea5cbe-5885-4afa-9b29-a5936f5dfafc.png"
+            imageUrl="/lovable-uploads/bbc9006b-6167-400a-94f8-5d99417fc057.png"
             size="20 cm"
             onBuyClick={scrollToCheckout}
           />
@@ -207,7 +208,7 @@ const Index: React.FC = () => {
             title="Pelúcia Angel Rosa"
             price="R$ 89,90"
             description="Pelúcia da Angel (Experimento 624) em rosa vibrante. A namorada do Stitch com acabamento premium e super fofa."
-            imageUrl="/lovable-uploads/10640ba9-0eca-46e1-8aec-ecfe98856602.png"
+            imageUrl="/lovable-uploads/2b760e1c-3171-4717-8279-70def31836e0.png"
             size="20 cm"
             onBuyClick={scrollToCheckout}
           />
@@ -215,9 +216,20 @@ const Index: React.FC = () => {
           <ProductCard
             title="Kit Stitch e Angel"
             price="R$ 159,90"
+            discount="10% OFF"
             description="Kit com 2 pelúcias oficiais Disney: Stitch azul e Angel rosa. Perfeitos para colecionar ou presentear. Economize comprando o par!"
-            imageUrl="/lovable-uploads/a49577ad-eacf-43f0-87bb-85a716ec4dba.png"
+            imageUrl="/lovable-uploads/ae6c99e3-646e-4355-a86a-5ff5d98cd627.png"
             size="20 cm cada"
+            onBuyClick={scrollToCheckout}
+          />
+          
+          <ProductCard
+            title="Kit Stitch + Garrafa"
+            price="R$ 129,90"
+            discount="15% OFF"
+            description="Kit exclusivo com pelúcia Stitch e garrafa temática. Presente perfeito para fãs de todas as idades."
+            imageUrl="/lovable-uploads/96d43dbe-a13c-4f0f-a78d-59bd7e466261.png"
+            size="Pelúcia 20cm + Garrafa 500ml"
             onBuyClick={scrollToCheckout}
           />
         </div>
@@ -238,7 +250,7 @@ const Index: React.FC = () => {
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Por que você vai amar</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Nossas mochilas do Stitch combinam estilo, qualidade e o carisma do personagem mais amado da Disney.
+              Nossas pelúcias do Stitch combinam fofura, qualidade e o carisma do personagem mais amado da Disney.
             </p>
           </motion.div>
           
@@ -250,8 +262,8 @@ const Index: React.FC = () => {
             >
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <img 
-                  src="/lovable-uploads/133875ed-7115-4a36-9f30-a7beab0b7c35.png" 
-                  alt="Mochila Stitch" 
+                  src="/lovable-uploads/ae6c99e3-646e-4355-a86a-5ff5d98cd627.png" 
+                  alt="Pelúcias Stitch e Angel" 
                   className="w-full h-auto"
                 />
               </div>
@@ -288,8 +300,8 @@ const Index: React.FC = () => {
                     <Check className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-medium mb-1">Compartimentos Práticos</h3>
-                    <p className="text-gray-600">Espaço interno organizador para levar seus pertences com segurança e praticidade no dia a dia.</p>
+                    <h3 className="text-xl font-medium mb-1">Segurança e Qualidade</h3>
+                    <p className="text-gray-600">Produto seguro para crianças, com certificações internacionais e produzido com materiais não tóxicos.</p>
                   </div>
                 </li>
                 
@@ -299,7 +311,7 @@ const Index: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-xl font-medium mb-1">Versatilidade</h3>
-                    <p className="text-gray-600">Perfeita para diversas ocasiões: escola, faculdade, passeios e viagens curtas. Estilo e diversão em qualquer lugar!</p>
+                    <p className="text-gray-600">Perfeita para decorar quartos, presentear amigos e familiares ou simplesmente abraçar em momentos de carinho.</p>
                   </div>
                 </li>
               </ul>

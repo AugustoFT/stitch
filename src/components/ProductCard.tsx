@@ -9,6 +9,7 @@ interface ProductCardProps {
   description: string;
   imageUrl: string;
   size?: string;
+  discount?: string;
   onBuyClick: () => void;
 }
 
@@ -18,6 +19,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   description,
   imageUrl,
   size,
+  discount,
   onBuyClick
 }) => {
   return (
@@ -40,6 +42,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="absolute top-3 right-3 bg-stitch-yellow text-stitch-dark font-bold py-1 px-3 rounded-full text-sm">
           {price}
         </div>
+        {discount && (
+          <div className="absolute top-3 left-3 bg-stitch-pink text-white font-bold py-1 px-3 rounded-full text-sm">
+            {discount}
+          </div>
+        )}
         {size && (
           <div className="absolute bottom-3 left-3 bg-white/80 backdrop-blur-sm text-stitch-dark font-medium py-1 px-3 rounded-full text-xs">
             {size}
