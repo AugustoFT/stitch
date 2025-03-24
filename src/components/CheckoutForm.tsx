@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { CreditCard } from 'lucide-react';
+import { createPreference, redirectToMercadoPagoCheckout } from '../utils/mercadoPago';
 
 const CheckoutForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -21,31 +21,51 @@ const CheckoutForm: React.FC = () => {
     cardExpiry: '',
     cardCvc: '',
   });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Pedido realizado com sucesso! Em breve você receberá mais informações por email.");
-    setFormData({
-      nome: '',
-      email: '',
-      telefone: '',
-      endereco: '',
-      complemento: '',
-      complemento2: '',
-      cidade: '',
-      estado: '',
-      cep: '',
-      formaPagamento: 'cartao',
-      cardNumber: '',
-      cardName: '',
-      cardExpiry: '',
-      cardCvc: '',
-    });
+    setIsSubmitting(true);
+    
+    try {
+      // Create a preference with MercadoPago
+      const preferenceResult: any = await createPreference(formData);
+      
+      // Redirect to MercadoPago checkout
+      redirectToMercadoPagoCheckout(preferenceResult.id);
+      
+      // Reset form (this would actually happen after returning from MercadoPago in production)
+      toast.success("Pedido iniciado! Você será redirecionado para a página de pagamento.");
+      
+      // Reset form
+      setFormData({
+        nome: '',
+        email: '',
+        telefone: '',
+        endereco: '',
+        complemento: '',
+        complemento2: '',
+        cidade: '',
+        estado: '',
+        cep: '',
+        formaPagamento: 'cartao',
+        cardNumber: '',
+        cardName: '',
+        cardExpiry: '',
+        cardCvc: '',
+      });
+    } catch (error) {
+      console.error("Erro ao processar pagamento:", error);
+      toast.error("Houve um erro ao processar seu pagamento. Por favor, tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -337,8 +357,9 @@ const CheckoutForm: React.FC = () => {
           className="btn-primary w-full mt-6"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          disabled={isSubmitting}
         >
-          Finalizar Compra
+          {isSubmitting ? "Processando..." : "Finalizar Compra"}
         </motion.button>
         
         <p className="text-xs text-center text-gray-500 mt-4">
