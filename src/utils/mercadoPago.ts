@@ -16,6 +16,18 @@ const preferenceClient = new Preference(client);
 // Create an instance of the Payment client for credit card payments
 const paymentClient = new Payment(client);
 
+// Extended PreferenceResponse interface to include point_of_interaction
+interface ExtendedPreferenceResponse {
+  id: string;
+  init_point: string;
+  point_of_interaction?: {
+    transaction_data?: {
+      qr_code_base64?: string;
+      qr_code?: string;
+    }
+  }
+}
+
 // This function creates a checkout preference
 export const createPreference = async (formData: any) => {
   try {
@@ -107,7 +119,7 @@ export const createPixPayment = async (formData: any) => {
     console.log('Creating PIX preference with data:', preferenceData);
     
     // Create the preference using MercadoPago
-    const response = await preferenceClient.create({ body: preferenceData });
+    const response = await preferenceClient.create({ body: preferenceData }) as ExtendedPreferenceResponse;
     
     // The response from the API might not include point_of_interaction directly
     // Let's handle this more safely by checking the structure
