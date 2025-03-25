@@ -6,6 +6,8 @@ import { handleCorsRequest, createErrorResponse } from './utils.ts';
 
 // Main handler to route requests
 serve(async (req) => {
+  console.log(`Received request: ${req.method} ${req.url}`);
+  
   // Handle CORS preflight requests first
   if (req.method === 'OPTIONS') {
     console.log('Handling CORS preflight request');
