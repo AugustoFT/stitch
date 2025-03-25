@@ -1,9 +1,7 @@
-
 import { isDevelopmentEnvironment } from './environment';
 
 // Get the correct API endpoint based on environment
 export const getApiEndpoint = () => {
-  // Always use the environment variable for the endpoint
   const apiEndpoint = import.meta.env.VITE_SUPABASE_FUNCTION_URL || '';
   console.log('Using API endpoint:', apiEndpoint);
   
@@ -11,6 +9,7 @@ export const getApiEndpoint = () => {
     console.warn('API endpoint not configured. Please check your environment variables.');
   }
   
+  // Remove any trailing slashes
   return apiEndpoint.endsWith('/') ? apiEndpoint.slice(0, -1) : apiEndpoint;
 };
 
@@ -29,16 +28,14 @@ export const processCardPaymentRequest = async (paymentData: any) => {
       description: paymentData.description
     });
     
-    // Ensure we're using the correct URL format
-    const url = `${apiEndpoint}/card`;
-    console.log('Request URL:', url);
-    
-    const response = await fetch(url, {
+    const response = await fetch(`${apiEndpoint}/card`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(paymentData),
+      mode: 'cors',
+      credentials: 'include'
     });
     
     if (!response.ok) {
@@ -78,7 +75,6 @@ export const createPixPaymentRequest = async (paymentData: any) => {
       description: paymentData.description
     });
     
-    // Ensure we're using the correct URL format
     const url = `${apiEndpoint}/pix`;
     console.log('Request URL:', url);
     
@@ -145,6 +141,6 @@ export const simulatePixPaymentResponse = () => {
     id,
     status: 'pending',
     qr_code: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789',
-    qr_code_base64: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAE0UlEQVR4nO3dwW4bOxBFQcfI/385TrZZGAhsPc0ZqHY/ue0ruC2Kev398+fP19LXr19/fPc/f/++z9tP/95P/vRP/spP/pNfn/ft61/gCQEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEI9/fr91//fn/9++tO0erv3D7J6ae/fZLv9knuy3IChBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcGuf5P7bvrOTdPtJpp9q+ndOf87pp3JfHjgBwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAuLVPsn2i6c+0fUvR9meaXv30/d+X507NE+EEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhFv7JNO3FG2fZPqpbt9SNP2cnn96bgLhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIRb+yTbTz9929HqyezvEH/A86fnJhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQLi1T7J9S9H0ZdV/5wak6VO5L7fcl+UECCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4dY+yfYtRfdn+gVYn2T6MplHl+UECCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQg3NonmT7J9GeafpLp57zP9pdXv2d+Kk5PAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQLi1T7J9W8/0U01/6+kTTZ9z+uW4r7AjYALhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCDc+vr7bbv2fbt0+kmOL8Ca/vTT7Cg4PAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDh1j7J9E/v9GVH07/tOzsC3MmP57EsCzmcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHBrn+T4lqLj5zx+zvs8XjeTdiTkBggnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOHWPsntE9n/8N+38kxfmTX9VLdvKfLcPuV9WU6AcAIQTgDCCUA4AQgnAOEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQbu2TbJ9o+kTTl1X/ne/7uif8tuMv5cMLnBaAHxOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcGuPhPvtTzL9naafZPo577u+M2v7Saa/P8/lBAgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOHWPsl2x5cdbX//7/uT3l/57Rv2HzmXEyCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIT7G772kkDByjffAAAAAElFTkSuQmCC'
+    qr_code_base64: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAE0UlEQVR4nO3dwW4bOxBFQcfI/385TrZZGAhsPc0ZqHY/ue0ruC2Kev398+fP19LXr19/fPc/f/++z9tP/95P/vRP/spP/pNfn/ft61/gCQEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAuLVPsn2i6c+0fUvR9meaXv30/d+X507NE+EEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcGuf5P7bvrOTdPtJpp9q+ndOf87pp3JfHjgBwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIRb+yTbTz9929HqyezvEH/A86fnJhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQLi1T7J9S9H0ZdV/5wak6VO5L7fcl+UECCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQg3NonmT7J9GeafpLp57zP9pdXv2d+Kk5PAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQLi1T7J9W8/0U01/6+kTTZ9z+uW4r7AjYALhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCDc+vr7bbv2fbt0+kmOL8Ca/vTT7Cg4PAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDh1j7J9E/v9GVH07/tOzsC3MmP57EsCzmcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHBrn+T4lqLj5zx+zvs8XjeTdiTkBggnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOHWPsntE9n/8N+38kxfmTX9VLdvKfLcPuV9WU6AcAIQTgDCCUA4AQgnAOEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQbu2TbJ9o+kTTl1X/ne/7uif8tuMv5cMLnBaAHxOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcGuPhPvtTzL9naafZPo577u+M2v7Saa/P8/lBAgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOHWPsl2x5cdbX//7/uT3l/57Rv2HzmXEyCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIT7G772kkDByjffAAAAAElFTkSuQmCC'
   };
 };

@@ -4,16 +4,15 @@ import { corsHeaders } from '../_shared/cors.ts';
 import { processCardPayment, createPixPayment, checkPaymentStatus } from './handlers.ts';
 import { handleCorsRequest, createErrorResponse } from './utils.ts';
 
-// Main handler to route requests
 serve(async (req) => {
-  console.log(`Received request: ${req.method} ${req.url}`);
-  
-  // Handle CORS preflight requests first
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    console.log('Handling CORS preflight request');
-    return handleCorsRequest();
+    return new Response(null, {
+      headers: corsHeaders,
+      status: 204
+    });
   }
-  
+
   try {
     const url = new URL(req.url);
     const path = url.pathname.split('/').pop();
@@ -31,7 +30,6 @@ serve(async (req) => {
       return await checkPaymentStatus(req, url);
     }
     
-    console.log(`Endpoint not found: ${path}`);
     return new Response(
       JSON.stringify({ error: 'Endpoint não encontrado' }),
       { 
@@ -41,6 +39,13 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Erro no processamento da requisição:', error);
-    return createErrorResponse(error.message || 'Erro interno no servidor');
+    return new Response(
+      JSON.stringify({ error: error.message || 'Erro interno no servidor' }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500 
+      }
+    );
   }
 });
+
