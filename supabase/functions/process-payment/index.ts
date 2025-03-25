@@ -1,7 +1,8 @@
 
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
-import { corsHeaders } from '../_shared/cors.ts';
-import { processCardPayment, createPixPayment, checkPaymentStatus } from './handlers.ts';
+// Import directly from Deno standard library with a fixed version
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { corsHeaders } from "../_shared/cors.ts";
+import { processCardPayment, createPixPayment, checkPaymentStatus } from "./handlers.ts";
 
 // Sempre logar os cabeçalhos CORS para debug
 console.log('CORS Headers configurados:', corsHeaders);
