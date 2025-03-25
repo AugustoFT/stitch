@@ -1,28 +1,15 @@
 
-import { determineCardType, getPaymentStatusMessage, mercadoPagoPublicKey } from './config';
 import { processCardPaymentRequest, simulateCardPaymentResponse } from './api';
+import { determineCardType, getPaymentStatusMessage, mercadoPagoPublicKey } from './config';
+import { setupProcessPolyfill } from './polyfills';
+import { validateCardData, validateFormData } from './validators';
+import { handleCardTokenization } from './tokenization';
+import { isDevelopmentEnvironment } from './environment';
 
-// Criar shim para process para evitar erros "process is not defined" com o SDK do MercadoPago
-if (typeof window !== 'undefined' && !window.process) {
-  window.process = { 
-    env: {},
-    version: '16.0.0',
-    platform: 'browser',
-    versions: {
-      node: '16.0.0'
-    },
-    release: {
-      name: 'node'
-    }
-  } as any;
-}
+// Initialize process polyfill
+setupProcessPolyfill();
 
-// Verificar ambiente de execução
-export const isDevelopmentEnvironment = () => {
-  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-};
-
-// Função para processar pagamento com cartão
+// Main function to process card payment
 export const processCardPayment = async (cardData: any, formData: any, installments: number = 1, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
   try {
     console.log('Processando pagamento com cartão no valor de:', amount, 'e descrição:', description);
@@ -36,58 +23,20 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       };
     }
     
-    // Validar dados do formulário
-    if (!formData.nome || !formData.email || !formData.cpf) {
-      console.error('Dados de formulário obrigatórios ausentes para pagamento com cartão');
-      return {
-        status: 'error',
-        status_detail: 'Missing required form data',
-        message: 'Dados incompletos. Por favor, preencha todos os campos obrigatórios.'
-      };
-    }
+    // Validate form and card data
+    const formValidationError = validateFormData(formData);
+    if (formValidationError) return formValidationError;
     
-    // Validar dados do cartão
-    if (!cardData.cardNumber || !cardData.cardholderName || !cardData.expirationDate || !cardData.securityCode) {
-      console.error('Dados de cartão obrigatórios ausentes');
-      return {
-        status: 'error',
-        status_detail: 'Missing required card data',
-        message: 'Dados do cartão incompletos. Por favor, preencha todos os campos do cartão.'
-      };
-    }
+    const cardValidationError = validateCardData(cardData);
+    if (cardValidationError) return cardValidationError;
     
     try {
-      // 1. Inicializar o MercadoPago.js para tokenização
+      // Initialize MercadoPago and tokenize card
       console.log('Inicializando tokenização de cartão com MercadoPago.js');
       const mp = new window.MercadoPago(mercadoPagoPublicKey);
       
-      // Extrair mês e ano da data de validade (MM/AA)
-      const [expMonth, expYear] = cardData.expirationDate.split('/');
-      
-      // Formatar CPF corretamente
-      const cpf = formData.cpf.replace(/\D/g, '');
-      
-      // 2. Tokenizar o cartão usando MercadoPago.js
-      console.log('Tokenizando dados do cartão...');
-      const cardTokenData = {
-        cardNumber: cardData.cardNumber.replace(/\s+/g, ''),
-        cardholderName: cardData.cardholderName,
-        cardExpirationMonth: expMonth,
-        cardExpirationYear: `20${expYear}`,
-        securityCode: cardData.securityCode,
-        identificationType: 'CPF',
-        identificationNumber: cpf
-      };
-      
-      // Log seguro (omitindo dados sensíveis)
-      console.log('Dados para tokenização (detalhes sensíveis omitidos):', {
-        ...cardTokenData,
-        cardNumber: '****' + cardTokenData.cardNumber.slice(-4),
-        securityCode: '***'
-      });
-      
-      // Tokenizar cartão
-      const cardToken = await mp.createCardToken(cardTokenData);
+      // Create card token
+      const cardToken = await handleCardTokenization(mp, cardData, formData);
       
       if (!cardToken || !cardToken.id) {
         throw new Error('Falha ao gerar token do cartão');
@@ -95,9 +44,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       
       console.log('Token do cartão gerado com sucesso:', cardToken.id);
       
-      // 3. Enviar token e dados de pagamento para processamento
-      console.log('Enviando dados de pagamento para processamento em nosso backend');
-      
+      // Prepare payment data
       const paymentData = {
         token: cardToken.id,
         paymentMethod: determineCardType(cardData.cardNumber),
@@ -108,15 +55,14 @@ export const processCardPayment = async (cardData: any, formData: any, installme
           email: formData.email,
           identification: {
             type: "CPF",
-            number: cpf
+            number: formData.cpf.replace(/\D/g, '')
           }
         }
       };
       
-      // Processar pagamento via nosso backend
+      // Process payment via our backend or use simulation in development
       let paymentResult;
       
-      // Se estivermos em desenvolvimento e não houver conexão com o backend, use a simulação
       if (isDevelopmentEnvironment()) {
         try {
           paymentResult = await processCardPaymentRequest(paymentData);
@@ -163,7 +109,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
   }
 };
 
-// Versão offline para testes - será usada apenas em desenvolvimento
+// Offline version for testing
 export const processCardPaymentOffline = async (cardData: any, formData: any, installments: number = 1, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
   console.log('MODO DESENVOLVIMENTO: Processando pagamento offline (sem API)');
   
