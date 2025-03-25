@@ -65,12 +65,14 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
       });
       console.log('Amount:', totalAmount);
       console.log('Description:', getProductDescription(selectedProducts));
+      console.log('Products:', selectedProducts);
       
-      // Create PIX payment with dynamic amount and description
+      // Create PIX payment with dynamic amount, description and products
       const pixResult = await createPixPayment(
         formData,
         totalAmount,
-        getProductDescription(selectedProducts)
+        getProductDescription(selectedProducts),
+        selectedProducts
       );
       
       console.log('PIX payment result:', pixResult);

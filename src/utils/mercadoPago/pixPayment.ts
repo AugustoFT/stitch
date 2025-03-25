@@ -1,8 +1,10 @@
+
 import { createPixPaymentRequest, simulatePixPaymentResponse } from './api';
 import { isDevelopmentEnvironment } from './environment';
+import { createNewOrder } from '../orders/orderManager';
 
 // Função para criar um pagamento PIX
-export const createPixPayment = async (formData: any, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
+export const createPixPayment = async (formData: any, amount: number = 139.99, description: string = 'Pelúcia Stitch', products: any[] = []) => {
   try {
     console.log('Criando pagamento PIX no valor de:', amount, 'e descrição:', description);
     
@@ -53,6 +55,54 @@ export const createPixPayment = async (formData: any, amount: number = 139.99, d
       }
       
       console.log('Resposta do pagamento PIX:', paymentResponse);
+      
+      // Criar pedido no sistema
+      if (paymentResponse && paymentResponse.id) {
+        // Preparar dados dos produtos para o pedido
+        const orderProducts = products.length > 0 
+          ? products.map(p => ({
+              id: p.id,
+              quantity: p.quantity,
+              price: typeof p.price === 'string' 
+                ? parseFloat(p.price.replace('R$ ', '').replace(',', '.')) 
+                : p.price,
+              name: p.title || p.name,
+              imageUrl: p.imageUrl
+            }))
+          : [{ 
+              id: 1, 
+              quantity: 1, 
+              price: amount, 
+              name: description,
+              imageUrl: ''
+            }];
+        
+        // Criar pedido no sistema
+        try {
+          const customerInfo = {
+            name: formData.nome,
+            email: formData.email,
+            phone: formData.telefone || '',
+            address: formData.endereco || '',
+            city: formData.cidade || '',
+            state: formData.estado || '',
+            zip: formData.cep || '',
+            cpf: formData.cpf
+          };
+          
+          const order = await createNewOrder(
+            orderProducts,
+            customerInfo,
+            'pix',
+            paymentResponse.id.toString()
+          );
+          
+          console.log('Pedido criado com sucesso:', order);
+        } catch (orderError) {
+          console.error('Erro ao criar pedido:', orderError);
+          // Não impedimos o processo se o pedido falhar, apenas logamos o erro
+        }
+      }
       
       return {
         id: paymentResponse.id,
