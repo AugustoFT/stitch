@@ -1,5 +1,5 @@
 
-import { corsHeaders } from '../../_shared/cors.ts';
+import { corsHeaders } from '../_shared/cors.ts';
 
 // Mercado Pago access token from environment
 const MERCADO_PAGO_ACCESS_TOKEN = Deno.env.get('MERCADO_PAGO_ACCESS_TOKEN') || '';
