@@ -31,6 +31,6 @@ export function createErrorResponse(message: string, status = 500) {
   console.error(`Error: ${message}`);
   return createJsonResponse({ 
     status: 'error', 
-    message: message || 'Erro interno no servidor' 
+    message: message || 'Internal server error' 
   }, status);
 }

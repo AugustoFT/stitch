@@ -6,11 +6,11 @@ const MERCADO_PAGO_ACCESS_TOKEN = Deno.env.get('MERCADO_PAGO_ACCESS_TOKEN') || '
 
 export async function createPixPayment(req: Request) {
   try {
-    console.log('Iniciando criação de pagamento PIX');
+    console.log('Initiating PIX payment creation');
     
     const { transactionAmount, description, payer } = await req.json();
     
-    console.log('Criando pagamento PIX:', { 
+    console.log('Creating PIX payment:', { 
       transactionAmount, 
       description 
     });
@@ -41,11 +41,11 @@ export async function createPixPayment(req: Request) {
     const responseData = await mpResponse.json();
     
     if (!mpResponse.ok) {
-      console.error('Erro na resposta do Mercado Pago (PIX):', responseData);
+      console.error('Error in Mercado Pago response (PIX):', responseData);
       return new Response(
         JSON.stringify({ 
           status: 'error', 
-          message: responseData.message || 'Erro ao processar pagamento PIX' 
+          message: responseData.message || 'Error processing PIX payment' 
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
@@ -69,11 +69,11 @@ export async function createPixPayment(req: Request) {
       }
     );
   } catch (error) {
-    console.error('Erro ao criar pagamento PIX:', error);
+    console.error('Error creating PIX payment:', error);
     return new Response(
       JSON.stringify({ 
         status: 'error', 
-        message: error.message || 'Erro interno no servidor' 
+        message: error.message || 'Internal server error' 
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 

@@ -6,11 +6,11 @@ const MERCADO_PAGO_ACCESS_TOKEN = Deno.env.get('MERCADO_PAGO_ACCESS_TOKEN') || '
 
 export async function processCardPayment(req: Request) {
   try {
-    console.log('Iniciando processamento de pagamento com cartão');
+    console.log('Initiating card payment processing');
     
     const { token, paymentMethod, installments, transactionAmount, description, payer } = await req.json();
     
-    console.log('Processando pagamento com cartão:', { 
+    console.log('Processing card payment:', { 
       paymentMethod, 
       installments, 
       transactionAmount, 
@@ -30,7 +30,7 @@ export async function processCardPayment(req: Request) {
       }
     };
     
-    console.log('Enviando dados para API do Mercado Pago');
+    console.log('Sending data to Mercado Pago API');
     
     // Send to Mercado Pago API
     const mpResponse = await fetch('https://api.mercadopago.com/v1/payments', {
@@ -45,12 +45,12 @@ export async function processCardPayment(req: Request) {
     const responseData = await mpResponse.json();
     
     if (!mpResponse.ok) {
-      console.error('Erro na resposta do Mercado Pago:', responseData);
+      console.error('Error in Mercado Pago response:', responseData);
       return new Response(
         JSON.stringify({ 
           status: 'rejected', 
-          status_detail: responseData.message || 'Erro no processamento', 
-          message: responseData.message || 'Erro ao processar pagamento'
+          status_detail: responseData.message || 'Processing error', 
+          message: responseData.message || 'Error processing payment'
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
@@ -59,7 +59,7 @@ export async function processCardPayment(req: Request) {
       );
     }
     
-    console.log('Resposta do Mercado Pago obtida com sucesso:', responseData.status);
+    console.log('Mercado Pago response obtained successfully:', responseData.status);
     
     return new Response(
       JSON.stringify({
@@ -74,11 +74,11 @@ export async function processCardPayment(req: Request) {
       }
     );
   } catch (error) {
-    console.error('Erro ao processar pagamento:', error);
+    console.error('Error processing payment:', error);
     return new Response(
       JSON.stringify({ 
         status: 'error', 
-        message: error.message || 'Erro interno no servidor' 
+        message: error.message || 'Internal server error' 
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 

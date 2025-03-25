@@ -10,7 +10,7 @@ export async function checkPaymentStatus(req: Request, url: URL) {
     
     if (!paymentId) {
       return new Response(
-        JSON.stringify({ status: 'error', message: 'ID do pagamento não fornecido' }),
+        JSON.stringify({ status: 'error', message: 'Payment ID not provided' }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
           status: 400 
@@ -32,7 +32,7 @@ export async function checkPaymentStatus(req: Request, url: URL) {
       return new Response(
         JSON.stringify({ 
           status: 'error', 
-          message: responseData.message || 'Erro ao verificar status do pagamento' 
+          message: responseData.message || 'Error checking payment status' 
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
@@ -53,11 +53,11 @@ export async function checkPaymentStatus(req: Request, url: URL) {
       }
     );
   } catch (error) {
-    console.error('Erro ao verificar status do pagamento:', error);
+    console.error('Error checking payment status:', error);
     return new Response(
       JSON.stringify({ 
         status: 'error', 
-        message: error.message || 'Erro interno no servidor' 
+        message: error.message || 'Internal server error' 
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
