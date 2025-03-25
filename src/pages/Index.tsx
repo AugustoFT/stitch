@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -68,6 +69,7 @@ const Index: React.FC = () => {
     }
   ];
   
+  // Efeito para atualizar os produtos selecionados e recalcular o total quando a seleção muda
   useEffect(() => {
     const selectedProducts = products
       .filter(product => selectedProductIds.includes(product.id))
@@ -82,6 +84,18 @@ const Index: React.FC = () => {
     
     setTotalAmount(total);
   }, [selectedProductIds]);
+
+  // Efeito para atualizar o total quando a quantidade muda
+  useEffect(() => {
+    if (productsWithQuantity.length > 0) {
+      const total = productsWithQuantity.reduce((sum, product) => {
+        const price = parseFloat(product.price.replace('R$ ', '').replace(',', '.'));
+        return sum + (price * product.quantity);
+      }, 0);
+      
+      setTotalAmount(total);
+    }
+  }, [productsWithQuantity]);
 
   const [timeLeft, setTimeLeft] = useState({
     days: 1,

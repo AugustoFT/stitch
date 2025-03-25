@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import ProductCard from '../ProductCard';
 
@@ -34,6 +34,15 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
   const productRef = useRef<HTMLDivElement>(null);
   const productInView = useInView(productRef, { once: true, margin: "-100px" });
 
+  // Garantir que os manipuladores de seleção e quantidade estejam propagando as alterações
+  const handleProductSelect = (productId: number, selected: boolean) => {
+    toggleProductSelection(productId, selected);
+  };
+
+  const handleProductQuantityChange = (productId: number, quantity: number) => {
+    handleQuantityChange(productId, quantity);
+  };
+
   return (
     <section 
       id="produtos"
@@ -65,8 +74,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
             discount={product.discount}
             additionalInfo={product.additionalInfo}
             onBuyClick={scrollToCheckout}
-            onSelect={(selected) => toggleProductSelection(product.id, selected)}
-            onQuantityChange={(quantity) => handleQuantityChange(product.id, quantity)}
+            onSelect={(selected) => handleProductSelect(product.id, selected)}
+            onQuantityChange={(quantity) => handleProductQuantityChange(product.id, quantity)}
             isSelected={selectedProductIds.includes(product.id)}
           />
         ))}
