@@ -7,7 +7,7 @@ import PixPaymentForm from './PixPaymentForm';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import ProductQuantitySelector from '../ProductQuantitySelector';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ProductInfo {
@@ -92,7 +92,10 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
       {/* Dynamic product cart with quantity selectors */}
       {localProducts.length > 0 && (
         <div className="mb-6">
-          <h3 className="font-medium text-stitch-pink mb-3 text-base">Carrinho de Compras</h3>
+          <h3 className="font-medium text-stitch-pink mb-3 text-base flex items-center">
+            <ShoppingBag className="w-4 h-4 mr-2" />
+            Carrinho de Compras
+          </h3>
           
           <div className="space-y-3 mb-4">
             <AnimatePresence>
@@ -142,7 +145,7 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
           </div>
           
           <motion.div 
-            className="flex justify-between items-center pt-2 font-medium text-stitch-blue bg-blue-50 p-3 rounded-lg"
+            className="flex justify-between items-center pt-2 font-medium bg-blue-50 p-3 rounded-lg"
             layout
             key={localTotal}
             initial={{ opacity: 0.5, scale: 0.98 }}
@@ -150,9 +153,23 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
             transition={{ duration: 0.3 }}
           >
             <span className="text-gray-800">Total:</span>
-            <span className="text-stitch-blue">R$ {localTotal.toFixed(2).replace('.', ',')}</span>
+            <span className="text-stitch-blue font-bold">R$ {localTotal.toFixed(2).replace('.', ',')}</span>
           </motion.div>
         </div>
+      )}
+      
+      {/* Show message when cart is empty */}
+      {localProducts.length === 0 && (
+        <motion.div 
+          className="bg-blue-50 p-4 rounded-lg mb-6 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <ShoppingBag className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+          <p className="text-gray-600 text-sm">Seu carrinho está vazio</p>
+          <p className="text-gray-500 text-xs mt-1">Selecione produtos para continuar</p>
+        </motion.div>
       )}
       
       {/* Customer information form */}
