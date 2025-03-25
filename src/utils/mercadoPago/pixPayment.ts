@@ -1,6 +1,11 @@
 
 import { preferenceClient, ExtendedPreferenceResponse } from './config';
 
+// Create a global process shim to prevent "process is not defined" errors with MercadoPago SDK
+if (typeof window !== 'undefined' && !window.process) {
+  window.process = { env: {} } as any;
+}
+
 // Function specifically for creating PIX payments
 export const createPixPayment = async (formData: any, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
   try {
