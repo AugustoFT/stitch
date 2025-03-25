@@ -8,7 +8,11 @@ export function createJsonResponse(data: any, status = 200) {
   return new Response(
     JSON.stringify(data),
     { 
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }, 
       status 
     }
   );
@@ -19,7 +23,12 @@ export function createJsonResponse(data: any, status = 200) {
  */
 export function handleCorsRequest() {
   return new Response(null, { 
-    headers: corsHeaders,
+    headers: {
+      ...corsHeaders,
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, Authorization, X-Client-Info, Apikey, Content-Type'
+    },
     status: 204 
   });
 }

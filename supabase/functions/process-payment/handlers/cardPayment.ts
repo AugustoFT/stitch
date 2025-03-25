@@ -52,14 +52,28 @@ export async function processCardPayment(req: Request) {
     
     console.log('Mercado Pago response obtained successfully:', responseData.status);
     
-    return createJsonResponse({
-      id: responseData.id.toString(),
-      status: responseData.status,
-      status_detail: responseData.status_detail,
-      message: responseData.status_detail
-    });
+    return new Response(
+      JSON.stringify({
+        id: responseData.id.toString(),
+        status: responseData.status,
+        status_detail: responseData.status_detail,
+        message: responseData.status_detail
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+        status: 200 
+      }
+    );
   } catch (error) {
     console.error('Error processing payment:', error);
-    return createErrorResponse(error.message || 'Internal server error');
+    return new Response(
+      JSON.stringify({ 
+        error: error.message || 'Internal server error' 
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+        status: 500 
+      }
+    );
   }
 }

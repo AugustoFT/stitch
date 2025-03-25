@@ -6,10 +6,13 @@ import { processCardPayment, createPixPayment, checkPaymentStatus } from "./hand
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Handling OPTIONS request (CORS preflight)');
     return new Response(null, {
       headers: {
         ...corsHeaders,
+        'Access-Control-Allow-Origin': '*',  // Allow all origins in development
         'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, Authorization, X-Client-Info, Apikey, Content-Type',
         'Access-Control-Max-Age': '86400',
       },
       status: 204
@@ -41,7 +44,8 @@ serve(async (req) => {
       { 
         headers: { 
           ...corsHeaders, 
-          'Content-Type': 'application/json' 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         }, 
         status: 404 
       }
@@ -56,11 +60,11 @@ serve(async (req) => {
       { 
         headers: { 
           ...corsHeaders, 
-          'Content-Type': 'application/json' 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         },
         status: 500 
       }
     );
   }
 });
-
