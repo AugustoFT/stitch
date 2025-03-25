@@ -5,6 +5,15 @@ import PaymentMethodSelector from './PaymentMethodSelector';
 import CreditCardForm from './CreditCardForm';
 import PixPaymentForm from './PixPaymentForm';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
+import OrderSummary from './OrderSummary';
+
+interface ProductInfo {
+  id: number;
+  title: string;
+  price: number;
+  imageUrl: string;
+  quantity: number;
+}
 
 interface CheckoutFormContentProps {
   formData: any;
@@ -20,7 +29,7 @@ interface CheckoutFormContentProps {
   handleCPFChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCEPChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handlePaymentMethodChange: (method: string) => void;
-  productsWithQuantity: any[];
+  productsWithQuantity: ProductInfo[];
   calculatedTotal: number;
 }
 
@@ -46,8 +55,19 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
     return <PaymentSuccessMessage paymentResult={paymentResult} />;
   }
 
+  // Display order summary if there are products
+  const showOrderSummary = productsWithQuantity && productsWithQuantity.length > 0;
+
   return (
     <>
+      {/* Show order summary at the top of the form */}
+      {showOrderSummary && (
+        <OrderSummary 
+          products={productsWithQuantity} 
+          totalAmount={calculatedTotal} 
+        />
+      )}
+      
       {/* Customer information form */}
       <CustomerInfoForm 
         formData={formData}
