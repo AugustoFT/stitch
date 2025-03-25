@@ -1,8 +1,7 @@
-
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { processCardPayment } from '../../utils/mercadoPago';
+import { processCardPayment, processCardPaymentOffline, isProduction, getEnvironment, ENV, setEnvironment } from '../../utils/mercadoPago';
 import CardPaymentSuccess from './CardPaymentSuccess';
 import CardInputs from './CardInputs';
 import InstallmentSelector from './InstallmentSelector';
@@ -45,8 +44,17 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   const [paymentResult, setLocalPaymentResult] = React.useState<any>(null);
   const [cardPaymentStatus, setLocalCardPaymentStatus] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<{[key: string]: string}>({});
-  
-  // Restore form data from localStorage if available
+
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    if (hostname === 'lilo-stitch.com' || hostname.includes('mercadopago')) {
+      setEnvironment(ENV.PRODUCTION);
+    } else {
+      setEnvironment(ENV.DEVELOPMENT);
+    }
+    console.log(`Ambiente configurado: ${getEnvironment()}`);
+  }, []);
+
   useEffect(() => {
     const savedCardData = localStorage.getItem('cardFormData');
     if (savedCardData) {
@@ -54,14 +62,12 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         const parsedData = JSON.parse(savedCardData);
         setCardNumber(parsedData.cardNumber || '');
         setCardholderName(parsedData.cardholderName || '');
-        // Don't restore sensitive data like CVV
       } catch (e) {
         console.error('Error parsing saved card data', e);
       }
     }
   }, []);
-  
-  // Save non-sensitive card data to localStorage
+
   const saveFormData = () => {
     const dataToSave = {
       cardNumber,
@@ -69,8 +75,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     };
     localStorage.setItem('cardFormData', JSON.stringify(dataToSave));
   };
-  
-  // Validate field and update errors state
+
   const validateField = (field: string, value: string) => {
     const errorMessage = validateCardField(field, value);
     
@@ -86,7 +91,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       return true;
     }
   };
-  
+
   const validateAllFields = () => {
     const cardNumberValid = validateField('cardNumber', cardNumber);
     const cardholderNameValid = validateField('cardholderName', cardholderName);
@@ -95,7 +100,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     
     return cardNumberValid && cardholderNameValid && expirationDateValid && securityCodeValid;
   };
-  
+
   const getProductDescription = () => {
     if (!selectedProducts || selectedProducts.length === 0) {
       return 'Pelúcia Stitch';
@@ -107,17 +112,15 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     
     return `Compra Stitch (${selectedProducts.length} itens)`;
   };
-  
+
   const handleCardPayment = async () => {
     if (!mercadoPagoReady) {
       toast.error("O sistema de pagamento ainda não foi carregado. Aguarde alguns segundos.");
       return;
     }
     
-    // Save non-sensitive form data
     saveFormData();
     
-    // Validate all fields
     if (!validateAllFields()) {
       toast.error("Por favor, corrija os erros no formulário antes de continuar.");
       return;
@@ -130,19 +133,16 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     try {
       toast.info("Processando pagamento, aguarde...");
       
-      // Validate form data before proceeding
       if (!formData.nome || !formData.email || !formData.cpf) {
         toast.error("Por favor, preencha todos os campos obrigatórios.");
         setIsSubmitting(false);
         return;
       }
       
-      // Log data for debugging
       console.log('Form data:', formData);
       console.log('Total amount:', totalAmount);
       console.log('Installments:', installments);
       
-      // Get card data and process payment
       const cardData: CardData = {
         cardNumber,
         cardholderName,
@@ -150,21 +150,32 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         securityCode
       };
       
-      // Process the payment directly with installments
-      const result = await processCardPayment(
-        cardData, 
-        formData, 
-        installments, 
-        totalAmount, 
-        getProductDescription()
-      );
+      let result;
+      if (isProduction()) {
+        console.log('Processando pagamento em ambiente de PRODUÇÃO');
+        result = await processCardPayment(
+          cardData, 
+          formData, 
+          installments, 
+          totalAmount, 
+          getProductDescription()
+        );
+      } else {
+        console.log('Processando pagamento em ambiente de DESENVOLVIMENTO');
+        result = await processCardPaymentOffline(
+          cardData, 
+          formData, 
+          installments, 
+          totalAmount, 
+          getProductDescription()
+        );
+      }
       
       console.log('Payment result:', result);
       
       setLocalPaymentResult(result);
       setLocalCardPaymentStatus(result.status);
       
-      // Pass results up to parent component
       setPaymentResult(result);
       setCardPaymentStatus(result.status);
       
