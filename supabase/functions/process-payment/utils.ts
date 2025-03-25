@@ -1,5 +1,5 @@
 
-import { corsHeaders } from '../_shared/cors.ts';
+import { corsHeaders } from './_shared/cors.ts';
 
 /**
  * Create a properly formatted JSON response
