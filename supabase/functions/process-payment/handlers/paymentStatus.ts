@@ -4,9 +4,6 @@ import { corsHeaders } from '../_shared/cors.ts';
 // Mercado Pago access token from environment
 const MERCADO_PAGO_ACCESS_TOKEN = Deno.env.get('MERCADO_PAGO_ACCESS_TOKEN') || '';
 
-/**
- * Check payment status in Mercado Pago
- */
 export async function checkPaymentStatus(req: Request, url: URL) {
   try {
     const paymentId = url.searchParams.get('id');

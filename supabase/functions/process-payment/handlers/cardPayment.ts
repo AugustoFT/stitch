@@ -4,9 +4,6 @@ import { corsHeaders } from '../_shared/cors.ts';
 // Mercado Pago access token from environment
 const MERCADO_PAGO_ACCESS_TOKEN = Deno.env.get('MERCADO_PAGO_ACCESS_TOKEN') || '';
 
-/**
- * Process credit card payment through Mercado Pago
- */
 export async function processCardPayment(req: Request) {
   try {
     console.log('Iniciando processamento de pagamento com cartão');

@@ -4,9 +4,6 @@ import { corsHeaders } from '../_shared/cors.ts';
 // Mercado Pago access token from environment
 const MERCADO_PAGO_ACCESS_TOKEN = Deno.env.get('MERCADO_PAGO_ACCESS_TOKEN') || '';
 
-/**
- * Create PIX payment through Mercado Pago
- */
 export async function createPixPayment(req: Request) {
   try {
     console.log('Iniciando criação de pagamento PIX');
