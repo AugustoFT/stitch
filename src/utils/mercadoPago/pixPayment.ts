@@ -43,7 +43,7 @@ export const createPixPayment = async (formData: any, amount: number = 139.99, d
       console.log('Resposta do pagamento PIX:', paymentResponse);
       
       return {
-        id: paymentResponse.id,
+        id: paymentResponse.id.toString(), // Convert id to string explicitly
         status: paymentResponse.status,
         qr_code: paymentResponse.point_of_interaction?.transaction_data?.qr_code,
         qr_code_base64: paymentResponse.point_of_interaction?.transaction_data?.qr_code_base64,
@@ -88,3 +88,4 @@ export const createPixPaymentOffline = async (formData: any, amount: number = 13
     message: 'Pagamento PIX gerado com sucesso. Escaneie o QR code para pagar.'
   };
 };
+

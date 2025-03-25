@@ -13,6 +13,14 @@ interface PixPaymentFormProps {
   totalAmount?: number;
 }
 
+// Define interface for pixData to ensure consistent typing
+interface PixData {
+  id?: string;
+  qr_code?: string;
+  qr_code_base64?: string;
+  status?: string;
+}
+
 const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
   formData,
   isSubmitting,
@@ -20,7 +28,7 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
   selectedProducts = [],
   totalAmount = 139.99
 }) => {
-  const [pixData, setPixData] = React.useState<{ qr_code?: string; qr_code_base64?: string; id?: string } | null>(null);
+  const [pixData, setPixData] = React.useState<PixData | null>(null);
   const [formErrors, setFormErrors] = React.useState<string[]>([]);
   const [pixError, setPixError] = React.useState<string | null>(null);
 
@@ -106,7 +114,14 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
       console.log('PIX payment result:', pixResult);
       
       if (pixResult && (pixResult.qr_code || pixResult.qr_code_base64)) {
-        setPixData(pixResult);
+        // Make sure we're setting data with the correct types
+        setPixData({
+          id: pixResult.id, // Already a string from our API update
+          qr_code: pixResult.qr_code,
+          qr_code_base64: pixResult.qr_code_base64,
+          status: pixResult.status
+        });
+        
         toast.success("QR Code PIX gerado com sucesso! Escaneie para pagar.");
       } else {
         setPixError("Erro ao gerar QR Code PIX. Verifique suas informações e tente novamente.");

@@ -32,6 +32,19 @@ export interface PixPaymentRequest {
   };
 }
 
+// Interface para resposta de pagamento com PIX
+export interface PixPaymentResponse {
+  id: string; // Ensure id is a string type
+  status: string;
+  point_of_interaction?: {
+    transaction_data?: {
+      qr_code?: string;
+      qr_code_base64?: string;
+      ticket_url?: string;
+    }
+  };
+}
+
 /**
  * Função para processar pagamento com cartão diretamente via Mercado Pago
  * @param paymentData Dados do pagamento com cartão
@@ -59,7 +72,7 @@ export const processCardPaymentRequest = async (paymentData: CardPaymentRequest)
     const response = await paymentClient.create({ body: mpPaymentData });
     
     return {
-      id: response.id,
+      id: response.id.toString(), // Convert to string to ensure consistent typing
       status: response.status,
       status_detail: response.status_detail,
       message: response.status_detail
@@ -80,7 +93,7 @@ export const processCardPaymentRequest = async (paymentData: CardPaymentRequest)
  * @param paymentData Dados do pagamento PIX
  * @returns Resposta com QR code e informações do PIX
  */
-export const createPixPaymentRequest = async (paymentData: PixPaymentRequest) => {
+export const createPixPaymentRequest = async (paymentData: PixPaymentRequest): Promise<PixPaymentResponse> => {
   try {
     console.log('Criando pagamento PIX via Mercado Pago:', paymentData);
     
@@ -99,7 +112,7 @@ export const createPixPaymentRequest = async (paymentData: PixPaymentRequest) =>
     const response = await paymentClient.create({ body: mpPaymentData });
     
     return {
-      id: response.id,
+      id: response.id.toString(), // Ensure we return id as string
       status: response.status,
       point_of_interaction: response.point_of_interaction
     };
@@ -122,7 +135,7 @@ export const checkPaymentStatus = async (paymentId: string) => {
     const response = await paymentClient.get({ id: paymentId });
     
     return {
-      id: response.id,
+      id: response.id.toString(), // Convert to string for consistency
       status: response.status,
       status_detail: response.status_detail
     };
