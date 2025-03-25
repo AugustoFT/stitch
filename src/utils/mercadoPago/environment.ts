@@ -1,11 +1,10 @@
 
 // Check if we're in a development environment
 export const isDevelopmentEnvironment = () => {
-  return false; // Forçar ambiente de produção
-  // return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  return false; // Forcing production environment
 };
 
-// Função para forçar modo de produção
+// Function to force production mode
 export const forceProductionMode = () => {
   return true;
 };
