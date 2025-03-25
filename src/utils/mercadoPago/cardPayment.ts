@@ -3,7 +3,17 @@ import { paymentClient, determineCardType, getPaymentStatusMessage, mercadoPagoP
 
 // Create a global process shim to prevent "process is not defined" errors with MercadoPago SDK
 if (typeof window !== 'undefined' && !window.process) {
-  window.process = { env: {} } as any;
+  window.process = { 
+    env: {},
+    version: '16.0.0', // Provide a node version
+    platform: 'browser',
+    versions: {
+      node: '16.0.0'
+    },
+    release: {
+      name: 'node'
+    }
+  } as any;
 }
 
 // Function to directly process a card payment without redirection
