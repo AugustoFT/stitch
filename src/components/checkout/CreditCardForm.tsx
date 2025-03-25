@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast'; // Updated import path
 import CardPaymentSuccess from './CardPaymentSuccess';
 import CardPaymentWrapper from './card/CardPaymentWrapper';
 import { useCardFormValidation } from './hooks/useCardFormValidation';
