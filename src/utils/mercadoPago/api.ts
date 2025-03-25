@@ -1,5 +1,5 @@
 
-import { API_BASE_URL } from './config';
+import { client, API_BASE_URL, paymentClient } from './config';
 
 // Interface para dados de pagamento com cartão
 export interface CardPaymentRequest {
@@ -33,56 +33,80 @@ export interface PixPaymentRequest {
 }
 
 /**
- * Função para processar pagamento com cartão no backend
+ * Função para processar pagamento com cartão diretamente via Mercado Pago
  * @param paymentData Dados do pagamento com cartão
  * @returns Resposta do processamento do pagamento
  */
 export const processCardPaymentRequest = async (paymentData: CardPaymentRequest) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/payments/process`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(paymentData)
+    console.log('Processando pagamento com cartão via Mercado Pago:', {
+      ...paymentData,
+      token: 'XXXX-XXXX-XXXX-XXXX' // Ocultando o token por segurança
     });
     
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `Erro ao processar pagamento: ${response.status}`);
-    }
+    const mpPaymentData = {
+      token: paymentData.token,
+      installments: Number(paymentData.installments),
+      transaction_amount: Number(paymentData.transactionAmount),
+      description: paymentData.description,
+      payment_method_id: paymentData.paymentMethod,
+      payer: {
+        email: paymentData.payer.email,
+        identification: paymentData.payer.identification
+      }
+    };
     
-    return await response.json();
+    const response = await paymentClient.create({ body: mpPaymentData });
+    
+    return {
+      id: response.id,
+      status: response.status,
+      status_detail: response.status_detail,
+      message: response.status_detail
+    };
   } catch (error: any) {
     console.error('Erro na requisição de pagamento:', error);
-    throw error;
+    const errorMessage = error.cause?.response?.data?.message || error.message || 'Erro ao processar pagamento';
+    return {
+      status: 'rejected',
+      status_detail: 'error',
+      message: errorMessage
+    };
   }
 };
 
 /**
- * Função para criar pagamento PIX no backend
+ * Função para criar pagamento PIX diretamente via Mercado Pago
  * @param paymentData Dados do pagamento PIX
  * @returns Resposta com QR code e informações do PIX
  */
 export const createPixPaymentRequest = async (paymentData: PixPaymentRequest) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/payments/pix`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(paymentData)
-    });
+    console.log('Criando pagamento PIX via Mercado Pago:', paymentData);
     
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `Erro ao criar pagamento PIX: ${response.status}`);
-    }
+    const mpPaymentData = {
+      transaction_amount: Number(paymentData.transactionAmount),
+      description: paymentData.description,
+      payment_method_id: 'pix',
+      payer: {
+        email: paymentData.payer.email,
+        first_name: paymentData.payer.firstName,
+        last_name: paymentData.payer.lastName || paymentData.payer.firstName, // Mercado Pago exige lastName
+        identification: paymentData.payer.identification
+      }
+    };
     
-    return await response.json();
+    const response = await paymentClient.create({ body: mpPaymentData });
+    
+    return {
+      id: response.id,
+      status: response.status,
+      point_of_interaction: response.point_of_interaction
+    };
   } catch (error: any) {
     console.error('Erro na requisição de pagamento PIX:', error);
-    throw error;
+    const errorMessage = error.cause?.response?.data?.message || error.message || 'Erro ao criar pagamento PIX';
+    throw new Error(errorMessage);
   }
 };
 
@@ -93,21 +117,18 @@ export const createPixPaymentRequest = async (paymentData: PixPaymentRequest) =>
  */
 export const checkPaymentStatus = async (paymentId: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/payments/${paymentId}/status`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
+    console.log('Verificando status do pagamento:', paymentId);
     
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `Erro ao verificar status do pagamento: ${response.status}`);
-    }
+    const response = await paymentClient.get({ id: paymentId });
     
-    return await response.json();
+    return {
+      id: response.id,
+      status: response.status,
+      status_detail: response.status_detail
+    };
   } catch (error: any) {
     console.error('Erro ao verificar status do pagamento:', error);
-    throw error;
+    const errorMessage = error.cause?.response?.data?.message || error.message || 'Erro ao verificar status';
+    throw new Error(errorMessage);
   }
 };

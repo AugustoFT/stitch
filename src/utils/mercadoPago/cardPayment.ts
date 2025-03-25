@@ -1,5 +1,6 @@
 
-import { determineCardType, getPaymentStatusMessage, mercadoPagoPublicKey, API_BASE_URL } from './config';
+import { determineCardType, getPaymentStatusMessage, mercadoPagoPublicKey } from './config';
+import { processCardPaymentRequest } from './api';
 
 // Criar shim para process para evitar erros "process is not defined" com o SDK do MercadoPago
 if (typeof window !== 'undefined' && !window.process) {
@@ -89,10 +90,10 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       
       console.log('Token do cartão gerado com sucesso:', cardToken.id);
       
-      // 3. Enviar token e dados de pagamento para o backend
-      console.log('Enviando dados de pagamento para o backend');
+      // 3. Enviar token e dados de pagamento para processamento
+      console.log('Enviando dados de pagamento para processamento');
       
-      const backendPaymentData = {
+      const paymentData = {
         token: cardToken.id,
         paymentMethod: determineCardType(cardData.cardNumber),
         installments: installments,
@@ -107,23 +108,9 @@ export const processCardPayment = async (cardData: any, formData: any, installme
         }
       };
       
-      // Enviar para o endpoint de pagamento do backend
-      const paymentResponse = await fetch(`${API_BASE_URL}/api/payments/process`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(backendPaymentData)
-      });
-      
-      if (!paymentResponse.ok) {
-        const errorData = await paymentResponse.json();
-        throw new Error(errorData.message || 'Erro ao processar pagamento no servidor');
-      }
-      
-      // 4. Receber e retornar a resposta do backend
-      const paymentResult = await paymentResponse.json();
-      console.log('Resposta do pagamento do backend:', paymentResult);
+      // Processar pagamento diretamente via API
+      const paymentResult = await processCardPaymentRequest(paymentData);
+      console.log('Resposta do processamento de pagamento:', paymentResult);
       
       return {
         status: paymentResult.status,
@@ -158,8 +145,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
   }
 };
 
-// Para facilitar testes durante o desenvolvimento, adicionamos uma versão de fallback
-// que pode ser usada quando a API backend não estiver disponível
+// Versão offline para testes - será usada apenas em desenvolvimento
 export const processCardPaymentOffline = async (cardData: any, formData: any, installments: number = 1, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
   console.log('MODO DESENVOLVIMENTO: Processando pagamento offline (sem API)');
   

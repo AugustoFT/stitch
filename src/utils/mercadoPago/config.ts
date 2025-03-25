@@ -1,15 +1,15 @@
 
 import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 
-// Chave pública para uso no frontend - pode ser exposta
+// Chave pública para uso no frontend - segura para expor
 export const mercadoPagoPublicKey = 'APP_USR-46646251-3224-483c-b69d-85c5f8c96428';
 
-// Cliente configurado apenas com a chave pública para operações de frontend
+// Configuração do cliente Mercado Pago
 export const client = new MercadoPagoConfig({ 
-  accessToken: 'APP_USR-6405882494224029-030315-88737fea58568b8cc6d16c0be760c632-1082540248' 
+  accessToken: 'APP_USR-6405882494224029-030315-88737fea58568b8cc6d16c0be760c632-1082540248'
 });
 
-// Clientes compartilhados
+// Clientes instanciados para uso direto
 export const preferenceClient = new Preference(client);
 export const paymentClient = new Payment(client);
 
@@ -63,5 +63,9 @@ export function getPaymentStatusMessage(status: string): string {
   }
 }
 
-// URL da API backend - substitua pela URL real do seu servidor de produção
-export const API_BASE_URL = 'https://api.seu-backend.com';
+// URL base da API - produção vs desenvolvimento
+const PROD_API_URL = 'https://api.mercadopago.com';
+const DEV_API_URL = 'https://api.mercadopago.com';
+
+// Definição da URL da API com base no ambiente
+export const API_BASE_URL = window.location.hostname === 'localhost' ? DEV_API_URL : PROD_API_URL;
