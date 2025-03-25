@@ -9,6 +9,8 @@ const MERCADO_PAGO_ACCESS_TOKEN = Deno.env.get('MERCADO_PAGO_ACCESS_TOKEN') || '
  */
 export async function processCardPayment(req: Request) {
   try {
+    console.log('Iniciando processamento de pagamento com cartão');
+    
     const { token, paymentMethod, installments, transactionAmount, description, payer } = await req.json();
     
     console.log('Processando pagamento com cartão:', { 
@@ -30,6 +32,8 @@ export async function processCardPayment(req: Request) {
         identification: payer.identification
       }
     };
+    
+    console.log('Enviando dados para API do Mercado Pago');
     
     // Send to Mercado Pago API
     const mpResponse = await fetch('https://api.mercadopago.com/v1/payments', {
@@ -57,6 +61,8 @@ export async function processCardPayment(req: Request) {
         }
       );
     }
+    
+    console.log('Resposta do Mercado Pago obtida com sucesso:', responseData.status);
     
     return new Response(
       JSON.stringify({
@@ -90,6 +96,8 @@ export async function processCardPayment(req: Request) {
  */
 export async function createPixPayment(req: Request) {
   try {
+    console.log('Iniciando criação de pagamento PIX');
+    
     const { transactionAmount, description, payer } = await req.json();
     
     console.log('Criando pagamento PIX:', { 

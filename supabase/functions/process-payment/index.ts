@@ -2,11 +2,16 @@
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { processCardPayment, createPixPayment, checkPaymentStatus } from './handlers.ts';
-import { handleCorsRequest, createErrorResponse } from './utils.ts';
+
+// Sempre logar os cabeçalhos CORS para debug
+console.log('CORS Headers configurados:', corsHeaders);
 
 serve(async (req) => {
-  // Handle CORS preflight
+  console.log(`Recebido ${req.method} solicitação para ${req.url}`);
+  
+  // Handle CORS preflight requests - MUITO IMPORTANTE!
   if (req.method === 'OPTIONS') {
+    console.log('Respondendo requisição OPTIONS (preflight CORS)');
     return new Response(null, {
       headers: corsHeaders,
       status: 204
@@ -17,7 +22,7 @@ serve(async (req) => {
     const url = new URL(req.url);
     const path = url.pathname.split('/').pop();
     
-    console.log(`Processing ${req.method} request for path: ${path}`);
+    console.log(`Processando ${req.method} request para path: ${path}`);
     
     // Route requests based on path and method
     if (req.method === 'POST') {
@@ -48,4 +53,3 @@ serve(async (req) => {
     );
   }
 });
-

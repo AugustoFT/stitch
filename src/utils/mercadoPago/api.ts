@@ -1,3 +1,4 @@
+
 import { isDevelopmentEnvironment } from './environment';
 
 // Get the correct API endpoint based on environment
@@ -35,7 +36,6 @@ export const processCardPaymentRequest = async (paymentData: any) => {
       },
       body: JSON.stringify(paymentData),
       mode: 'cors',
-      credentials: 'include'
     });
     
     if (!response.ok) {
@@ -84,6 +84,7 @@ export const createPixPaymentRequest = async (paymentData: any) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(paymentData),
+      mode: 'cors',
     });
     
     if (!response.ok) {
