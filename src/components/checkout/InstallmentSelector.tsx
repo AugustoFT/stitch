@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface InstallmentSelectorProps {
   installments: number;
@@ -12,11 +12,21 @@ const InstallmentSelector: React.FC<InstallmentSelectorProps> = ({
   setInstallments,
   totalAmount
 }) => {
-  // Generate installment options dynamically
+  // Update installments if selection would be invalid with new total
+  useEffect(() => {
+    // Ensure selected installment is valid for the current total amount
+    if (installments > 1 && totalAmount < 10) {
+      // If total is too low for installments, reset to 1x
+      setInstallments(1);
+    }
+  }, [totalAmount, installments, setInstallments]);
+
+  // Generate installment options dynamically based on current total amount
   const generateInstallmentOptions = () => {
     const options = [];
+    const maxInstallments = totalAmount < 10 ? 1 : 6; // Limit installments for very low amounts
     
-    for(let i = 1; i <= 6; i++) {
+    for(let i = 1; i <= maxInstallments; i++) {
       const installmentValue = totalAmount / i;
       options.push(
         <option key={i} value={i}>
