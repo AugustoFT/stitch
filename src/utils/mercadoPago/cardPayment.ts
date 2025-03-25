@@ -16,6 +16,63 @@ if (typeof window !== 'undefined' && !window.process) {
   } as any;
 }
 
+// Simulate a backend server endpoint for processing payments
+const simulateBackendPaymentAPI = async (paymentData: any): Promise<any> => {
+  console.log('Sending payment data to simulated backend:', paymentData);
+  
+  // In a real implementation, this would be an actual fetch to your backend
+  // return fetch('https://your-backend.com/api/process-payment', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(paymentData)
+  // }).then(res => res.json());
+  
+  // For demo purposes: simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  // Clean card number for testing
+  const cleanCardNumber = paymentData.cardData.cardNumber.replace(/\s+/g, '');
+  
+  // Simulate different payment responses based on test card numbers
+  if (cleanCardNumber === '5031433215406351') {
+    console.log('Test card detected - simulating successful payment response from backend');
+    return {
+      id: 'back_' + Math.random().toString(36).substring(2, 15),
+      status: 'approved',
+      status_detail: 'accredited',
+      message: 'Pagamento aprovado com sucesso!'
+    };
+  }
+  
+  if (cleanCardNumber === '4000000000000002') {
+    console.log('Test card detected - simulating declined payment response from backend');
+    return {
+      id: 'back_' + Math.random().toString(36).substring(2, 15),
+      status: 'rejected',
+      status_detail: 'cc_rejected_insufficient_amount',
+      message: 'Pagamento rejeitado. Saldo insuficiente.'
+    };
+  }
+  
+  if (cleanCardNumber === '4000000000000044') {
+    console.log('Test card detected - simulating in_process payment response from backend');
+    return {
+      id: 'back_' + Math.random().toString(36).substring(2, 15),
+      status: 'in_process',
+      status_detail: 'pending_contingency',
+      message: 'Pagamento em processamento. Aguarde a confirmação.'
+    };
+  }
+  
+  // Default success response
+  return {
+    id: 'back_' + Math.random().toString(36).substring(2, 15),
+    status: 'approved',
+    status_detail: 'accredited',
+    message: 'Pagamento aprovado com sucesso! (Modo de demonstração)'
+  };
+};
+
 // Function to directly process a card payment without redirection
 export const processCardPayment = async (cardData: any, formData: any, installments: number = 1, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
   try {
@@ -50,72 +107,55 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       };
     }
     
-    console.log('Processing direct card payment with MercadoPago');
+    console.log('Processing payment through simulated backend integration');
     
     try {
-      // For client-side only processing, we can simulate payment responses based on test card numbers
-      // This is a workaround for CORS issues with direct API calls to MercadoPago
+      // 1. Simulate card tokenization process (normally done with MercadoPago.js)
+      console.log('Simulating card tokenization');
       
-      // Clean card number for testing
-      const cleanCardNumber = cardData.cardNumber.replace(/\s+/g, '');
+      // Extract month and year from expiration date (MM/YY)
+      const [expMonth, expYear] = cardData.expirationDate.split('/');
       
       // Format CPF properly
       const cpf = formData.cpf.replace(/\D/g, '');
       
-      // Demo/testing mode - simulate different payment responses based on test card numbers
-      // In a production environment, this would be handled by a backend server
-      
-      // Test card success: 5031 4332 1540 6351
-      if (cleanCardNumber === '5031433215406351') {
-        console.log('Test card detected - simulating successful payment');
-        return {
-          id: 'sim_' + Math.random().toString(36).substring(2, 15),
-          status: 'approved',
-          status_detail: 'accredited',
-          message: 'Pagamento aprovado com sucesso!'
-        };
-      }
-      
-      // Test card declined: 4000 0000 0000 0002
-      if (cleanCardNumber === '4000000000000002') {
-        console.log('Test card detected - simulating declined payment');
-        return {
-          id: 'sim_' + Math.random().toString(36).substring(2, 15),
-          status: 'rejected',
-          status_detail: 'cc_rejected_insufficient_amount',
-          message: 'Pagamento rejeitado. Saldo insuficiente.'
-        };
-      }
-      
-      // Test card processing: 4000 0000 0000 0044
-      if (cleanCardNumber === '4000000000000044') {
-        console.log('Test card detected - simulating in_process payment');
-        return {
-          id: 'sim_' + Math.random().toString(36).substring(2, 15),
-          status: 'in_process',
-          status_detail: 'pending_contingency',
-          message: 'Pagamento em processamento. Aguarde a confirmação.'
-        };
-      }
-      
-      // Default fallback - simulate success for demo purposes
-      // In production, you would need a backend server to handle the actual payment
-      console.log('Simulating successful payment in demo mode');
-      return {
-        id: 'sim_' + Math.random().toString(36).substring(2, 15),
-        status: 'approved',
-        status_detail: 'accredited',
-        message: 'Pagamento aprovado com sucesso! (Modo de demonstração)'
+      // Create a simulated tokenization object that would be sent to MercadoPago
+      const tokenizationData = {
+        cardNumber: cardData.cardNumber.replace(/\s+/g, ''),
+        cardholderName: cardData.cardholderName,
+        expirationMonth: expMonth,
+        expirationYear: `20${expYear}`,
+        securityCode: cardData.securityCode,
+        identificationType: 'CPF',
+        identificationNumber: cpf
       };
       
-      /* 
-       * IMPORTANT: Direct API calls to MercadoPago from the browser are blocked by CORS.
-       * In a production environment, you would need to:
-       * 1. Set up a backend server (Node.js, etc.)
-       * 2. Send the card data to your server
-       * 3. Have your server make the API call to MercadoPago
-       * 4. Return the result to the frontend
-       */
+      console.log('Generated tokenization data (sensitive details hidden):', {
+        ...tokenizationData,
+        cardNumber: '****' + tokenizationData.cardNumber.slice(-4),
+        securityCode: '***'
+      });
+      
+      // 2. In a real implementation, we would now send the token to the backend
+      // along with payment details, but we'll simulate the backend response
+      const paymentResponseFromBackend = await simulateBackendPaymentAPI({
+        cardData: tokenizationData,
+        formData: {
+          email: formData.email,
+          cpf: cpf
+        },
+        transactionDetails: {
+          amount: amount,
+          description: description,
+          installments: installments
+        }
+      });
+      
+      console.log('Payment response from backend:', paymentResponseFromBackend);
+      
+      // 3. Return the payment result to update the UI
+      return paymentResponseFromBackend;
+      
     } catch (tokenError: any) {
       console.error('Error processing card payment:', tokenError);
       
