@@ -29,8 +29,10 @@ export const processCardPaymentRequest = async (paymentData: any) => {
       description: paymentData.description
     });
     
-    // Use the correct endpoint format - the issue was here
-    const response = await fetch(`${apiEndpoint}/card`, {
+    // Ensure we're using the correct URL format without double-slashes
+    const url = `${apiEndpoint}/card`;
+    
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -75,8 +77,10 @@ export const createPixPaymentRequest = async (paymentData: any) => {
       description: paymentData.description
     });
     
-    // Use the correct endpoint format - the issue was here
-    const response = await fetch(`${apiEndpoint}/pix`, {
+    // Ensure we're using the correct URL format without double-slashes
+    const url = `${apiEndpoint}/pix`;
+    
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
