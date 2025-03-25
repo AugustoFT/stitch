@@ -18,7 +18,10 @@ export function createJsonResponse(data: any, status = 200) {
  * Handle CORS preflight requests
  */
 export function handleCorsRequest() {
-  return new Response('ok', { headers: corsHeaders });
+  return new Response(null, { 
+    headers: corsHeaders,
+    status: 204 
+  });
 }
 
 /**

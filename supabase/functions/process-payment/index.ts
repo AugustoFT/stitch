@@ -6,14 +6,17 @@ import { handleCorsRequest, createErrorResponse } from './utils.ts';
 
 // Main handler to route requests
 serve(async (req) => {
-  // Handle CORS preflight requests
+  // Handle CORS preflight requests first
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request');
     return handleCorsRequest();
   }
   
   try {
     const url = new URL(req.url);
     const path = url.pathname.split('/').pop();
+    
+    console.log(`Processing ${req.method} request for path: ${path}`);
     
     // Route requests based on path and method
     if (req.method === 'POST') {
@@ -26,6 +29,7 @@ serve(async (req) => {
       return await checkPaymentStatus(req, url);
     }
     
+    console.log(`Endpoint not found: ${path}`);
     return new Response(
       JSON.stringify({ error: 'Endpoint não encontrado' }),
       { 
