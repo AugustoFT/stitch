@@ -46,6 +46,13 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     loadSavedCardData();
   }, []);
 
+  // Se totalAmount mudar, verificar se o número atual de parcelas ainda é válido
+  useEffect(() => {
+    if (installments > 1 && totalAmount < 10) {
+      setInstallments(1);
+    }
+  }, [totalAmount, installments]);
+
   const getProductDescription = () => {
     if (!selectedProducts || selectedProducts.length === 0) {
       return 'Pelúcia Stitch';
@@ -150,6 +157,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
           paymentResult={paymentResult}
           cardPaymentStatus={cardPaymentStatus}
           isSubmitting={isSubmitting}
+          totalAmount={totalAmount} // Passando o valor total dinâmico
           setInstallments={setInstallments}
           setCardField={setCardField}
           validateField={validateField}

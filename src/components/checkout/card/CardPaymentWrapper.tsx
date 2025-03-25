@@ -13,6 +13,7 @@ interface CardPaymentWrapperProps {
   paymentResult: any;
   cardPaymentStatus: string | null;
   isSubmitting: boolean;
+  totalAmount: number; // Adicionando totalAmount como prop
   setInstallments: (value: number) => void;
   setCardField: (field: keyof CardData, value: string) => void;
   validateField: (field: string, value: string) => boolean;
@@ -26,6 +27,7 @@ const CardPaymentWrapper: React.FC<CardPaymentWrapperProps> = ({
   paymentResult,
   cardPaymentStatus,
   isSubmitting,
+  totalAmount,  // Recebendo o valor total dinamicamente
   setInstallments,
   setCardField,
   validateField,
@@ -49,7 +51,7 @@ const CardPaymentWrapper: React.FC<CardPaymentWrapperProps> = ({
       <InstallmentSelector
         installments={installments}
         setInstallments={setInstallments}
-        totalAmount={paymentResult?.transactionAmount || 139.99}
+        totalAmount={totalAmount} // Usando o valor total dinâmico
       />
       
       <PaymentStatusIndicator
