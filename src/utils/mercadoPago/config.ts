@@ -63,9 +63,26 @@ export function getPaymentStatusMessage(status: string): string {
   }
 }
 
-// URL base da API - produção vs desenvolvimento
-const PROD_API_URL = 'https://api.mercadopago.com';
-const DEV_API_URL = 'https://api.mercadopago.com';
+// Variável ambiente de execução
+export enum ENV {
+  DEVELOPMENT = 'development',
+  PRODUCTION = 'production'
+}
 
-// Definição da URL da API com base no ambiente
-export const API_BASE_URL = window.location.hostname === 'localhost' ? DEV_API_URL : PROD_API_URL;
+// Estado da aplicação
+let environment = ENV.DEVELOPMENT;
+
+// Definir ambiente de execução
+export const setEnvironment = (env: ENV) => {
+  environment = env;
+  console.log(`Ambiente configurado para: ${env}`);
+};
+
+// Obter ambiente de execução
+export const getEnvironment = () => environment;
+
+// Verificar se estamos em produção
+export const isProduction = () => environment === ENV.PRODUCTION;
+
+// URL base da API - será substituída pelo backend real
+export const API_BASE_URL = 'https://api.mercadopago.com';

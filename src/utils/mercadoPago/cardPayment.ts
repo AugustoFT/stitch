@@ -1,6 +1,6 @@
 
 import { determineCardType, getPaymentStatusMessage, mercadoPagoPublicKey } from './config';
-import { processCardPaymentRequest } from './api';
+import { processCardPaymentRequest, simulateCardPaymentResponse } from './api';
 
 // Criar shim para process para evitar erros "process is not defined" com o SDK do MercadoPago
 if (typeof window !== 'undefined' && !window.process) {
@@ -16,6 +16,11 @@ if (typeof window !== 'undefined' && !window.process) {
     }
   } as any;
 }
+
+// Verificar ambiente de execução
+export const isDevelopmentEnvironment = () => {
+  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+};
 
 // Função para processar pagamento com cartão
 export const processCardPayment = async (cardData: any, formData: any, installments: number = 1, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
@@ -91,7 +96,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       console.log('Token do cartão gerado com sucesso:', cardToken.id);
       
       // 3. Enviar token e dados de pagamento para processamento
-      console.log('Enviando dados de pagamento para processamento');
+      console.log('Enviando dados de pagamento para processamento em nosso backend');
       
       const paymentData = {
         token: cardToken.id,
@@ -108,8 +113,21 @@ export const processCardPayment = async (cardData: any, formData: any, installme
         }
       };
       
-      // Processar pagamento diretamente via API
-      const paymentResult = await processCardPaymentRequest(paymentData);
+      // Processar pagamento via nosso backend
+      let paymentResult;
+      
+      // Se estivermos em desenvolvimento e não houver conexão com o backend, use a simulação
+      if (isDevelopmentEnvironment()) {
+        try {
+          paymentResult = await processCardPaymentRequest(paymentData);
+        } catch (connError) {
+          console.warn('Usando modo de simulação devido a erro de conexão:', connError);
+          paymentResult = simulateCardPaymentResponse(paymentData);
+        }
+      } else {
+        paymentResult = await processCardPaymentRequest(paymentData);
+      }
+      
       console.log('Resposta do processamento de pagamento:', paymentResult);
       
       return {
@@ -136,7 +154,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       };
     }
   } catch (error: any) {
-    console.error('Erro ao processar pagamento direto com cartão:', error);
+    console.error('Erro ao processar pagamento com cartão:', error);
     return {
       status: 'error',
       status_detail: error.message || 'Falha ao processar o pagamento',
