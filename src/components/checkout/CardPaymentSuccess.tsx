@@ -67,6 +67,12 @@ const CardPaymentSuccess: React.FC<CardPaymentSuccessProps> = ({ paymentResult }
               Número do pedido: {paymentResult.orderId}
             </p>
           )}
+
+          {paymentResult.tracking_code && (
+            <p className="text-xs mt-1 text-gray-600">
+              Código de rastreio: {paymentResult.tracking_code}
+            </p>
+          )}
         </div>
       </div>
     </motion.div>

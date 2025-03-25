@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Check, AlertCircle } from 'lucide-react';
 
 interface PaymentSuccessMessageProps {
   paymentResult: any;
@@ -32,6 +32,11 @@ const PaymentSuccessMessage: React.FC<PaymentSuccessMessageProps> = ({ paymentRe
       {paymentResult.orderId && (
         <p className="text-xs text-green-600 mt-1">
           Número do pedido: {paymentResult.orderId}
+        </p>
+      )}
+      {paymentResult.tracking_code && (
+        <p className="text-xs text-green-600 mt-1">
+          Código de rastreio: {paymentResult.tracking_code}
         </p>
       )}
     </motion.div>

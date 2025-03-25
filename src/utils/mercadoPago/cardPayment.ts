@@ -63,15 +63,20 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       // Process payment via our backend or use simulation in development
       let paymentResult;
       
-      if (isDevelopmentEnvironment()) {
-        try {
-          paymentResult = await processCardPaymentRequest(paymentData);
-        } catch (connError) {
-          console.warn('Usando modo de simulação devido a erro de conexão:', connError);
-          paymentResult = simulateCardPaymentResponse(paymentData);
-        }
-      } else {
+      try {
+        // Tenta comunicar com o backend primeiro
         paymentResult = await processCardPaymentRequest(paymentData);
+      } catch (connError) {
+        console.warn('Erro de conexão com o backend:', connError);
+        
+        // Se estamos em desenvolvimento, usamos a simulação
+        if (isDevelopmentEnvironment()) {
+          console.log('Usando modo de simulação devido a erro de conexão');
+          paymentResult = simulateCardPaymentResponse(paymentData);
+        } else {
+          // Em produção, propagamos o erro
+          throw connError;
+        }
       }
       
       console.log('Resposta do processamento de pagamento:', paymentResult);
@@ -146,7 +151,7 @@ export const processCardPaymentOffline = async (cardData: any, formData: any, in
     };
   }
   
-  // Resposta padrão
+  // Resposta padrão para qualquer outro cartão em desenvolvimento
   return {
     id: 'dev_' + Math.random().toString(36).substring(2, 15),
     status: 'approved',

@@ -108,6 +108,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         );
       } else {
         console.log('Processando pagamento em ambiente de DESENVOLVIMENTO');
+        // Use o modo simulado para testes de integração completa
         result = await processCardPaymentOffline(
           cardData, 
           formData, 
@@ -122,35 +123,35 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       setLocalPaymentResult(result);
       setLocalCardPaymentStatus(result.status);
       
+      // Primeiro atualiza a UI com o resultado do pagamento
       setPaymentResult(result);
       setCardPaymentStatus(result.status);
       
       if (result.status === 'approved') {
         toast.success("Pagamento aprovado com sucesso!");
         
-        // Criar pedido após aprovação do pagamento
+        // Preparar produtos para o pedido
+        const orderProducts = selectedProducts.map(product => ({
+          id: product.id,
+          name: product.title,
+          quantity: product.quantity,
+          price: parseFloat(product.price.replace('R$ ', '').replace(',', '.')),
+          imageUrl: product.imageUrl
+        }));
+        
+        // Preparar informações do cliente
+        const customerInfo = {
+          name: formData.nome,
+          email: formData.email,
+          phone: formData.telefone,
+          address: formData.endereco,
+          city: formData.cidade,
+          state: formData.estado,
+          zip: formData.cep,
+          cpf: formData.cpf
+        };
+        
         try {
-          // Preparar produtos para o pedido
-          const orderProducts = selectedProducts.map(product => ({
-            id: product.id,
-            name: product.title,
-            quantity: product.quantity,
-            price: parseFloat(product.price.replace('R$ ', '').replace(',', '.')),
-            imageUrl: product.imageUrl
-          }));
-          
-          // Preparar informações do cliente
-          const customerInfo = {
-            name: formData.nome,
-            email: formData.email,
-            phone: formData.telefone,
-            address: formData.endereco,
-            city: formData.cidade,
-            state: formData.estado,
-            zip: formData.cep,
-            cpf: formData.cpf
-          };
-          
           // Criar pedido no sistema
           const order = await createNewOrder(
             orderProducts,
@@ -161,11 +162,22 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
           
           console.log('Pedido criado com sucesso:', order);
           
-          // Adicionar informação do pedido ao resultado do pagamento
-          result.orderId = order.id;
-          setPaymentResult({...result, orderId: order.id});
+          // Gerar código de rastreamento aleatório para fins de demonstração
+          const trackingCode = 'BR' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0') + 'SP';
+          
+          // Adicionar informação do pedido e do rastreio ao resultado do pagamento
+          const updatedResult = {
+            ...result, 
+            orderId: order.id,
+            tracking_code: trackingCode
+          };
+          
+          // Atualizar estado local e global com as informações completas
+          setLocalPaymentResult(updatedResult);
+          setPaymentResult(updatedResult);
           
           toast.success("Pedido registrado com sucesso!");
+          toast.success(`Código de rastreio gerado: ${trackingCode}`);
         } catch (orderError) {
           console.error('Erro ao criar pedido:', orderError);
           toast.error("Pagamento aprovado, mas houve um erro ao registrar o pedido. Entre em contato com o suporte.");
