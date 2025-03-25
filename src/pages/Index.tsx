@@ -183,9 +183,11 @@ const Index: React.FC = () => {
       
       if (existingProductIndex >= 0) {
         // Se existir, atualiza a quantidade
-        return prev.map(product => 
+        const updatedProducts = prev.map(product => 
           product.id === productId ? { ...product, quantity } : product
         );
+        
+        return updatedProducts;
       } else {
         // Se não existir, não faz nada (o produto deve ser selecionado primeiro)
         return prev;
@@ -234,6 +236,7 @@ const Index: React.FC = () => {
           productsWithQuantity={productsWithQuantity}
           totalAmount={totalAmount}
           onRemoveProduct={handleRemoveProduct}
+          onQuantityChange={handleQuantityChange}
         />
       </div>
       

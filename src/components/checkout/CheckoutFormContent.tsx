@@ -35,6 +35,7 @@ interface CheckoutFormContentProps {
   productsWithQuantity: ProductInfo[];
   calculatedTotal: number;
   onRemoveProduct?: (productId: number) => void;
+  onQuantityChange?: (productId: number, quantity: number) => void;
 }
 
 const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
@@ -53,7 +54,8 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
   handlePaymentMethodChange,
   productsWithQuantity,
   calculatedTotal,
-  onRemoveProduct
+  onRemoveProduct,
+  onQuantityChange
 }) => {
   // Local state for products and total to enable dynamic updates
   const [localProducts, setLocalProducts] = useState<ProductInfo[]>([]);
@@ -67,20 +69,9 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
 
   // Handle quantity change for a product
   const handleQuantityChange = (productId: number, newQuantity: number) => {
-    const updatedProducts = localProducts.map(product => 
-      product.id === productId 
-        ? { ...product, quantity: newQuantity } 
-        : product
-    );
-    
-    setLocalProducts(updatedProducts);
-    
-    // Recalculate total
-    const newTotal = updatedProducts.reduce((sum, product) => 
-      sum + (product.price * product.quantity), 0
-    );
-    
-    setLocalTotal(newTotal);
+    if (onQuantityChange) {
+      onQuantityChange(productId, newQuantity);
+    }
   };
 
   // Handle product removal
@@ -101,7 +92,7 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
       {/* Dynamic product cart with quantity selectors */}
       {localProducts.length > 0 && (
         <div className="mb-6">
-          <h3 className="font-medium text-stitch-blue mb-3 text-sm">Carrinho de Compras</h3>
+          <h3 className="font-medium text-stitch-pink mb-3 text-base">Carrinho de Compras</h3>
           
           <div className="space-y-3 mb-4">
             <AnimatePresence>
@@ -159,7 +150,7 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
             transition={{ duration: 0.3 }}
           >
             <span className="text-gray-800">Total:</span>
-            <span>R$ {localTotal.toFixed(2).replace('.', ',')}</span>
+            <span className="text-stitch-blue">R$ {localTotal.toFixed(2).replace('.', ',')}</span>
           </motion.div>
         </div>
       )}

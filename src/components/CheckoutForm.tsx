@@ -17,12 +17,14 @@ interface CheckoutFormProps {
   selectedProducts?: any[];
   totalAmount?: number;
   onRemoveProduct?: (productId: number) => void;
+  onQuantityChange?: (productId: number, quantity: number) => void;
 }
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({ 
   selectedProducts = [], 
   totalAmount = 139.99,
-  onRemoveProduct
+  onRemoveProduct,
+  onQuantityChange
 }) => {
   const {
     formState,
@@ -89,6 +91,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
             productsWithQuantity={formState.productsWithQuantity}
             calculatedTotal={formState.calculatedTotal}
             onRemoveProduct={onRemoveProduct}
+            onQuantityChange={onQuantityChange}
           />
         </form>
       )}
