@@ -47,6 +47,14 @@ export const createPixPayment = async (formData: any, amount: number = 139.99, d
           { id: 'debit_card' },
           { id: 'ticket' }
         ]
+      },
+      // Enforce HTTPS for all notification URLs
+      notification_url: window.location.origin.replace('http:', 'https:') + '/api/notifications',
+      // Ensure back_urls use HTTPS
+      back_urls: {
+        success: window.location.origin.replace('http:', 'https:') + '/success',
+        failure: window.location.origin.replace('http:', 'https:') + '/failure',
+        pending: window.location.origin.replace('http:', 'https:') + '/pending'
       }
     };
     

@@ -39,7 +39,11 @@ export const processCardPayment = async (cardData: any, formData: any, installme
     
     try {
       // For direct card processing, we need to create a card token first
-      const mp = new window.MercadoPago(mercadoPagoPublicKey);
+      const mp = new window.MercadoPago(mercadoPagoPublicKey, {
+        advancedOptions: {
+          security: true // Enable additional security features
+        }
+      });
       
       // Format expiration month and year from MM/YY format
       const [expirationMonth, expirationYear] = cardData.expirationDate.split('/');
@@ -99,7 +103,24 @@ export const processCardPayment = async (cardData: any, formData: any, installme
           },
           first_name: formData.nome.split(' ')[0],
           last_name: formData.nome.split(' ').slice(1).join(' ') || formData.nome.split(' ')[0]
-        }
+        },
+        // Add additional security options
+        additional_info: {
+          ip_address: window.location.hostname,
+          platform: 'Web',
+          device_id: navigator.userAgent,
+          items: [
+            {
+              id: 'pelucia-stitch',
+              title: description,
+              description: description,
+              quantity: 1,
+              unit_price: amount
+            }
+          ]
+        },
+        // Ensure callback URLs use HTTPS
+        callback_url: window.location.origin.replace('http:', 'https:') + '/payment/callback'
       };
       
       console.log('Creating payment with data:', {
