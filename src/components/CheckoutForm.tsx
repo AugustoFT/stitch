@@ -16,11 +16,13 @@ declare global {
 interface CheckoutFormProps {
   selectedProducts?: any[];
   totalAmount?: number;
+  onRemoveProduct?: (productId: number) => void;
 }
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({ 
   selectedProducts = [], 
-  totalAmount = 139.99 
+  totalAmount = 139.99,
+  onRemoveProduct
 }) => {
   const {
     formState,
@@ -86,6 +88,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
             handlePaymentMethodChange={handlePaymentMethodChange}
             productsWithQuantity={formState.productsWithQuantity}
             calculatedTotal={formState.calculatedTotal}
+            onRemoveProduct={onRemoveProduct}
           />
         </form>
       )}

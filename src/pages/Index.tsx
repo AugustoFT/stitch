@@ -11,6 +11,7 @@ import TestimonialsSection from '../components/sections/TestimonialsSection';
 import FAQSection from '../components/sections/FAQSection';
 import CallToAction from '../components/sections/CallToAction';
 import CheckoutSection from '../components/sections/CheckoutSection';
+import { toast } from 'sonner';
 
 interface ProductInfo {
   id: number;
@@ -157,9 +158,21 @@ const Index: React.FC = () => {
 
   const toggleProductSelection = (productId: number, selected: boolean) => {
     if (selected) {
-      setSelectedProductIds(prev => [...prev, productId]);
+      setSelectedProductIds(prev => {
+        if (!prev.includes(productId)) {
+          toast.success("Produto adicionado ao carrinho!");
+          return [...prev, productId];
+        }
+        return prev;
+      });
     } else {
-      setSelectedProductIds(prev => prev.filter(id => id !== productId));
+      setSelectedProductIds(prev => {
+        const newSelection = prev.filter(id => id !== productId);
+        if (newSelection.length !== prev.length) {
+          toast.info("Produto removido do carrinho");
+        }
+        return newSelection;
+      });
     }
   };
   
@@ -178,6 +191,11 @@ const Index: React.FC = () => {
         return prev;
       }
     });
+  };
+  
+  const handleRemoveProduct = (productId: number) => {
+    // Remove o produto da lista de selecionados
+    toggleProductSelection(productId, false);
   };
 
   return (
@@ -215,6 +233,7 @@ const Index: React.FC = () => {
         <CheckoutSection 
           productsWithQuantity={productsWithQuantity}
           totalAmount={totalAmount}
+          onRemoveProduct={handleRemoveProduct}
         />
       </div>
       

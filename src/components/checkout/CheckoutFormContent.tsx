@@ -6,7 +6,9 @@ import CreditCardForm from './CreditCardForm';
 import PixPaymentForm from './PixPaymentForm';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import ProductQuantitySelector from '../ProductQuantitySelector';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ProductInfo {
   id: number;
@@ -32,6 +34,7 @@ interface CheckoutFormContentProps {
   handlePaymentMethodChange: (method: string) => void;
   productsWithQuantity: ProductInfo[];
   calculatedTotal: number;
+  onRemoveProduct?: (productId: number) => void;
 }
 
 const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
@@ -49,7 +52,8 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
   handleCEPChange,
   handlePaymentMethodChange,
   productsWithQuantity,
-  calculatedTotal
+  calculatedTotal,
+  onRemoveProduct
 }) => {
   // Local state for products and total to enable dynamic updates
   const [localProducts, setLocalProducts] = useState<ProductInfo[]>([]);
@@ -79,6 +83,14 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
     setLocalTotal(newTotal);
   };
 
+  // Handle product removal
+  const handleRemoveProduct = (productId: number) => {
+    if (onRemoveProduct) {
+      onRemoveProduct(productId);
+      toast.info("Produto removido do carrinho");
+    }
+  };
+
   // Check if payment was already approved
   if (paymentResult && paymentResult.status === 'approved') {
     return <PaymentSuccessMessage paymentResult={paymentResult} />;
@@ -92,33 +104,50 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
           <h3 className="font-medium text-stitch-blue mb-3 text-sm">Carrinho de Compras</h3>
           
           <div className="space-y-3 mb-4">
-            {localProducts.map(product => (
-              <motion.div 
-                key={product.id} 
-                className="flex items-center justify-between bg-blue-50 p-3 rounded-lg"
-                layout
-              >
-                <div className="flex items-center">
-                  <div className="h-12 w-12 rounded overflow-hidden flex-shrink-0 mr-3 bg-white p-1">
-                    <img src={product.imageUrl} alt={product.title} className="h-full w-full object-contain" />
+            <AnimatePresence>
+              {localProducts.map(product => (
+                <motion.div 
+                  key={product.id} 
+                  className="flex items-center justify-between bg-blue-50 p-3 rounded-lg"
+                  layout
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="flex items-center">
+                    <div className="h-12 w-12 rounded overflow-hidden flex-shrink-0 mr-3 bg-white p-1">
+                      <img src={product.imageUrl} alt={product.title} className="h-full w-full object-contain" />
+                    </div>
+                    
+                    <div>
+                      <p className="text-sm font-medium">{product.title}</p>
+                      <p className="text-xs text-gray-600">
+                        R$ {product.price.toFixed(2).replace('.', ',')} cada
+                      </p>
+                    </div>
                   </div>
                   
-                  <div>
-                    <p className="text-sm font-medium">{product.title}</p>
-                    <p className="text-xs text-gray-600">
-                      R$ {product.price.toFixed(2).replace('.', ',')} cada
-                    </p>
+                  <div className="flex items-center space-x-2">
+                    <ProductQuantitySelector 
+                      quantity={product.quantity} 
+                      onQuantityChange={(qty) => handleQuantityChange(product.id, qty)} 
+                    />
+                    
+                    {onRemoveProduct && (
+                      <motion.button 
+                        whileTap={{ scale: 0.9 }}
+                        className="p-1 bg-red-100 text-red-500 rounded-full hover:bg-red-200"
+                        onClick={() => handleRemoveProduct(product.id)}
+                        aria-label="Remover produto"
+                      >
+                        <X size={16} />
+                      </motion.button>
+                    )}
                   </div>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <ProductQuantitySelector 
-                    quantity={product.quantity} 
-                    onQuantityChange={(qty) => handleQuantityChange(product.id, qty)} 
-                  />
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
           
           <motion.div 

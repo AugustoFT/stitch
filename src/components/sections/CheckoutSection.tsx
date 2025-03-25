@@ -19,9 +19,14 @@ interface ProductInfo {
 interface CheckoutSectionProps {
   productsWithQuantity: ProductInfo[];
   totalAmount: number;
+  onRemoveProduct?: (productId: number) => void;
 }
 
-const CheckoutSection: React.FC<CheckoutSectionProps> = ({ productsWithQuantity, totalAmount }) => {
+const CheckoutSection: React.FC<CheckoutSectionProps> = ({ 
+  productsWithQuantity, 
+  totalAmount,
+  onRemoveProduct
+}) => {
   const checkoutRef = useRef<HTMLDivElement>(null);
   const checkoutInView = useInView(checkoutRef, { once: true, margin: "-100px" });
   
@@ -56,6 +61,7 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({ productsWithQuantity,
       <CheckoutForm 
         selectedProducts={localProducts}
         totalAmount={localTotal}
+        onRemoveProduct={onRemoveProduct}
       />
     </section>
   );
