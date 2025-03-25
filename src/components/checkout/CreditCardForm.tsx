@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { toast } from '@/hooks/use-toast'; // Updated import path
+import { useToast } from '@/hooks/use-toast';
 import CardPaymentSuccess from './CardPaymentSuccess';
 import CardPaymentWrapper from './card/CardPaymentWrapper';
 import { useCardFormValidation } from './hooks/useCardFormValidation';
@@ -29,6 +29,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   totalAmount = 139.99
 }) => {
   const [installments, setInstallments] = useState(1);
+  const { toast } = useToast();
   
   useEffect(() => {
     console.log('FORÇANDO MODO DE PRODUÇÃO!');
@@ -68,7 +69,11 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     saveFormData();
     
     if (!validateAllFields()) {
-      toast.error("Por favor, corrija os erros no formulário antes de continuar.");
+      toast({
+        variant: "destructive",
+        title: "Erro de validação",
+        description: "Por favor, corrija os erros no formulário antes de continuar."
+      });
       return;
     }
     
