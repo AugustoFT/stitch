@@ -57,28 +57,27 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
   onRemoveProduct,
   onQuantityChange
 }) => {
-  // Local state for products and total to enable dynamic updates
-  const [localProducts, setLocalProducts] = useState<ProductInfo[]>([]);
-  const [localTotal, setLocalTotal] = useState(calculatedTotal);
+  // State for real-time cart display
+  const [cartProducts, setCartProducts] = useState<ProductInfo[]>(productsWithQuantity);
+  const [cartTotal, setCartTotal] = useState(calculatedTotal);
 
-  // Initialize local state from props
+  // Sync state with props when they change
   useEffect(() => {
-    setLocalProducts(productsWithQuantity);
-    setLocalTotal(calculatedTotal);
+    setCartProducts(productsWithQuantity);
+    setCartTotal(calculatedTotal);
   }, [productsWithQuantity, calculatedTotal]);
-
-  // Handle quantity change for a product
-  const handleQuantityChange = (productId: number, newQuantity: number) => {
-    if (onQuantityChange) {
-      onQuantityChange(productId, newQuantity);
-    }
-  };
 
   // Handle product removal
   const handleRemoveProduct = (productId: number) => {
     if (onRemoveProduct) {
       onRemoveProduct(productId);
-      toast.info("Produto removido do carrinho");
+    }
+  };
+
+  // Handle quantity change in the cart
+  const handleQuantityChange = (productId: number, newQuantity: number) => {
+    if (onQuantityChange) {
+      onQuantityChange(productId, newQuantity);
     }
   };
 
@@ -90,7 +89,7 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
   return (
     <>
       {/* Dynamic product cart with quantity selectors */}
-      {localProducts.length > 0 && (
+      {cartProducts.length > 0 && (
         <div className="mb-6">
           <h3 className="font-medium text-stitch-pink mb-3 text-base flex items-center">
             <ShoppingBag className="w-4 h-4 mr-2" />
@@ -99,7 +98,7 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
           
           <div className="space-y-3 mb-4">
             <AnimatePresence>
-              {localProducts.map(product => (
+              {cartProducts.map(product => (
                 <motion.div 
                   key={product.id} 
                   className="flex items-center justify-between bg-blue-50 p-3 rounded-lg"
@@ -147,19 +146,19 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
           <motion.div 
             className="flex justify-between items-center pt-2 font-medium bg-blue-50 p-3 rounded-lg"
             layout
-            key={localTotal}
+            key={cartTotal}
             initial={{ opacity: 0.5, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
           >
             <span className="text-gray-800">Total:</span>
-            <span className="text-stitch-blue font-bold">R$ {localTotal.toFixed(2).replace('.', ',')}</span>
+            <span className="text-stitch-blue font-bold">R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
           </motion.div>
         </div>
       )}
       
       {/* Show message when cart is empty */}
-      {localProducts.length === 0 && (
+      {cartProducts.length === 0 && (
         <motion.div 
           className="bg-blue-50 p-4 rounded-lg mb-6 text-center"
           initial={{ opacity: 0 }}
@@ -196,8 +195,8 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
           setIsSubmitting={setIsSubmitting}
           setPaymentResult={setPaymentResult}
           setCardPaymentStatus={setCardPaymentStatus}
-          selectedProducts={localProducts}
-          totalAmount={localTotal}
+          selectedProducts={cartProducts}
+          totalAmount={cartTotal}
         />
       )}
       
@@ -206,8 +205,8 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
           formData={formData}
           isSubmitting={isSubmitting}
           setIsSubmitting={setIsSubmitting}
-          selectedProducts={localProducts}
-          totalAmount={localTotal}
+          selectedProducts={cartProducts}
+          totalAmount={cartTotal}
         />
       )}
       

@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import CheckoutForm from '../CheckoutForm';
 
@@ -31,16 +31,6 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
 }) => {
   const checkoutRef = useRef<HTMLDivElement>(null);
   const checkoutInView = useInView(checkoutRef, { once: true, margin: "-100px" });
-  
-  // Estado local para lidar com alterações de produtos em tempo real
-  const [localProducts, setLocalProducts] = useState<ProductInfo[]>(productsWithQuantity);
-  const [localTotal, setLocalTotal] = useState<number>(totalAmount);
-  
-  // Atualizar produtos e total quando props mudarem
-  useEffect(() => {
-    setLocalProducts(productsWithQuantity);
-    setLocalTotal(totalAmount);
-  }, [productsWithQuantity, totalAmount]);
 
   return (
     <section 
@@ -61,8 +51,8 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
       </motion.div>
       
       <CheckoutForm 
-        selectedProducts={localProducts}
-        totalAmount={localTotal}
+        selectedProducts={productsWithQuantity}
+        totalAmount={totalAmount}
         onRemoveProduct={onRemoveProduct}
         onQuantityChange={onQuantityChange}
       />

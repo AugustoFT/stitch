@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { initMercadoPago } from '../../../utils/mercadoPago';
@@ -33,7 +34,7 @@ interface CheckoutFormState {
   calculatedTotal: number;
 }
 
-export const useCheckoutForm = (selectedProducts: any[] = [], initialTotalAmount: number = 139.99) => {
+export const useCheckoutForm = (initialProducts: any[] = [], initialTotalAmount: number = 139.99) => {
   const [formState, setFormState] = useState<CheckoutFormState>({
     formData: {
       nome: '',
@@ -59,18 +60,17 @@ export const useCheckoutForm = (selectedProducts: any[] = [], initialTotalAmount
   
   // Refs for tracking initialization state
   const mercadoPagoRef = useRef<any>(null);
-  const productsProcessed = useRef(false);
   const customerInfoLoaded = useRef(false);
   const scriptLoaded = useRef(false);
 
-  // Process selectedProducts to include quantities
+  // Effect to process and update products when they change
   useEffect(() => {
-    if (productsProcessed.current || !selectedProducts || selectedProducts.length === 0) {
+    if (!initialProducts || initialProducts.length === 0) {
       return;
     }
     
     try {
-      const processedProducts = selectedProducts.map(product => ({
+      const processedProducts = initialProducts.map(product => ({
         id: product.id,
         title: product.title,
         price: typeof product.price === 'string' 
@@ -80,20 +80,21 @@ export const useCheckoutForm = (selectedProducts: any[] = [], initialTotalAmount
         quantity: product.quantity || 1
       }));
       
+      const total = processedProducts.reduce(
+        (sum, product) => sum + (product.price * product.quantity), 
+        0
+      );
+      
       setFormState(prev => ({
         ...prev,
         productsWithQuantity: processedProducts,
-        calculatedTotal: processedProducts.reduce(
-          (sum, product) => sum + (product.price * product.quantity), 
-          0
-        )
+        calculatedTotal: total
       }));
       
-      productsProcessed.current = true;
     } catch (error) {
       console.error('Error processing products:', error);
     }
-  }, [selectedProducts]);
+  }, [initialProducts]);
 
   // Load customer data from localStorage on component mount
   useEffect(() => {
@@ -187,6 +188,48 @@ export const useCheckoutForm = (selectedProducts: any[] = [], initialTotalAmount
     }
   };
 
+  // Update a product's quantity
+  const updateProductQuantity = (productId: number, quantity: number) => {
+    setFormState(prev => {
+      const updatedProducts = prev.productsWithQuantity.map(product => 
+        product.id === productId ? { ...product, quantity } : product
+      );
+      
+      const newTotal = updatedProducts.reduce(
+        (sum, product) => sum + (product.price * product.quantity), 
+        0
+      );
+      
+      return {
+        ...prev,
+        productsWithQuantity: updatedProducts,
+        calculatedTotal: newTotal
+      };
+    });
+  };
+
+  // Remove a product
+  const removeProduct = (productId: number) => {
+    setFormState(prev => {
+      const updatedProducts = prev.productsWithQuantity.filter(
+        product => product.id !== productId
+      );
+      
+      const newTotal = updatedProducts.reduce(
+        (sum, product) => sum + (product.price * product.quantity), 
+        0
+      );
+      
+      return {
+        ...prev,
+        productsWithQuantity: updatedProducts,
+        calculatedTotal: newTotal
+      };
+    });
+    
+    toast.info("Produto removido do carrinho");
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormState(prev => ({
@@ -228,6 +271,8 @@ export const useCheckoutForm = (selectedProducts: any[] = [], initialTotalAmount
     saveCustomerInfo,
     setIsSubmitting,
     setPaymentResult,
-    setCardPaymentStatus
+    setCardPaymentStatus,
+    updateProductQuantity,
+    removeProduct
   };
 };

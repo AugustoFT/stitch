@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import PaymentSuccessMessage from './checkout/PaymentSuccessMessage';
 import CheckoutFormContent from './checkout/CheckoutFormContent';
@@ -34,7 +34,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     saveCustomerInfo,
     setIsSubmitting,
     setPaymentResult,
-    setCardPaymentStatus
+    setCardPaymentStatus,
+    updateProductQuantity,
+    removeProduct
   } = useCheckoutForm(selectedProducts, totalAmount);
 
   // Use formatter handlers for formatted inputs
@@ -50,6 +52,29 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       formState.formData = newFormData;
     }
   });
+
+  // Connect parent's callbacks to internal state handlers
+  useEffect(() => {
+    if (selectedProducts.length > 0) {
+      // No need to sync here as the hook handles this
+    }
+  }, [selectedProducts]);
+
+  // Handle product removal via internal or external handlers
+  const handleRemoveProduct = (productId: number) => {
+    removeProduct(productId);
+    if (onRemoveProduct) {
+      onRemoveProduct(productId);
+    }
+  };
+
+  // Handle quantity change via internal or external handlers
+  const handleQuantityChange = (productId: number, quantity: number) => {
+    updateProductQuantity(productId, quantity);
+    if (onQuantityChange) {
+      onQuantityChange(productId, quantity);
+    }
+  };
 
   return (
     <motion.div 
@@ -90,8 +115,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
             handlePaymentMethodChange={handlePaymentMethodChange}
             productsWithQuantity={formState.productsWithQuantity}
             calculatedTotal={formState.calculatedTotal}
-            onRemoveProduct={onRemoveProduct}
-            onQuantityChange={onQuantityChange}
+            onRemoveProduct={handleRemoveProduct}
+            onQuantityChange={handleQuantityChange}
           />
         </form>
       )}
