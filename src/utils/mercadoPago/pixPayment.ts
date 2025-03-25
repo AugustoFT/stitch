@@ -1,12 +1,13 @@
 
 import { toast } from 'sonner';
 import { createPixPaymentRequest, simulatePixPaymentResponse } from './api';
-import { isDevelopmentEnvironment } from './environment';
+import { isDevelopmentEnvironment, forceProductionMode } from './environment';
 
 // Função para criar pagamento PIX
 export const createPixPayment = async (formData: any, amount: number = 139.99, description: string = 'Pelúcia Stitch', products?: any[]): Promise<any> => {
   try {
     console.log('Iniciando criação de pagamento PIX');
+    console.log('MODO DE PRODUÇÃO ATIVO!');
     
     if (!formData.nome || !formData.email || !formData.cpf) {
       console.error('Dados do formulário incompletos');
@@ -37,21 +38,9 @@ export const createPixPayment = async (formData: any, amount: number = 139.99, d
       }
     };
 
-    // Modo de desenvolvimento ou modo de produção
-    let paymentResult;
-    
-    if (isDevelopmentEnvironment()) {
-      try {
-        console.log('Tentando processar pagamento PIX via API');
-        paymentResult = await createPixPaymentRequest(paymentData);
-      } catch (apiError) {
-        console.warn('Usando modo de simulação PIX devido a erro:', apiError);
-        paymentResult = simulatePixPaymentResponse(paymentData);
-      }
-    } else {
-      console.log('Processando pagamento PIX em ambiente de produção');
-      paymentResult = await createPixPaymentRequest(paymentData);
-    }
+    // Processar pagamento PIX via API do MercadoPago
+    console.log('Processando pagamento PIX em ambiente de PRODUÇÃO');
+    const paymentResult = await createPixPaymentRequest(paymentData);
     
     // Extrair dados e normalizar a estrutura
     const qrCode = paymentResult.qr_code || (paymentResult.point_of_interaction?.transaction_data?.qr_code);
@@ -86,7 +75,7 @@ export const checkPixStatus = async (pixId: string): Promise<string> => {
     // Em um ambiente real, isso consultaria o status no backend
     console.log('Verificando status do PIX ID:', pixId);
     
-    // No modo de desenvolvimento, sempre retorna pendente para testar
+    // No modo de produção, sempre retorna pendente para testar
     return 'pending';
   } catch (error) {
     console.error('Erro ao verificar status do PIX:', error);

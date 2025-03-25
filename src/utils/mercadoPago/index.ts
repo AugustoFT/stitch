@@ -5,6 +5,7 @@ export * from './preferences';
 export * from './pixPayment';
 export * from './cardPayment';
 export * from './api';
+export * from './environment';
 
 // Instruções de uso para ambiente de produção vs desenvolvimento
 export const ENV = {
@@ -13,8 +14,8 @@ export const ENV = {
 };
 
 // Controle de ambiente atual
-// Em um ambiente real, isso seria configurado com base em variáveis de ambiente
-let currentEnvironment = ENV.DEVELOPMENT;
+// Configurado para produção por padrão
+let currentEnvironment = ENV.PRODUCTION;
 
 /**
  * Define o ambiente atual (produção ou desenvolvimento)
@@ -42,5 +43,6 @@ export const getEnvironment = () => {
  * @returns true se estiver em produção
  */
 export const isProduction = () => {
-  return currentEnvironment === ENV.PRODUCTION;
+  // Sempre retorna true para forçar modo de produção
+  return true;
 };

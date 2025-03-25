@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -33,6 +32,10 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   const [paymentResult, setLocalPaymentResult] = useState<any>(null);
   const [cardPaymentStatus, setLocalCardPaymentStatus] = useState<string | null>(null);
   
+  useEffect(() => {
+    console.log('FORÇANDO MODO DE PRODUÇÃO!');
+  }, []);
+  
   const {
     cardData,
     errors,
@@ -47,7 +50,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     loadSavedCardData();
   }, []);
 
-  // Se totalAmount mudar, verificar se o número atual de parcelas ainda é válido
   useEffect(() => {
     if (installments > 1 && totalAmount < 10) {
       setInstallments(1);
@@ -96,41 +98,26 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       console.log('Total amount:', totalAmount);
       console.log('Installments:', installments);
       
-      let result;
-      if (isProduction()) {
-        console.log('Processando pagamento em ambiente de PRODUÇÃO');
-        result = await processCardPayment(
-          cardData, 
-          formData, 
-          installments, 
-          totalAmount, 
-          getProductDescription()
-        );
-      } else {
-        console.log('Processando pagamento em ambiente de DESENVOLVIMENTO');
-        // Use o modo simulado para testes de integração completa
-        result = await processCardPaymentOffline(
-          cardData, 
-          formData, 
-          installments, 
-          totalAmount, 
-          getProductDescription()
-        );
-      }
+      console.log('Processando pagamento em ambiente de PRODUÇÃO');
+      const result = await processCardPayment(
+        cardData, 
+        formData, 
+        installments, 
+        totalAmount, 
+        getProductDescription()
+      );
       
       console.log('Payment result:', result);
       
       setLocalPaymentResult(result);
       setLocalCardPaymentStatus(result.status);
       
-      // Primeiro atualiza a UI com o resultado do pagamento
       setPaymentResult(result);
       setCardPaymentStatus(result.status);
       
       if (result.status === 'approved') {
         toast.success("Pagamento aprovado com sucesso!");
         
-        // Preparar produtos para o pedido
         const orderProducts = selectedProducts.map(product => ({
           id: product.id,
           name: product.title,
@@ -139,7 +126,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
           imageUrl: product.imageUrl
         }));
         
-        // Preparar informações do cliente
         const customerInfo = {
           name: formData.nome,
           email: formData.email,
@@ -152,7 +138,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         };
         
         try {
-          // Criar pedido no sistema
           const order = await createNewOrder(
             orderProducts,
             customerInfo,
@@ -162,17 +147,14 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
           
           console.log('Pedido criado com sucesso:', order);
           
-          // Gerar código de rastreamento aleatório para fins de demonstração
           const trackingCode = 'BR' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0') + 'SP';
           
-          // Adicionar informação do pedido e do rastreio ao resultado do pagamento
           const updatedResult = {
             ...result, 
             orderId: order.id,
             tracking_code: trackingCode
           };
           
-          // Atualizar estado local e global com as informações completas
           setLocalPaymentResult(updatedResult);
           setPaymentResult(updatedResult);
           
