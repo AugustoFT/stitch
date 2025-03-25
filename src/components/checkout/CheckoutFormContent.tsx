@@ -5,8 +5,6 @@ import PaymentMethodSelector from './PaymentMethodSelector';
 import CreditCardForm from './CreditCardForm';
 import PixPaymentForm from './PixPaymentForm';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
-import OrderSummary from './OrderSummary';
-import ProductQuantitySelector from '../ProductQuantitySelector';
 import { motion } from 'framer-motion';
 
 interface ProductInfo {
@@ -85,60 +83,8 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
     return <PaymentSuccessMessage paymentResult={paymentResult} />;
   }
 
-  // Display order summary if there are products
-  const showOrderSummary = localProducts && localProducts.length > 0;
-
   return (
     <>
-      {/* Product selection with quantity controls */}
-      {showOrderSummary && (
-        <div className="mb-6">
-          <h3 className="font-medium text-stitch-blue mb-3 text-sm">Seus Produtos</h3>
-          
-          <div className="space-y-3 mb-4">
-            {localProducts.map(product => (
-              <motion.div 
-                key={product.id} 
-                className="flex items-center justify-between bg-blue-50 p-3 rounded-lg"
-                layout
-              >
-                <div className="flex items-center">
-                  <div className="h-12 w-12 rounded overflow-hidden flex-shrink-0 mr-3 bg-white p-1">
-                    <img src={product.imageUrl} alt={product.title} className="h-full w-full object-contain" />
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm font-medium">{product.title}</p>
-                    <p className="text-xs text-gray-600">
-                      R$ {product.price.toFixed(2).replace('.', ',')} cada
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <ProductQuantitySelector 
-                    quantity={product.quantity} 
-                    onQuantityChange={(qty) => handleQuantityChange(product.id, qty)} 
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          
-          <motion.div 
-            className="flex justify-between items-center pt-2 font-medium text-stitch-blue bg-blue-50 p-3 rounded-lg"
-            layout
-            key={localTotal}
-            initial={{ opacity: 0.5, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <span className="text-gray-800">Total:</span>
-            <span>R$ {localTotal.toFixed(2).replace('.', ',')}</span>
-          </motion.div>
-        </div>
-      )}
-      
       {/* Customer information form */}
       <CustomerInfoForm 
         formData={formData}
