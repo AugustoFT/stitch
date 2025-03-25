@@ -1,6 +1,5 @@
-
 import { createPixPaymentRequest, simulatePixPaymentResponse } from './api';
-import { isDevelopmentEnvironment } from './cardPayment';
+import { isDevelopmentEnvironment } from './environment';
 
 // Função para criar um pagamento PIX
 export const createPixPayment = async (formData: any, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
