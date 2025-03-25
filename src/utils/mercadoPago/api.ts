@@ -11,7 +11,7 @@ export const getApiEndpoint = () => {
     console.warn('API endpoint not configured. Please check your environment variables.');
   }
   
-  return apiEndpoint;
+  return apiEndpoint.endsWith('/') ? apiEndpoint.slice(0, -1) : apiEndpoint;
 };
 
 // Process card payment through backend API
@@ -30,7 +30,8 @@ export const processCardPaymentRequest = async (paymentData: any) => {
     });
     
     // Ensure we're using the correct URL format without double-slashes
-    const url = `${apiEndpoint}/card`;
+    const url = `${apiEndpoint}/process-payment/card`;
+    console.log('Request URL:', url);
     
     const response = await fetch(url, {
       method: 'POST',
@@ -78,7 +79,8 @@ export const createPixPaymentRequest = async (paymentData: any) => {
     });
     
     // Ensure we're using the correct URL format without double-slashes
-    const url = `${apiEndpoint}/pix`;
+    const url = `${apiEndpoint}/process-payment/pix`;
+    console.log('Request URL:', url);
     
     const response = await fetch(url, {
       method: 'POST',
