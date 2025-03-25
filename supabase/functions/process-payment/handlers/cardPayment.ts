@@ -1,5 +1,6 @@
 
 import { corsHeaders } from '../_shared/cors.ts';
+import { createJsonResponse, createErrorResponse } from '../utils.ts';
 
 // Mercado Pago access token from environment
 const MERCADO_PAGO_ACCESS_TOKEN = Deno.env.get('MERCADO_PAGO_ACCESS_TOKEN') || '';
@@ -46,44 +47,19 @@ export async function processCardPayment(req: Request) {
     
     if (!mpResponse.ok) {
       console.error('Error in Mercado Pago response:', responseData);
-      return new Response(
-        JSON.stringify({ 
-          status: 'rejected', 
-          status_detail: responseData.message || 'Processing error', 
-          message: responseData.message || 'Error processing payment'
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-          status: 400 
-        }
-      );
+      return createErrorResponse(responseData.message || 'Error processing payment', 400);
     }
     
     console.log('Mercado Pago response obtained successfully:', responseData.status);
     
-    return new Response(
-      JSON.stringify({
-        id: responseData.id.toString(),
-        status: responseData.status,
-        status_detail: responseData.status_detail,
-        message: responseData.status_detail
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 200 
-      }
-    );
+    return createJsonResponse({
+      id: responseData.id.toString(),
+      status: responseData.status,
+      status_detail: responseData.status_detail,
+      message: responseData.status_detail
+    });
   } catch (error) {
     console.error('Error processing payment:', error);
-    return new Response(
-      JSON.stringify({ 
-        status: 'error', 
-        message: error.message || 'Internal server error' 
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 500 
-      }
-    );
+    return createErrorResponse(error.message || 'Internal server error');
   }
 }

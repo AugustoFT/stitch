@@ -3,6 +3,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { corsHeaders } from "./_shared/cors.ts";
 import { processCardPayment, createPixPayment, checkPaymentStatus } from "./handlers.ts";
+import { handleCorsRequest } from "./utils.ts";
 
 // Always log the CORS headers for debug
 console.log('CORS Headers configured:', corsHeaders);
@@ -13,10 +14,7 @@ serve(async (req) => {
   // Handle CORS preflight requests - VERY IMPORTANT!
   if (req.method === 'OPTIONS') {
     console.log('Responding to OPTIONS request (CORS preflight)');
-    return new Response(null, {
-      headers: corsHeaders,
-      status: 204
-    });
+    return handleCorsRequest();
   }
 
   try {
