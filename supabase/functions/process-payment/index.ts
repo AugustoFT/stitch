@@ -4,15 +4,15 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { corsHeaders } from "./_shared/cors.ts";
 import { processCardPayment, createPixPayment, checkPaymentStatus } from "./handlers.ts";
 
-// Sempre logar os cabeçalhos CORS para debug
-console.log('CORS Headers configurados:', corsHeaders);
+// Always log the CORS headers for debug
+console.log('CORS Headers configured:', corsHeaders);
 
 serve(async (req) => {
-  console.log(`Recebido ${req.method} solicitação para ${req.url}`);
+  console.log(`Received ${req.method} request for ${req.url}`);
   
-  // Handle CORS preflight requests - MUITO IMPORTANTE!
+  // Handle CORS preflight requests - VERY IMPORTANT!
   if (req.method === 'OPTIONS') {
-    console.log('Respondendo requisição OPTIONS (preflight CORS)');
+    console.log('Responding to OPTIONS request (CORS preflight)');
     return new Response(null, {
       headers: corsHeaders,
       status: 204
@@ -23,7 +23,7 @@ serve(async (req) => {
     const url = new URL(req.url);
     const path = url.pathname.split('/').pop();
     
-    console.log(`Processando ${req.method} request para path: ${path}`);
+    console.log(`Processing ${req.method} request for path: ${path}`);
     
     // Route requests based on path and method
     if (req.method === 'POST') {
@@ -37,16 +37,16 @@ serve(async (req) => {
     }
     
     return new Response(
-      JSON.stringify({ error: 'Endpoint não encontrado' }),
+      JSON.stringify({ error: 'Endpoint not found' }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
         status: 404 
       }
     );
   } catch (error) {
-    console.error('Erro no processamento da requisição:', error);
+    console.error('Error processing request:', error);
     return new Response(
-      JSON.stringify({ error: error.message || 'Erro interno no servidor' }),
+      JSON.stringify({ error: error.message || 'Internal server error' }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 
