@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { createPixPayment } from '../../utils/mercadoPago';
+import { createNewOrder } from '../../utils/orders/orderManager';
 
 // Importando os componentes refatorados
 import FormErrors from './pix/FormErrors';
@@ -24,6 +25,7 @@ interface PixData {
   qr_code?: string;
   qr_code_base64?: string;
   status?: string;
+  orderId?: string;
 }
 
 const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
@@ -78,12 +80,53 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
       console.log('PIX payment result:', pixResult);
       
       if (pixResult && (pixResult.qr_code || pixResult.qr_code_base64)) {
+        // Criar pedido após geração do PIX
+        try {
+          // Preparar produtos para o pedido
+          const orderProducts = selectedProducts.map(product => ({
+            id: product.id,
+            name: product.title,
+            quantity: product.quantity,
+            price: parseFloat(product.price.replace('R$ ', '').replace(',', '.')),
+            imageUrl: product.imageUrl
+          }));
+          
+          // Preparar informações do cliente
+          const customerInfo = {
+            name: formData.nome,
+            email: formData.email,
+            phone: formData.telefone,
+            address: formData.endereco,
+            city: formData.cidade,
+            state: formData.estado,
+            zip: formData.cep,
+            cpf: formData.cpf
+          };
+          
+          // Criar pedido no sistema com status pendente
+          const order = await createNewOrder(
+            orderProducts,
+            customerInfo,
+            'pix',
+            pixResult.id
+          );
+          
+          console.log('Pedido PIX criado com sucesso:', order);
+          
+          // Adicionar ID do pedido ao resultado do PIX
+          pixResult.orderId = order.id;
+        } catch (orderError) {
+          console.error('Erro ao criar pedido PIX:', orderError);
+          toast.error("QR Code gerado, mas houve um erro ao registrar o pedido. Entre em contato com o suporte.");
+        }
+      
         // Make sure we're setting data with the correct types
         setPixData({
           id: pixResult.id, // Already a string from our API update
           qr_code: pixResult.qr_code,
           qr_code_base64: pixResult.qr_code_base64,
-          status: pixResult.status
+          status: pixResult.status,
+          orderId: pixResult.orderId
         });
         
         toast.success("QR Code PIX gerado com sucesso! Escaneie para pagar.");

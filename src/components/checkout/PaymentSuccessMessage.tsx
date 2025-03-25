@@ -29,6 +29,11 @@ const PaymentSuccessMessage: React.FC<PaymentSuccessMessageProps> = ({ paymentRe
           ID da transação: {paymentResult.id}
         </p>
       )}
+      {paymentResult.orderId && (
+        <p className="text-xs text-green-600 mt-1">
+          Número do pedido: {paymentResult.orderId}
+        </p>
+      )}
     </motion.div>
   );
 };

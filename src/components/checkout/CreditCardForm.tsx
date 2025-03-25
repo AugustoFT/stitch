@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { processCardPayment, processCardPaymentOffline, isProduction, getEnvironment } from '../../utils/mercadoPago';
+import { createNewOrder } from '../../utils/orders/orderManager';
 import CardPaymentSuccess from './CardPaymentSuccess';
 import CardPaymentWrapper from './card/CardPaymentWrapper';
 import { useCardFormValidation } from './hooks/useCardFormValidation';
@@ -126,6 +127,49 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       
       if (result.status === 'approved') {
         toast.success("Pagamento aprovado com sucesso!");
+        
+        // Criar pedido após aprovação do pagamento
+        try {
+          // Preparar produtos para o pedido
+          const orderProducts = selectedProducts.map(product => ({
+            id: product.id,
+            name: product.title,
+            quantity: product.quantity,
+            price: parseFloat(product.price.replace('R$ ', '').replace(',', '.')),
+            imageUrl: product.imageUrl
+          }));
+          
+          // Preparar informações do cliente
+          const customerInfo = {
+            name: formData.nome,
+            email: formData.email,
+            phone: formData.telefone,
+            address: formData.endereco,
+            city: formData.cidade,
+            state: formData.estado,
+            zip: formData.cep,
+            cpf: formData.cpf
+          };
+          
+          // Criar pedido no sistema
+          const order = await createNewOrder(
+            orderProducts,
+            customerInfo,
+            'credit_card',
+            result.id
+          );
+          
+          console.log('Pedido criado com sucesso:', order);
+          
+          // Adicionar informação do pedido ao resultado do pagamento
+          result.orderId = order.id;
+          setPaymentResult({...result, orderId: order.id});
+          
+          toast.success("Pedido registrado com sucesso!");
+        } catch (orderError) {
+          console.error('Erro ao criar pedido:', orderError);
+          toast.error("Pagamento aprovado, mas houve um erro ao registrar o pedido. Entre em contato com o suporte.");
+        }
       } else if (result.status === 'in_process' || result.status === 'pending') {
         toast.info("Pagamento em processamento. Aguarde a confirmação.");
       } else {
@@ -157,7 +201,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
           paymentResult={paymentResult}
           cardPaymentStatus={cardPaymentStatus}
           isSubmitting={isSubmitting}
-          totalAmount={totalAmount} // Passando o valor total dinâmico
+          totalAmount={totalAmount}
           setInstallments={setInstallments}
           setCardField={setCardField}
           validateField={validateField}
