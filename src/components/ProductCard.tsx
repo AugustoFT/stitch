@@ -44,11 +44,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const newSelected = !selected;
     setSelected(newSelected);
     onSelect(newSelected);
+    
+    // Quando selecionar, já propaga a quantidade atual
+    if (newSelected && onQuantityChange) {
+      onQuantityChange(quantity);
+    }
   };
   
   const handleQuantityChange = (newQuantity: number) => {
     setQuantity(newQuantity);
-    if (onQuantityChange) {
+    
+    // Se o produto estiver selecionado, propaga a mudança de quantidade
+    if (selected && onQuantityChange) {
       onQuantityChange(newQuantity);
     }
   };

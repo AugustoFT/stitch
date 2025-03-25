@@ -97,6 +97,7 @@ const Index: React.FC = () => {
     }
   }, [productsWithQuantity]);
 
+  // Contador regressivo
   const [timeLeft, setTimeLeft] = useState({
     days: 1,
     hours: 6,
@@ -164,9 +165,18 @@ const Index: React.FC = () => {
   
   const handleQuantityChange = (productId: number, quantity: number) => {
     setProductsWithQuantity(prev => {
-      return prev.map(product => 
-        product.id === productId ? { ...product, quantity } : product
-      );
+      // Primeiro verifica se o produto já existe no array
+      const existingProductIndex = prev.findIndex(p => p.id === productId);
+      
+      if (existingProductIndex >= 0) {
+        // Se existir, atualiza a quantidade
+        return prev.map(product => 
+          product.id === productId ? { ...product, quantity } : product
+        );
+      } else {
+        // Se não existir, não faz nada (o produto deve ser selecionado primeiro)
+        return prev;
+      }
     });
   };
 

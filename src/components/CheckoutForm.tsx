@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import OrderSummary from './checkout/OrderSummary';
 import PaymentSuccessMessage from './checkout/PaymentSuccessMessage';
 import CheckoutFormContent from './checkout/CheckoutFormContent';
 import { useCheckoutForm } from './checkout/hooks/useCheckoutForm';
@@ -64,14 +63,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
           Promoção por tempo limitado!
         </div>
       </div>
-      
-      {/* Show order summary if there are products selected */}
-      {formState.productsWithQuantity.length > 0 && (
-        <OrderSummary 
-          products={formState.productsWithQuantity} 
-          totalAmount={formState.calculatedTotal} 
-        />
-      )}
       
       {/* Show success message if payment is approved */}
       <PaymentSuccessMessage paymentResult={formState.paymentResult} />
