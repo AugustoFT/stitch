@@ -82,13 +82,26 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
       
       if (pixResult && (pixResult.qr_code || pixResult.qr_code_base64)) {
         // Preparar produtos para o pedido
-        const orderProducts = selectedProducts.map(product => ({
-          id: product.id,
-          name: product.title,
-          quantity: product.quantity,
-          price: parseFloat(product.price.replace('R$ ', '').replace(',', '.')),
-          imageUrl: product.imageUrl
-        }));
+        const orderProducts = selectedProducts.map(product => {
+          // Garantir que o preço seja processado corretamente
+          let productPrice;
+          if (typeof product.price === 'string') {
+            productPrice = parseFloat(product.price.replace('R$ ', '').replace(',', '.'));
+          } else if (typeof product.price === 'number') {
+            productPrice = product.price;
+          } else {
+            console.warn('Formato de preço inesperado:', product.price);
+            productPrice = 0;
+          }
+
+          return {
+            id: product.id,
+            name: product.title,
+            quantity: product.quantity,
+            price: productPrice,
+            imageUrl: product.imageUrl
+          };
+        });
         
         // Preparar informações do cliente
         const customerInfo = {
