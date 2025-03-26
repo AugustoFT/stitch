@@ -1,17 +1,25 @@
 
-// Environment detection utilities
-
-// Check if running in development environment
-export const isDevelopmentEnvironment = (): boolean => {
-  return import.meta.env.DEV === true;
+// Função para verificar ambiente de desenvolvimento
+export const isDevelopmentEnvironment = () => {
+  return import.meta.env.DEV;
 };
 
-// Force production mode for testing production environment in development
-// This will be set to true to force production behavior even when in development
-export const forceProductionMode = true;
+// Função para verificar se rodando localmente
+export const isLocalHost = () => {
+  return typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' || 
+    window.location.hostname === '127.0.0.1'
+  );
+};
 
-// Log current environment status
-console.log(`Running in ${isDevelopmentEnvironment() ? 'DEVELOPMENT' : 'PRODUCTION'} environment`);
-if (forceProductionMode) {
-  console.log('Production mode is FORCED for all environments');
-}
+// Função para forçar modo de produção (independente do ambiente)
+export const forceProductionMode = () => {
+  console.log('FORÇANDO MODO DE PRODUÇÃO!');
+  return true;
+};
+
+// Função para obter URL da Supabase Function
+export const getSupabaseEndpoint = () => {
+  // Obter a URL correta do .env
+  return import.meta.env.VITE_SUPABASE_FUNCTION_URL;
+};

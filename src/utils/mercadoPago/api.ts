@@ -1,147 +1,113 @@
 
-import { isDevelopmentEnvironment } from './environment';
+import { toast } from 'sonner';
+import { getEnvironment, isProduction } from './environment';
 
-// Get the correct API endpoint based on environment
+// Função auxiliar para determinar o endpoint correto
 export const getApiEndpoint = () => {
-  const apiEndpoint = import.meta.env.VITE_SUPABASE_FUNCTION_URL || '';
-  console.log('Using API endpoint:', apiEndpoint);
-  
-  if (!apiEndpoint) {
-    console.warn('API endpoint not configured. Please check your environment variables.');
-  }
-  
-  // Remove any trailing slashes
-  return apiEndpoint.endsWith('/') ? apiEndpoint.slice(0, -1) : apiEndpoint;
+  // Lemos a variável de ambiente para a URL da função
+  const functionUrl = import.meta.env.VITE_SUPABASE_FUNCTION_URL;
+  console.log('Using API endpoint:', functionUrl);
+  return functionUrl;
 };
 
-// Process card payment through backend API
+// Requisição à API para processamento de pagamento com cartão
 export const processCardPaymentRequest = async (paymentData: any) => {
   try {
-    const apiEndpoint = getApiEndpoint();
+    const endpoint = `${getApiEndpoint()}/card`;
+    console.log('Enviando solicitação de pagamento com cartão para o backend:', paymentData);
     
-    if (!apiEndpoint) {
-      throw new Error('API endpoint not configured');
-    }
-    
-    console.log('Enviando solicitação de pagamento com cartão para o backend:', {
-      amount: paymentData.transactionAmount,
-      installments: paymentData.installments,
-      description: paymentData.description
-    });
-    
-    const response = await fetch(`${apiEndpoint}/card`, {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(paymentData),
-      mode: 'cors',
     });
     
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      console.error('Erro na resposta do servidor:', errorData || response.statusText);
-      
-      return {
-        status: 'rejected',
-        status_detail: errorData?.message || 'Erro no servidor',
-        message: errorData?.message || 'Falha ao processar pagamento',
-      };
+      const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido no servidor' }));
+      console.error('Erro na resposta do servidor:', errorData);
+      throw new Error(errorData.message || `Erro ${response.status}: ${response.statusText}`);
     }
     
     return await response.json();
   } catch (error: any) {
     console.error('Erro na requisição de pagamento:', error);
-    
-    return {
-      status: 'error',
-      status_detail: error.message || 'Falha na comunicação',
-      message: 'Falha ao conectar ao servidor de pagamento. Verifique sua conexão ou tente novamente mais tarde.',
-    };
+    throw error;
   }
 };
 
-// Create PIX payment through backend API
+// Requisição à API para processamento de pagamento PIX
 export const createPixPaymentRequest = async (paymentData: any) => {
   try {
-    const apiEndpoint = getApiEndpoint();
+    const endpoint = `${getApiEndpoint()}/pix`;
+    console.log('Enviando solicitação de pagamento PIX para o backend:', paymentData);
     
-    if (!apiEndpoint) {
-      throw new Error('API endpoint not configured');
-    }
-    
-    console.log('Enviando solicitação de pagamento PIX para o backend:', {
-      amount: paymentData.transactionAmount,
-      description: paymentData.description
-    });
-    
-    const url = `${apiEndpoint}/pix`;
-    console.log('Request URL:', url);
-    
-    const response = await fetch(url, {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(paymentData),
-      mode: 'cors',
     });
     
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      console.error('Erro na resposta do servidor (PIX):', errorData || response.statusText);
-      
-      throw new Error(errorData?.message || 'Falha ao processar pagamento PIX');
+      const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido no servidor' }));
+      console.error('Erro na resposta do servidor:', errorData);
+      throw new Error(errorData.message || `Erro ${response.status}: ${response.statusText}`);
     }
     
     return await response.json();
   } catch (error: any) {
     console.error('Erro na requisição de pagamento PIX:', error);
-    throw new Error('Failed to fetch');
+    throw error;
   }
 };
 
-// Simulate offline responses for testing
-export const simulateCardPaymentResponse = (cardNumber: string) => {
-  // Last 4 digits determine test response
-  const lastDigits = cardNumber.replace(/\D/g, '').slice(-4);
-  
-  if (lastDigits === '0000') {
-    return { 
-      status: 'rejected', 
-      status_detail: 'cc_rejected_card_disabled',
-      message: 'Cartão desativado' 
-    };
-  } else if (lastDigits === '1111') {
-    return { 
-      status: 'rejected', 
-      status_detail: 'cc_rejected_insufficient_amount',
-      message: 'Saldo insuficiente' 
-    };
-  } else if (lastDigits === '2222') {
-    return { 
-      status: 'in_process', 
-      status_detail: 'pending_review_manual',
-      message: 'Pagamento em análise' 
-    };
-  } else {
-    return { 
-      status: 'approved', 
-      status_detail: 'accredited',
-      id: Math.floor(Math.random() * 1000000000).toString(),
-      message: 'Pagamento aprovado' 
-    };
+// Requisição à API para verificar status do pagamento
+export const checkPaymentStatusRequest = async (paymentId: string) => {
+  try {
+    const endpoint = `${getApiEndpoint()}/status?id=${paymentId}`;
+    console.log('Verificando status do pagamento:', paymentId);
+    
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido no servidor' }));
+      console.error('Erro na resposta do servidor:', errorData);
+      throw new Error(errorData.message || `Erro ${response.status}: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error: any) {
+    console.error('Erro ao verificar status do pagamento:', error);
+    throw error;
   }
 };
 
-// Simulate PIX payment response for testing
-export const simulatePixPaymentResponse = () => {
-  const id = Math.floor(Math.random() * 1000000000).toString();
-  
+// Funções para simulação em ambiente de desenvolvimento (mantidas por compatibilidade)
+export const simulateCardPaymentResponse = (paymentData: any) => {
+  // Simulação simplificada (mantida para compatibilidade)
   return {
-    id,
+    status: 'approved',
+    status_detail: 'accredited',
+    id: '12345678',
+    message: 'Pagamento aprovado com sucesso'
+  };
+};
+
+export const simulatePixPaymentResponse = (paymentData: any) => {
+  // Simulação simplificada (mantida para compatibilidade)
+  return {
+    id: '12345678',
     status: 'pending',
-    qr_code: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789',
-    qr_code_base64: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAE0UlEQVR4nO3dwW4bOxBFQcfI/385TrZZGAhsPc0ZqHY/ue0ruC2Kev398+fP19LXr19/fPc/f/++z9tP/95P/vRP/spP/pNfn/ft61/gCQEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAuLVPsn2i6c+0fUvR9meaXv30/d+X507NE+EEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcGuf5P7bvrOTdPtJpp9q+ndOf87pp3JfHjgBwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIRb+yTbTz9929HqyezvEH/A86fnJhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQLi1T7J9S9H0ZdV/5wak6VO5L7fcl+UECCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQg3NonmT7J9GeafpLp57zP9pdXv2d+Kk5PAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQDgBCCcA4QQgnACEE4BwAhBOAMIJQLi1T7J9W8/0U01/6+kTTZ9z+uW4r7AjYALhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCDc+vr7bbv2fbt0+kmOL8Ca/vTT7Cg4PAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDh1j7J9E/v9GVH07/tOzsC3MmP57EsCzmcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHBrn+T4lqLj5zx+zvs8XjeTdiTkBggnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOHWPsntE9n/8N+38kxfmTX9VLdvKfLcPuV9WU6AcAIQTgDCCUA4AQgnAOEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQbu2TbJ9o+kTTl1X/ne/7uif8tuMv5cMLnBaAHxOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcGuPhPvtTzL9naafZPo577u+M2v7Saa/P8/lBAgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOEEIJwAhBOAcAIQTgDCCUA4AQgnAOHWPsl2x5cdbX//7/uT3l/57Rv2HzmXEyCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIQTgHACEE4AwglAOAEIJwDhBCCcAIT7G772kkDByjffAAAAAElFTkSuQmCC'
+    qr_code: 'QRCODE_EXAMPLE',
+    qr_code_base64: 'BASE64_STRING',
+    ticket_url: 'https://www.example.com/pix'
   };
 };
