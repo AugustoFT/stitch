@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import ProductCard from '../ProductCard';
 import { Button } from '../ui/button';
-import { ShoppingBag, Clock, Award, Users, AlertTriangle } from 'lucide-react';
+import { ShoppingBag, Clock, Award, Users, AlertTriangle, TruckIcon } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
 
 interface ProductInfo {
@@ -154,7 +154,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
               +500 clientes satisfeitos
             </div>
             <div className="bg-white px-3 py-1 rounded-full text-xs border border-stitch-blue/20 flex items-center">
-              <Truck className="h-3 w-3 mr-1 text-green-600" />
+              <TruckIcon className="h-3 w-3 mr-1 text-green-600" />
               Frete Grátis
             </div>
           </div>
