@@ -1,19 +1,33 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, lazy, Suspense } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackgroundElements from '../components/BackgroundElements';
 import HeroSection from '../components/sections/HeroSection';
-import ProductsSection from '../components/sections/ProductsSection';
-import BenefitsSection from '../components/sections/BenefitsSection';
-import FeatureCards from '../components/sections/FeatureCards';
-import TestimonialsSection from '../components/sections/TestimonialsSection';
-import FAQSection from '../components/sections/FAQSection';
-import CallToAction from '../components/sections/CallToAction';
-import CheckoutSection from '../components/sections/CheckoutSection';
+
+// Lazy loading sections for better performance
+const ProductsSection = lazy(() => import('../components/sections/ProductsSection'));
+const BenefitsSection = lazy(() => import('../components/sections/BenefitsSection'));
+const FeatureCards = lazy(() => import('../components/sections/FeatureCards'));
+const TestimonialsSection = lazy(() => import('../components/sections/TestimonialsSection'));
+const FAQSection = lazy(() => import('../components/sections/FAQSection'));
+const CallToAction = lazy(() => import('../components/sections/CallToAction'));
+const CheckoutSection = lazy(() => import('../components/sections/CheckoutSection'));
+
 import { useProductSelection } from '../hooks/useProductSelection';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import { productsList } from '../data/products';
+
+// Lazy loading component wrapper
+const LazyLoadSection = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={
+    <div className="flex justify-center items-center py-20">
+      <div className="animate-pulse text-stitch-blue">Carregando...</div>
+    </div>
+  }>
+    {children}
+  </Suspense>
+);
 
 const Index: React.FC = () => {
   const checkoutRef = useRef<HTMLDivElement>(null);
@@ -53,31 +67,45 @@ const Index: React.FC = () => {
         />
       </div>
       
-      <ProductsSection 
-        products={productsList}
-        scrollToCheckout={scrollToCheckout}
-        toggleProductSelection={toggleProductSelection}
-        handleQuantityChange={handleQuantityChange}
-        selectedProductIds={selectedProductIds}
-      />
+      <LazyLoadSection>
+        <ProductsSection 
+          products={productsList}
+          scrollToCheckout={scrollToCheckout}
+          toggleProductSelection={toggleProductSelection}
+          handleQuantityChange={handleQuantityChange}
+          selectedProductIds={selectedProductIds}
+        />
+      </LazyLoadSection>
       
-      <BenefitsSection />
+      <LazyLoadSection>
+        <BenefitsSection />
+      </LazyLoadSection>
       
-      <FeatureCards />
+      <LazyLoadSection>
+        <FeatureCards />
+      </LazyLoadSection>
       
-      <TestimonialsSection />
+      <LazyLoadSection>
+        <TestimonialsSection />
+      </LazyLoadSection>
       
-      <FAQSection />
+      <LazyLoadSection>
+        <FAQSection />
+      </LazyLoadSection>
       
-      <CallToAction scrollToCheckout={scrollToCheckout} />
+      <LazyLoadSection>
+        <CallToAction scrollToCheckout={scrollToCheckout} />
+      </LazyLoadSection>
       
       <div ref={checkoutRef}>
-        <CheckoutSection 
-          productsWithQuantity={productsWithQuantity}
-          totalAmount={totalAmount}
-          onRemoveProduct={handleRemoveProduct}
-          onQuantityChange={handleQuantityChange}
-        />
+        <LazyLoadSection>
+          <CheckoutSection 
+            productsWithQuantity={productsWithQuantity}
+            totalAmount={totalAmount}
+            onRemoveProduct={handleRemoveProduct}
+            onQuantityChange={handleQuantityChange}
+          />
+        </LazyLoadSection>
       </div>
       
       <Footer />

@@ -50,6 +50,7 @@ const CartProductItem: React.FC<CartProductItemProps> = ({
         <ProductQuantitySelector 
           quantity={product.quantity} 
           onQuantityChange={(qty) => onQuantityChange(product.id, qty)} 
+          maxQuantity={20} // Increase max quantity
         />
         
         <motion.button 

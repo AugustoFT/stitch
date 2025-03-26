@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 
 export interface CustomerInfoData {
@@ -5,6 +6,7 @@ export interface CustomerInfoData {
   email: string;
   telefone: string;
   endereco: string;
+  numero: string;
   complemento: string;
   complemento2: string;
   cidade: string;
@@ -20,6 +22,7 @@ export const useCustomerInfo = () => {
     email: '',
     telefone: '',
     endereco: '',
+    numero: '',
     complemento: '',
     complemento2: '',
     cidade: '',
@@ -78,6 +81,7 @@ export const useCustomerInfo = () => {
         cpf: formData.cpf,
         telefone: formData.telefone,
         endereco: formData.endereco,
+        numero: formData.numero,
         complemento: formData.complemento,
         complemento2: formData.complemento2,
         cidade: formData.cidade,

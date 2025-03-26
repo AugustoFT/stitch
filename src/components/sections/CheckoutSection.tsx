@@ -1,7 +1,9 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, lazy, Suspense } from 'react';
 import { motion, useInView } from 'framer-motion';
-import CheckoutForm from '../CheckoutForm';
+
+// Lazy loading the checkout form component
+const CheckoutForm = lazy(() => import('../CheckoutForm'));
 
 interface ProductInfo {
   id: number;
@@ -32,6 +34,13 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
   const checkoutRef = useRef<HTMLDivElement>(null);
   const checkoutInView = useInView(checkoutRef, { once: true, margin: "-100px" });
 
+  // Preload the CheckoutForm component when the section is about to be in view
+  useEffect(() => {
+    if (checkoutInView) {
+      import('../CheckoutForm');
+    }
+  }, [checkoutInView]);
+
   return (
     <section 
       id="checkout"
@@ -50,12 +59,18 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
         </p>
       </motion.div>
       
-      <CheckoutForm 
-        selectedProducts={productsWithQuantity}
-        totalAmount={totalAmount}
-        onRemoveProduct={onRemoveProduct}
-        onQuantityChange={onQuantityChange}
-      />
+      <Suspense fallback={
+        <div className="glass-card p-5 rounded-xl max-w-md mx-auto flex items-center justify-center h-96">
+          <div className="animate-pulse text-stitch-blue">Carregando formulário...</div>
+        </div>
+      }>
+        <CheckoutForm 
+          selectedProducts={productsWithQuantity}
+          totalAmount={totalAmount}
+          onRemoveProduct={onRemoveProduct}
+          onQuantityChange={onQuantityChange}
+        />
+      </Suspense>
     </section>
   );
 };

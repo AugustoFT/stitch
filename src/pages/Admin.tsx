@@ -1,57 +1,70 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Lock, Check, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Order } from '../types/orders';
 
-interface Order {
+interface LocalOrder {
   id: string;
   date: string;
   customer: string;
   address: string;
   products: string[];
   total: string;
-  status: 'pending' | 'shipped' | 'delivered' | 'canceled';
+  status: 'pending' | 'shipped' | 'delivered' | 'cancelled' | 'paid';
 }
-
-const mockOrders: Order[] = [
-  {
-    id: '001',
-    date: '2023-05-10',
-    customer: 'Maria Silva',
-    address: 'Rua das Flores, 123, São Paulo - SP',
-    products: ['Pelúcia Stitch'],
-    total: 'R$ 139,99',
-    status: 'delivered'
-  },
-  {
-    id: '002',
-    date: '2023-05-15',
-    customer: 'João Oliveira',
-    address: 'Av. Paulista, 1000, São Paulo - SP',
-    products: ['Óculos Stitch', 'Pelúcia Stitch'],
-    total: 'R$ 269,98',
-    status: 'shipped'
-  },
-  {
-    id: '003',
-    date: '2023-05-20',
-    customer: 'Ana Souza',
-    address: 'Rua Augusta, 500, São Paulo - SP',
-    products: ['Kit Completo Stitch'],
-    total: 'R$ 399,98',
-    status: 'pending'
-  }
-];
 
 const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<LocalOrder[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+
+  // Load orders from localStorage
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadOrders();
+    }
+  }, [isAuthenticated]);
+
+  const loadOrders = () => {
+    try {
+      const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const savedItems = JSON.parse(localStorage.getItem('orderItems') || '[]');
+      
+      const formattedOrders: LocalOrder[] = savedOrders.map((order: Order) => {
+        // Get items for this order
+        const orderItems = savedItems.filter((item: any) => item.order_id === order.id);
+        
+        // Format the address
+        const addressComponents = [
+          order.customer_info.address,
+          order.customer_info.numero,
+          order.customer_info.city,
+          order.customer_info.state
+        ].filter(Boolean);
+        
+        return {
+          id: order.id,
+          date: new Date(order.created_at).toLocaleDateString('pt-BR'),
+          customer: order.customer_info.name,
+          address: addressComponents.join(', '),
+          products: orderItems.map((item: any) => `${item.product_name} (${item.quantity}x)`),
+          total: `R$ ${order.total_price.toFixed(2).replace('.', ',')}`,
+          status: order.status
+        };
+      });
+      
+      setOrders(formattedOrders.length > 0 ? formattedOrders : []);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+      toast.error('Erro ao carregar pedidos');
+    }
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,10 +82,22 @@ const Admin: React.FC = () => {
     setPassword('');
   };
 
-  const updateOrderStatus = (id: string, status: 'pending' | 'shipped' | 'delivered' | 'canceled') => {
+  const updateOrderStatus = (id: string, status: 'pending' | 'shipped' | 'delivered' | 'cancelled' | 'paid') => {
     setOrders(orders.map(order => 
       order.id === id ? { ...order, status } : order
     ));
+    
+    // Also update in localStorage
+    try {
+      const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const updatedOrders = savedOrders.map((order: Order) => 
+        order.id === id ? { ...order, status, updated_at: new Date().toISOString() } : order
+      );
+      localStorage.setItem('orders', JSON.stringify(updatedOrders));
+    } catch (error) {
+      console.error('Error updating order status:', error);
+    }
+    
     toast.success(`Pedido #${id} atualizado para ${getStatusLabel(status)}`);
   };
 
@@ -81,7 +106,8 @@ const Admin: React.FC = () => {
       case 'pending': return 'Pendente';
       case 'shipped': return 'Enviado';
       case 'delivered': return 'Entregue';
-      case 'canceled': return 'Cancelado';
+      case 'cancelled': return 'Cancelado';
+      case 'paid': return 'Pago';
       default: return status;
     }
   };
@@ -91,7 +117,8 @@ const Admin: React.FC = () => {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'shipped': return 'bg-blue-100 text-blue-800';
       case 'delivered': return 'bg-green-100 text-green-800';
-      case 'canceled': return 'bg-red-100 text-red-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      case 'paid': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -212,9 +239,10 @@ const Admin: React.FC = () => {
                 >
                   <option value="all">Todos</option>
                   <option value="pending">Pendentes</option>
+                  <option value="paid">Pagos</option>
                   <option value="shipped">Enviados</option>
                   <option value="delivered">Entregues</option>
-                  <option value="canceled">Cancelados</option>
+                  <option value="cancelled">Cancelados</option>
                 </select>
               </div>
             </div>
@@ -237,7 +265,7 @@ const Admin: React.FC = () => {
                     {filteredOrders.length > 0 ? (
                       filteredOrders.map((order) => (
                         <tr key={order.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{order.id}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{order.id.substring(0, 6)}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.date}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div>{order.customer}</div>
@@ -263,9 +291,10 @@ const Admin: React.FC = () => {
                               className="text-sm border-gray-300 rounded-md shadow-sm focus:border-stitch-blue focus:ring focus:ring-stitch-blue/20"
                             >
                               <option value="pending">Pendente</option>
+                              <option value="paid">Pago</option>
                               <option value="shipped">Enviado</option>
                               <option value="delivered">Entregue</option>
-                              <option value="canceled">Cancelado</option>
+                              <option value="cancelled">Cancelado</option>
                             </select>
                           </td>
                         </tr>

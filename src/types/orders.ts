@@ -21,6 +21,7 @@ export interface Order {
     email: string;
     phone?: string;
     address?: string;
+    numero?: string;
     city?: string;
     state?: string;
     zip?: string;

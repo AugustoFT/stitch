@@ -20,7 +20,7 @@ export const useCardPayment = ({
   setPaymentResult,
   setCardPaymentStatus,
   selectedProducts = [],
-  totalAmount = 139.99,
+  totalAmount = 139.98,
   mercadoPagoReady
 }: UseCardPaymentProps) => {
   const [paymentResult, setLocalPaymentResult] = useState<any>(null);
@@ -109,6 +109,7 @@ export const useCardPayment = ({
       email: formData.email,
       phone: formData.telefone,
       address: formData.endereco,
+      numero: formData.numero,
       city: formData.cidade,
       state: formData.estado,
       zip: formData.cep,

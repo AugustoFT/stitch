@@ -84,7 +84,7 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
       
       <div>
         <label htmlFor="endereco" className="block text-sm font-medium text-gray-700 mb-1">
-          Endereço*
+          Rua*
         </label>
         <input
           type="text"
@@ -94,7 +94,23 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
           value={formData.endereco}
           onChange={handleChange}
           className="stitch-input"
-          placeholder="Rua, número"
+          placeholder="Nome da rua"
+        />
+      </div>
+      
+      <div>
+        <label htmlFor="numero" className="block text-sm font-medium text-gray-700 mb-1">
+          Número*
+        </label>
+        <input
+          type="text"
+          id="numero"
+          name="numero"
+          required
+          value={formData.numero || ''}
+          onChange={handleChange}
+          className="stitch-input"
+          placeholder="Número"
         />
       </div>
       
