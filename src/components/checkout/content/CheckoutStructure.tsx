@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, ShieldCheck } from 'lucide-react';
+import { Award, ShieldCheck, ShoppingBag } from 'lucide-react';
 import PaymentSuccessMessage from '../PaymentSuccessMessage';
 import CartDisplay from '../cart/CartDisplay';
 import CustomerInfoForm from '../CustomerInfoForm';
