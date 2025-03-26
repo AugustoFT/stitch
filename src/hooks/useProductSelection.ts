@@ -29,7 +29,12 @@ export const useProductSelection = (initialProducts: ProductInfo[]) => {
     setProductsWithQuantity(selectedProducts);
     
     const total = selectedProducts.reduce((sum, product) => {
-      const price = parseFloat(product.price.replace('R$ ', '').replace(',', '.'));
+      // Garantir que o preço seja tratado como string e convertido corretamente
+      const priceStr = typeof product.price === 'string' 
+        ? product.price 
+        : String(product.price);
+      
+      const price = parseFloat(priceStr.replace('R$ ', '').replace(',', '.'));
       return sum + (price * product.quantity);
     }, 0);
     
@@ -40,7 +45,12 @@ export const useProductSelection = (initialProducts: ProductInfo[]) => {
   useEffect(() => {
     if (productsWithQuantity.length > 0) {
       const total = productsWithQuantity.reduce((sum, product) => {
-        const price = parseFloat(product.price.replace('R$ ', '').replace(',', '.'));
+        // Garantir que o preço seja tratado como string e convertido corretamente
+        const priceStr = typeof product.price === 'string' 
+          ? product.price 
+          : String(product.price);
+        
+        const price = parseFloat(priceStr.replace('R$ ', '').replace(',', '.'));
         return sum + (price * product.quantity);
       }, 0);
       

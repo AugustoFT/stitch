@@ -61,7 +61,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
   
   // Convert price string to number (removing "R$ " and replacing comma with dot)
-  const priceNumber = parseFloat(price.replace('R$ ', '').replace(',', '.'));
+  // Garantir que o preço seja tratado como string antes de aplicar replace
+  const priceStr = typeof price === 'string' ? price : String(price);
+  const priceNumber = parseFloat(priceStr.replace('R$ ', '').replace(',', '.'));
   const totalPrice = priceNumber * quantity;
   
   return (

@@ -20,15 +20,28 @@ export const useCart = (initialProducts: any[] = [], initialTotalAmount: number 
     }
     
     try {
-      const processedProducts = initialProducts.map(product => ({
-        id: product.id,
-        title: product.title,
-        price: typeof product.price === 'string' 
-          ? parseFloat(product.price.replace('R$ ', '').replace(',', '.'))
-          : product.price,
-        imageUrl: product.imageUrl,
-        quantity: product.quantity || 1
-      }));
+      const processedProducts = initialProducts.map(product => {
+        // Garantir que o preço seja convertido para número corretamente
+        let priceValue = 0;
+        
+        if (typeof product.price === 'string') {
+          // Remove "R$ " e substitui vírgula por ponto para converter para número
+          priceValue = parseFloat(product.price.replace('R$ ', '').replace(',', '.'));
+        } else if (typeof product.price === 'number') {
+          priceValue = product.price;
+        } else {
+          console.warn('Formato de preço inesperado:', product.price);
+          priceValue = 0;
+        }
+        
+        return {
+          id: product.id,
+          title: product.title,
+          price: priceValue,
+          imageUrl: product.imageUrl,
+          quantity: product.quantity || 1
+        };
+      });
       
       const total = processedProducts.reduce(
         (sum, product) => sum + (product.price * product.quantity), 

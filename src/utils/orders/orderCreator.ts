@@ -20,7 +20,12 @@ export const createNewOrder = async (
     
     // Calculate total price
     const totalPrice = products.reduce((total, product) => {
-      return total + (product.price * product.quantity);
+      // Garantir que o preço seja um número
+      const productPrice = typeof product.price === 'number' 
+        ? product.price 
+        : parseFloat(String(product.price).replace('R$ ', '').replace(',', '.'));
+      
+      return total + (productPrice * product.quantity);
     }, 0);
     
     // In development environment, simulate an API
@@ -42,15 +47,22 @@ export const createNewOrder = async (
     };
     
     // Create order items
-    const items: OrderItem[] = products.map(product => ({
-      id: uuidv4(),
-      order_id: orderId,
-      product_id: product.id,
-      quantity: product.quantity,
-      price: product.price,
-      product_name: product.name,
-      product_image: product.imageUrl
-    }));
+    const items: OrderItem[] = products.map(product => {
+      // Garantir que o preço seja um número
+      const productPrice = typeof product.price === 'number' 
+        ? product.price 
+        : parseFloat(String(product.price).replace('R$ ', '').replace(',', '.'));
+        
+      return {
+        id: uuidv4(),
+        order_id: orderId,
+        product_id: product.id,
+        quantity: product.quantity,
+        price: productPrice,
+        product_name: product.name,
+        product_image: product.imageUrl
+      };
+    });
     
     // Save order data (simulated in development environment)
     console.log('Pedido criado:', order);
