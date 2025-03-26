@@ -2,7 +2,6 @@
 import React from 'react';
 import PaymentMethodSelector from '../PaymentMethodSelector';
 import CreditCardForm from '../CreditCardForm';
-import PixPaymentForm from '../PixPaymentForm';
 
 interface ProductInfo {
   id: number;
@@ -46,28 +45,16 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
         onChange={handlePaymentMethodChange}
       />
       
-      {cardFormVisible && (
-        <CreditCardForm 
-          formData={formData}
-          isSubmitting={isSubmitting}
-          mercadoPagoReady={mercadoPagoReady}
-          setIsSubmitting={setIsSubmitting}
-          setPaymentResult={setPaymentResult}
-          setCardPaymentStatus={setCardPaymentStatus}
-          selectedProducts={selectedProducts}
-          totalAmount={totalAmount}
-        />
-      )}
-      
-      {formData.formaPagamento === 'pix' && (
-        <PixPaymentForm 
-          formData={formData}
-          isSubmitting={isSubmitting}
-          setIsSubmitting={setIsSubmitting}
-          selectedProducts={selectedProducts}
-          totalAmount={totalAmount}
-        />
-      )}
+      <CreditCardForm 
+        formData={formData}
+        isSubmitting={isSubmitting}
+        mercadoPagoReady={mercadoPagoReady}
+        setIsSubmitting={setIsSubmitting}
+        setPaymentResult={setPaymentResult}
+        setCardPaymentStatus={setCardPaymentStatus}
+        selectedProducts={selectedProducts}
+        totalAmount={totalAmount}
+      />
     </>
   );
 };
