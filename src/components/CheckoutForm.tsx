@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import PaymentSuccessMessage from './checkout/PaymentSuccessMessage';
-import CheckoutFormContent from './checkout/CheckoutFormContent';
+import CheckoutFormContent from './checkout/content/CheckoutFormContent';
 import { useCheckoutForm } from './checkout/hooks/useCheckoutForm';
 import { useFormatterHandlers } from './checkout/FormatterHandlers';
 

@@ -1,10 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import CustomerInfoForm from './CustomerInfoForm';
-import PaymentSuccessMessage from './PaymentSuccessMessage';
-import CartDisplay from './cart/CartDisplay';
-import PaymentSection from './payment/PaymentSection';
-import CheckoutTerms from './CheckoutTerms';
+import CheckoutStructure from './CheckoutStructure';
 
 interface ProductInfo {
   id: number;
@@ -77,48 +73,26 @@ const CheckoutFormContent: React.FC<CheckoutFormContentProps> = ({
     }
   };
 
-  // Check if payment was already approved
-  if (paymentResult && paymentResult.status === 'approved') {
-    return <PaymentSuccessMessage paymentResult={paymentResult} />;
-  }
-
   return (
-    <>
-      {/* Cart display component */}
-      <CartDisplay 
-        products={cartProducts}
-        total={cartTotal}
-        onRemoveProduct={handleRemoveProduct}
-        onQuantityChange={handleQuantityChange}
-      />
-      
-      {/* Customer information form */}
-      <CustomerInfoForm 
-        formData={formData}
-        handleChange={handleChange}
-        handlePhoneChange={handlePhoneChange}
-        handleCPFChange={handleCPFChange}
-        handleCEPChange={handleCEPChange}
-      />
-      
-      {/* Payment section */}
-      <PaymentSection 
-        formData={formData}
-        isSubmitting={isSubmitting}
-        cardFormVisible={cardFormVisible}
-        mercadoPagoReady={mercadoPagoReady}
-        paymentResult={paymentResult}
-        setIsSubmitting={setIsSubmitting}
-        setPaymentResult={setPaymentResult}
-        setCardPaymentStatus={setCardPaymentStatus}
-        handlePaymentMethodChange={handlePaymentMethodChange}
-        selectedProducts={cartProducts}
-        totalAmount={cartTotal}
-      />
-      
-      {/* Terms and conditions */}
-      <CheckoutTerms />
-    </>
+    <CheckoutStructure
+      formData={formData}
+      isSubmitting={isSubmitting}
+      cardFormVisible={cardFormVisible}
+      mercadoPagoReady={mercadoPagoReady}
+      paymentResult={paymentResult}
+      setIsSubmitting={setIsSubmitting}
+      setPaymentResult={setPaymentResult}
+      setCardPaymentStatus={setCardPaymentStatus}
+      handleChange={handleChange}
+      handlePhoneChange={handlePhoneChange}
+      handleCPFChange={handleCPFChange}
+      handleCEPChange={handleCEPChange}
+      handlePaymentMethodChange={handlePaymentMethodChange}
+      products={cartProducts}
+      total={cartTotal}
+      onRemoveProduct={handleRemoveProduct}
+      onQuantityChange={handleQuantityChange}
+    />
   );
 };
 
