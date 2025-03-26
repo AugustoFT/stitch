@@ -1,11 +1,11 @@
 
 import { toast } from 'sonner';
-import { getEnvironment, isProduction } from './environment';
+import { isDevelopmentEnvironment, getSupabaseEndpoint, forceProductionMode } from './environment';
 
 // Função auxiliar para determinar o endpoint correto
 export const getApiEndpoint = () => {
   // Lemos a variável de ambiente para a URL da função
-  const functionUrl = import.meta.env.VITE_SUPABASE_FUNCTION_URL;
+  const functionUrl = getSupabaseEndpoint();
   console.log('Using API endpoint:', functionUrl);
   return functionUrl;
 };
