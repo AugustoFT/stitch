@@ -1,10 +1,13 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import PaymentSuccessMessage from '../PaymentSuccessMessage';
 import CartDisplay from '../cart/CartDisplay';
 import CustomerInfoForm from '../CustomerInfoForm';
 import PaymentSection from '../payment/PaymentSection';
 import CheckoutTerms from '../CheckoutTerms';
+import { Button } from '../../ui/button';
+import { ShoppingBag, Award } from 'lucide-react';
 
 interface ProductInfo {
   id: number;
@@ -58,8 +61,27 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
     return <PaymentSuccessMessage paymentResult={paymentResult} />;
   }
 
+  // Check if the kit is in the products
+  const hasKitCompleto = products.some(p => p.title && p.title.includes("Kit Completo"));
+
   return (
     <>
+      {/* Promoção especial no topo */}
+      {hasKitCompleto && (
+        <motion.div 
+          className="bg-stitch-yellow/20 p-3 rounded-lg border border-stitch-yellow mb-4 text-center"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Award className="text-stitch-yellow h-5 w-5" />
+            <span className="font-bold text-stitch-dark">Kit Exclusivo por R$ 0,10!</span>
+          </div>
+          <p className="text-xs text-gray-700">Aproveite esta oferta especial por tempo limitado!</p>
+        </motion.div>
+      )}
+      
       {/* Cart display component */}
       <CartDisplay 
         products={products}
@@ -67,6 +89,18 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
         onRemoveProduct={onRemoveProduct}
         onQuantityChange={onQuantityChange}
       />
+      
+      {/* Botão comprar intermediário */}
+      <div className="my-4 text-center">
+        <Button 
+          className="bg-stitch-pink hover:bg-stitch-pink/90 text-white font-semibold"
+          disabled={isSubmitting}
+          type="submit"
+        >
+          <ShoppingBag className="w-4 h-4 mr-2" />
+          Fechar Pedido
+        </Button>
+      </div>
       
       {/* Customer information form */}
       <CustomerInfoForm 

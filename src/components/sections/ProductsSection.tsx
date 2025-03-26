@@ -2,6 +2,8 @@
 import React, { useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import ProductCard from '../ProductCard';
+import { Button } from '../ui/button';
+import { ShoppingBag } from 'lucide-react';
 
 interface ProductInfo {
   id: number;
@@ -59,6 +61,16 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
         <p className="text-gray-600 max-w-2xl mx-auto text-sm">
           Escolha seus produtos favoritos do Stitch e leve este amiguinho fofo para todos os lugares. Cada modelo é oficial da Disney e feito com materiais de altíssima qualidade.
         </p>
+        
+        <motion.button
+          className="mt-5 bg-stitch-pink text-white py-2 px-6 rounded-md shadow-md font-medium flex items-center mx-auto"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={scrollToCheckout}
+        >
+          <ShoppingBag className="w-4 h-4 mr-2" />
+          Comprar Agora
+        </motion.button>
       </motion.div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -79,6 +91,26 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
             isSelected={selectedProductIds.includes(product.id)}
           />
         ))}
+      </div>
+      
+      <div className="mt-10 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={productInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="bg-stitch-light p-4 rounded-lg shadow-sm border border-stitch-blue/30 max-w-2xl mx-auto"
+        >
+          <h3 className="font-bold text-stitch-blue mb-2">Oferta especial!</h3>
+          <p className="text-gray-700 mb-3">Kit Completo Stitch por apenas <span className="text-stitch-pink font-bold">R$ 0,10</span> por tempo limitado!</p>
+          <motion.button
+            className="bg-stitch-blue text-white py-2 px-6 rounded-full shadow-md font-bold"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={scrollToCheckout}
+          >
+            Aproveitar Oferta
+          </motion.button>
+        </motion.div>
       </div>
     </section>
   );

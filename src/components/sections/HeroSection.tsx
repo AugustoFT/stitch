@@ -1,7 +1,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Clock } from 'lucide-react';
+import { Clock, Star } from 'lucide-react';
 
 interface HeroSectionProps {
   timeLeft: {
@@ -55,7 +55,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
                 animate={{ rotate: [12, 16, 12] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
-                99% OFF
+                Edição limitada
               </motion.div>
             </div>
           </motion.div>
@@ -82,22 +82,24 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
             </div>
           </div>
           
-          <motion.button 
-            className="btn-primary mr-3 text-sm py-2 px-4"
-            onClick={scrollToCheckout}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Comprar Agora
-          </motion.button>
-          <motion.a 
-            href="#beneficios"
-            className="inline-block py-2 px-4 text-sm text-stitch-blue border border-stitch-blue/30 rounded-md hover:bg-stitch-blue/10 transition-colors"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Saiba Mais
-          </motion.a>
+          <div className="flex flex-wrap gap-3">
+            <motion.button 
+              className="btn-primary mr-3 text-sm py-2 px-4"
+              onClick={scrollToCheckout}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Comprar Agora
+            </motion.button>
+            <motion.a 
+              href="#beneficios"
+              className="inline-block py-2 px-4 text-sm text-stitch-blue border border-stitch-blue/30 rounded-md hover:bg-stitch-blue/10 transition-colors"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Saiba Mais
+            </motion.a>
+          </div>
         </motion.div>
         
         <motion.div
@@ -112,6 +114,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
               alt="Kit Completo Stitch" 
               className="w-4/5 max-w-sm mx-auto drop-shadow-xl animate-float"
             />
+            <motion.button 
+              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-stitch-pink text-white py-2 px-6 rounded-full shadow-lg font-bold"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={scrollToCheckout}
+            >
+              Comprar por R$ 0,10
+            </motion.button>
           </div>
         </motion.div>
       </div>
