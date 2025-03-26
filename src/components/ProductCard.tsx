@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Clock, Truck, Award, Users } from 'lucide-react';
 import ProductQuantitySelector from './ProductQuantitySelector';
 
 interface ProductCardProps {
@@ -35,6 +35,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [selected, setSelected] = useState(isSelected);
   const [quantity, setQuantity] = useState(1);
+  const [countdown, setCountdown] = useState(1800); // 30 minutes in seconds
+  
+  // Simulate countdown
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(prev => prev > 0 ? prev - 1 : 0);
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, []);
+  
+  // Format countdown to mm:ss
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
   
   useEffect(() => {
     setSelected(isSelected);
@@ -66,6 +83,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const priceNumber = parseFloat(priceStr.replace('R$ ', '').replace(',', '.'));
   const totalPrice = priceNumber * quantity;
   
+  // Check if the price is over the free shipping threshold
+  const hasFreeShipping = priceNumber >= 99.98;
+  
   return (
     <motion.div
       className={`bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 ${
@@ -85,6 +105,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="absolute top-2 right-2 bg-stitch-pink text-white text-xs font-bold py-1 px-2 rounded-full">
           {discount}
         </div>
+        
+        {title.includes("Kit Completo") && (
+          <div className="absolute top-2 left-2 bg-stitch-yellow text-stitch-dark text-xs font-bold py-1 px-2 rounded-full">
+            Edição Limitada
+          </div>
+        )}
       </div>
       
       <div className="p-4">
@@ -94,15 +120,34 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <p className="text-gray-400 text-sm line-through ml-2">{originalPrice}</p>
         </div>
         
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{description}</p>
+        <p className="text-gray-600 text-sm mb-2 line-clamp-2">{description}</p>
         
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs text-gray-500">{size}</span>
-          
-          {additionalInfo && (
-            <span className="text-xs text-stitch-pink">{additionalInfo}</span>
-          )}
+        {/* Free shipping badge */}
+        {hasFreeShipping && (
+          <div className="bg-green-100 text-green-800 text-xs p-1.5 mb-2 rounded flex items-center">
+            <Truck className="w-3 h-3 mr-1" />
+            Frete Grátis
+          </div>
+        )}
+        
+        {/* Limited time offer countdown */}
+        <div className="bg-stitch-light text-stitch-blue text-xs p-1.5 mb-3 rounded flex items-center">
+          <Clock className="w-3 h-3 mr-1" />
+          Oferta termina em: {formatTime(countdown)}
         </div>
+        
+        {/* Social proof */}
+        <div className="flex items-center justify-between mb-3 text-xs text-gray-600">
+          <span className="flex items-center">
+            <Users className="w-3 h-3 mr-1" />
+            {Math.floor(Math.random() * 20) + 8} pessoas compraram
+          </span>
+          <span className="">{size}</span>
+        </div>
+        
+        {additionalInfo && (
+          <span className="text-xs text-stitch-pink block mb-2">{additionalInfo}</span>
+        )}
         
         <div className="flex flex-col space-y-3">
           <div className="flex items-center justify-between">
@@ -145,6 +190,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <ShoppingBag className="w-4 h-4 mr-1" />
               Comprar
             </motion.button>
+          </div>
+          
+          {/* Guarantee banner */}
+          <div className="bg-gray-100 p-2 rounded-md text-center text-xs text-gray-700 flex items-center justify-center">
+            <Award className="w-3 h-3 mr-1 text-stitch-blue" />
+            Garantia de 30 dias
           </div>
         </div>
       </div>

@@ -65,6 +65,29 @@ const Admin: React.FC = () => {
       toast.error('Erro ao atualizar status do pedido');
     }
   };
+  
+  const handleDeleteOrder = (id: string) => {
+    try {
+      // Remove from localStorage
+      const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const updatedOrders = savedOrders.filter((order: any) => order.id !== id);
+      localStorage.setItem('orders', JSON.stringify(updatedOrders));
+      
+      // Remove from state
+      setOrders(orders.filter(order => order.id !== id));
+      
+      // Also remove order items
+      const savedItems = JSON.parse(localStorage.getItem('orderItems') || '[]');
+      const updatedItems = savedItems.filter((item: any) => item.order_id !== id);
+      localStorage.setItem('orderItems', JSON.stringify(updatedItems));
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      toast.error('Erro ao excluir pedido');
+      return false;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -113,6 +136,7 @@ const Admin: React.FC = () => {
               orders={orders}
               filterStatus={filterStatus}
               updateOrderStatus={handleUpdateOrderStatus}
+              deleteOrder={handleDeleteOrder}
             />
           </motion.div>
         )}

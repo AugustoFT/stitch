@@ -63,3 +63,22 @@ export const updateOrderStatus = (id: string, status: 'pending' | 'shipped' | 'd
     return false;
   }
 };
+
+export const deleteOrder = (id: string) => {
+  try {
+    // Remove order
+    const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const updatedOrders = savedOrders.filter((order: Order) => order.id !== id);
+    localStorage.setItem('orders', JSON.stringify(updatedOrders));
+    
+    // Remove order items
+    const savedItems = JSON.parse(localStorage.getItem('orderItems') || '[]');
+    const updatedItems = savedItems.filter((item: any) => item.order_id !== id);
+    localStorage.setItem('orderItems', JSON.stringify(updatedItems));
+    
+    return true;
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    return false;
+  }
+};
