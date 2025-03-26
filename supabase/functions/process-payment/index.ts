@@ -2,26 +2,19 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { corsHeaders } from "./_shared/cors.ts";
 import { processCardPayment, createPixPayment, checkPaymentStatus } from "./handlers.ts";
+import { handleCorsRequest } from "./utils.ts";
 
 serve(async (req) => {
+  // Add debug logs for all requests
+  console.log(`Received ${req.method} request for ${req.url}`);
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     console.log('Handling OPTIONS request (CORS preflight)');
-    return new Response(null, {
-      headers: {
-        ...corsHeaders,
-        'Access-Control-Allow-Origin': '*',  // Allow all origins in development
-        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, Authorization, X-Client-Info, Apikey, Content-Type',
-        'Access-Control-Max-Age': '86400',
-      },
-      status: 204
-    });
+    return handleCorsRequest();
   }
 
   try {
-    console.log(`Received ${req.method} request for ${req.url}`);
-    
     const url = new URL(req.url);
     const path = url.pathname.split('/').pop();
     
@@ -44,8 +37,7 @@ serve(async (req) => {
       { 
         headers: { 
           ...corsHeaders, 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+          'Content-Type': 'application/json'
         }, 
         status: 404 
       }
@@ -60,8 +52,7 @@ serve(async (req) => {
       { 
         headers: { 
           ...corsHeaders, 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+          'Content-Type': 'application/json'
         },
         status: 500 
       }

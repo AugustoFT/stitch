@@ -10,8 +10,7 @@ export function createJsonResponse(data: any, status = 200) {
     { 
       headers: { 
         ...corsHeaders, 
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Content-Type': 'application/json'
       }, 
       status 
     }

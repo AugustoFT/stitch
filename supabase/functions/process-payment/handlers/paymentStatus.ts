@@ -27,27 +27,13 @@ export async function checkPaymentStatus(req: Request, url: URL) {
       return createErrorResponse(responseData.message || 'Error checking payment status', 400);
     }
     
-    return new Response(
-      JSON.stringify({
-        id: responseData.id.toString(),
-        status: responseData.status,
-        status_detail: responseData.status_detail
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 200 
-      }
-    );
+    return createJsonResponse({
+      id: responseData.id.toString(),
+      status: responseData.status,
+      status_detail: responseData.status_detail
+    });
   } catch (error) {
     console.error('Error checking payment status:', error);
-    return new Response(
-      JSON.stringify({ 
-        error: error.message || 'Internal server error' 
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 500 
-      }
-    );
+    return createErrorResponse(error.message || 'Internal server error', 500);
   }
 }
