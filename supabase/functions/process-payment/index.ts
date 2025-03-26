@@ -8,7 +8,7 @@ serve(async (req) => {
   // Add debug logs for all requests
   console.log(`Received ${req.method} request for ${req.url}`);
   
-  // Handle CORS preflight requests
+  // Handle CORS preflight requests (this is critical for browser preflight checks)
   if (req.method === 'OPTIONS') {
     console.log('Handling OPTIONS request (CORS preflight)');
     return handleCorsRequest();
@@ -16,7 +16,8 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const path = url.pathname.split('/').pop();
+    const pathParts = url.pathname.split('/');
+    const path = pathParts[pathParts.length - 1];
     
     console.log(`Processing ${req.method} request for path: ${path}`);
     
