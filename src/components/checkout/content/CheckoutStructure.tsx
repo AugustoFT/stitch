@@ -1,13 +1,12 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Award, ShieldCheck } from 'lucide-react';
 import PaymentSuccessMessage from '../PaymentSuccessMessage';
 import CartDisplay from '../cart/CartDisplay';
 import CustomerInfoForm from '../CustomerInfoForm';
 import PaymentSection from '../payment/PaymentSection';
 import CheckoutTerms from '../CheckoutTerms';
 import { Button } from '../../ui/button';
-import { ShoppingBag, Award } from 'lucide-react';
 
 interface ProductInfo {
   id: number;
@@ -56,17 +55,14 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
   onRemoveProduct,
   onQuantityChange
 }) => {
-  // Check if payment was already approved
   if (paymentResult && paymentResult.status === 'approved') {
     return <PaymentSuccessMessage paymentResult={paymentResult} />;
   }
 
-  // Check if the kit is in the products
   const hasKitCompleto = products.some(p => p.title && p.title.includes("Kit Completo"));
 
   return (
     <>
-      {/* Promoção especial no topo */}
       {hasKitCompleto && (
         <motion.div 
           className="bg-stitch-yellow/20 p-3 rounded-lg border border-stitch-yellow mb-4 text-center"
@@ -82,7 +78,6 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
         </motion.div>
       )}
       
-      {/* Cart display component */}
       <CartDisplay 
         products={products}
         total={total}
@@ -90,7 +85,6 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
         onQuantityChange={onQuantityChange}
       />
       
-      {/* Botão comprar intermediário */}
       <div className="my-4 text-center">
         <Button 
           className="bg-stitch-pink hover:bg-stitch-pink/90 text-white font-semibold"
@@ -102,7 +96,30 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
         </Button>
       </div>
       
-      {/* Customer information form */}
+      <motion.div 
+        className="flex justify-center items-center space-x-4 mt-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded-lg">
+          <Award className="text-stitch-blue w-6 h-6" />
+          <img 
+            src="/lovable-uploads/78b9b409-9337-4886-a8c3-2b137efe2ef0.png" 
+            alt="Comodo Secure" 
+            className="h-8 w-auto"
+          />
+        </div>
+        <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded-lg">
+          <ShieldCheck className="text-stitch-green w-6 h-6" />
+          <img 
+            src="/lovable-uploads/78b9b409-9337-4886-a8c3-2b137efe2ef0.png" 
+            alt="RA1000" 
+            className="h-8 w-auto"
+          />
+        </div>
+      </motion.div>
+      
       <CustomerInfoForm 
         formData={formData}
         handleChange={handleChange}
@@ -111,7 +128,6 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
         handleCEPChange={handleCEPChange}
       />
       
-      {/* Payment section */}
       <PaymentSection 
         formData={formData}
         isSubmitting={isSubmitting}
@@ -126,7 +142,6 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
         totalAmount={total}
       />
       
-      {/* Terms and conditions */}
       <CheckoutTerms />
     </>
   );
