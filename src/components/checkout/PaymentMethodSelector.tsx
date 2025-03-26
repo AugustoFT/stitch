@@ -43,19 +43,19 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
           {/* Credit card logos */}
           <div className="ml-auto flex space-x-1">
             <img 
-              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg" 
+              src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" 
               alt="Visa" 
-              className="h-6 w-auto"
+              className="h-5 w-auto"
             />
             <img 
-              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mastercard/mastercard-original.svg" 
+              src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg" 
               alt="Mastercard" 
-              className="h-6 w-auto"
+              className="h-5 w-auto"
             />
             <img 
-              src="https://logospng.org/download/american-express/logo-american-express-icon-1024.png" 
+              src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" 
               alt="American Express" 
-              className="h-6 w-auto"
+              className="h-5 w-auto"
             />
           </div>
         </div>

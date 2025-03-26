@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Clock, Truck, Award, Users } from 'lucide-react';
+import { ShoppingBag, Award, TruckIcon } from 'lucide-react';
 import ProductQuantitySelector from './ProductQuantitySelector';
 
 interface ProductCardProps {
@@ -35,23 +35,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [selected, setSelected] = useState(isSelected);
   const [quantity, setQuantity] = useState(1);
-  const [countdown, setCountdown] = useState(1800); // 30 minutes in seconds
-  
-  // Simulate countdown
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown(prev => prev > 0 ? prev - 1 : 0);
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, []);
-  
-  // Format countdown to mm:ss
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  };
   
   useEffect(() => {
     setSelected(isSelected);
@@ -125,25 +108,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Free shipping badge */}
         {hasFreeShipping && (
           <div className="bg-green-100 text-green-800 text-xs p-1.5 mb-2 rounded flex items-center">
-            <Truck className="w-3 h-3 mr-1" />
+            <TruckIcon className="w-3 h-3 mr-1" />
             Frete Grátis
           </div>
         )}
-        
-        {/* Limited time offer countdown */}
-        <div className="bg-stitch-light text-stitch-blue text-xs p-1.5 mb-3 rounded flex items-center">
-          <Clock className="w-3 h-3 mr-1" />
-          Oferta termina em: {formatTime(countdown)}
-        </div>
-        
-        {/* Social proof */}
-        <div className="flex items-center justify-between mb-3 text-xs text-gray-600">
-          <span className="flex items-center">
-            <Users className="w-3 h-3 mr-1" />
-            {Math.floor(Math.random() * 20) + 8} pessoas compraram
-          </span>
-          <span className="">{size}</span>
-        </div>
         
         {additionalInfo && (
           <span className="text-xs text-stitch-pink block mb-2">{additionalInfo}</span>
