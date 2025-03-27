@@ -73,7 +73,7 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
         >
           <div className="flex items-center justify-center gap-2 mb-2">
             <Award className="text-stitch-yellow h-5 w-5" />
-            <span className="font-bold text-stitch-dark">Kit Exclusivo por R$ 0,10!</span>
+            <span className="font-bold text-stitch-dark">Kit Exclusivo Stitch</span>
           </div>
           <p className="text-xs text-gray-700">Aproveite esta oferta especial por tempo limitado!</p>
         </motion.div>

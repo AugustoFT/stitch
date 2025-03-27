@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import ProductCard from '../ProductCard';
@@ -37,7 +36,6 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
   const productRef = useRef<HTMLDivElement>(null);
   const productInView = useInView(productRef, { once: true, margin: "-100px" });
 
-  // Garantir que os manipuladores de seleção e quantidade estejam propagando as alterações
   const handleProductSelect = (productId: number, selected: boolean) => {
     toggleProductSelection(productId, selected);
   };
@@ -106,7 +104,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
             <h3 className="font-bold text-stitch-blue">Oferta Exclusiva - Produto Oficial Disney!</h3>
           </div>
           
-          <p className="text-gray-700 mb-3">Kit Completo Stitch por apenas <span className="text-stitch-pink font-bold">R$ 0,10</span> com frete grátis!</p>
+          <p className="text-gray-700 mb-3">Kit Completo Stitch por apenas <span className="text-stitch-pink font-bold">R$ 399,99</span> com frete grátis!</p>
           
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-3">
             <div className="bg-white px-3 py-1 rounded-full text-xs border border-stitch-blue/20 flex items-center">
