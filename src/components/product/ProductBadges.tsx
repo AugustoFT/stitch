@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Award, TruckIcon } from 'lucide-react';
+import { Badge } from '../ui/badge';
 
 interface ProductBadgesProps {
   discount: string;
@@ -15,11 +16,9 @@ const ProductBadges: React.FC<ProductBadgesProps> = ({ discount, title, hasFreeS
         {discount}
       </div>
       
-      {title.includes("Kit Completo") && (
-        <div className="absolute top-2 left-2 bg-stitch-yellow text-stitch-dark text-xs font-bold py-1 px-2 rounded-full">
-          Edição Limitada
-        </div>
-      )}
+      <div className="absolute top-2 left-2 bg-stitch-yellow text-stitch-dark text-xs font-bold py-1 px-2 rounded-full">
+        Edição Limitada
+      </div>
       
       {/* Free shipping badge */}
       {hasFreeShipping && (

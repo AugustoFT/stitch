@@ -97,30 +97,6 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
         </Button>
       </div>
       
-      <motion.div 
-        className="flex justify-center items-center space-x-4 mt-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded-lg">
-          <Award className="text-stitch-blue w-6 h-6" />
-          <img 
-            src="/lovable-uploads/78b9b409-9337-4886-a8c3-2b137efe2ef0.png" 
-            alt="Comodo Secure" 
-            className="h-8 w-auto"
-          />
-        </div>
-        <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded-lg">
-          <ShieldCheck className="text-stitch-green w-6 h-6" />
-          <img 
-            src="/lovable-uploads/78b9b409-9337-4886-a8c3-2b137efe2ef0.png" 
-            alt="RA1000" 
-            className="h-8 w-auto"
-          />
-        </div>
-      </motion.div>
-      
       <CustomerInfoForm 
         formData={formData}
         handleChange={handleChange}
