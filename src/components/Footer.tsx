@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Lock, ShieldCheck, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -50,22 +49,22 @@ const Footer: React.FC = () => {
             <div className="flex flex-col items-center">
               <div className="bg-white rounded-full p-1 mb-2">
                 <img 
-                  src="https://logodownload.org/wp-content/uploads/2017/11/google-safe-browsing-logo.png" 
-                  alt="Google Safe Browsing" 
-                  className="h-6 w-auto"
+                  src="https://images.unsplash.com/photo-1485833077593-4278bba3f11f" 
+                  alt="Segurança de Dados" 
+                  className="h-6 w-6 object-cover rounded-full"
                 />
               </div>
-              <span className="text-xs text-gray-300">Google Safe Browsing</span>
+              <span className="text-xs text-gray-300">Dados Protegidos</span>
             </div>
             <div className="flex flex-col items-center">
               <div className="bg-white rounded-full p-1 mb-2">
                 <img 
-                  src="https://cdn.awsli.com.br/production/static/img/estrutura/selos-loja/google-safebrowsing.png" 
-                  alt="SSL Seguro" 
-                  className="h-6 w-auto"
+                  src="https://images.unsplash.com/photo-1469041797191-50ace28483c3" 
+                  alt="Autenticação" 
+                  className="h-6 w-6 object-cover rounded-full"
                 />
               </div>
-              <span className="text-xs text-gray-300">SSL Seguro</span>
+              <span className="text-xs text-gray-300">Autenticação</span>
             </div>
           </div>
         </div>
