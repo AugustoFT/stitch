@@ -10,6 +10,7 @@ import { useFormatterHandlers } from './checkout/FormatterHandlers';
 declare global {
   interface Window {
     MercadoPago: any;
+    fbq: any;
   }
 }
 
@@ -39,6 +40,17 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     removeProduct
   } = useCheckoutForm(selectedProducts, totalAmount);
 
+  // Track checkout view
+  useEffect(() => {
+    if (window.fbq) {
+      window.fbq('track', 'InitiateCheckout', {
+        num_items: selectedProducts.length,
+        value: totalAmount,
+        currency: 'BRL'
+      });
+    }
+  }, []);
+
   // Use formatter handlers for formatted inputs
   const { 
     handleCPFChange, 
@@ -62,6 +74,19 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
   // Handle product removal via internal or external handlers
   const handleRemoveProduct = (productId: number) => {
+    // Track remove from cart
+    if (window.fbq) {
+      const product = formState.productsWithQuantity.find(p => p.id === productId);
+      if (product) {
+        window.fbq('track', 'RemoveFromCart', {
+          content_ids: [productId],
+          content_name: product.title,
+          value: parseFloat(product.price.replace('R$ ', '').replace(',', '.')),
+          currency: 'BRL'
+        });
+      }
+    }
+    
     removeProduct(productId);
     if (onRemoveProduct) {
       onRemoveProduct(productId);
@@ -70,10 +95,45 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
   // Handle quantity change via internal or external handlers
   const handleQuantityChange = (productId: number, quantity: number) => {
+    const product = formState.productsWithQuantity.find(p => p.id === productId);
+    const currentQuantity = product ? product.quantity : 0;
+    
+    if (quantity > currentQuantity && window.fbq) {
+      // Track add to cart if increasing quantity
+      window.fbq('track', 'AddToCart', {
+        content_ids: [productId],
+        content_name: product ? product.title : 'Product',
+        value: product ? parseFloat(product.price.replace('R$ ', '').replace(',', '.')) : 0,
+        currency: 'BRL',
+        contents: [
+          {
+            id: productId,
+            quantity: quantity - currentQuantity
+          }
+        ]
+      });
+    }
+    
     updateProductQuantity(productId, quantity);
     if (onQuantityChange) {
       onQuantityChange(productId, quantity);
     }
+  };
+
+  const enhancedHandleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Track lead event when form is submitted
+    if (window.fbq) {
+      window.fbq('track', 'Lead', {
+        content_name: 'Checkout Form',
+        value: totalAmount,
+        currency: 'BRL'
+      });
+    }
+    
+    saveCustomerInfo();
+    handleSubmit(e);
   };
 
   return (
@@ -98,7 +158,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       
       {/* Don't show the form if payment was already approved */}
       {(!formState.paymentResult || formState.paymentResult.status !== 'approved') && (
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={enhancedHandleSubmit} className="space-y-3">
           <CheckoutFormContent
             formData={formState.formData}
             isSubmitting={formState.isSubmitting}

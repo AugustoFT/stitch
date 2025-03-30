@@ -6,7 +6,22 @@ interface CallToActionProps {
   scrollToCheckout: () => void;
 }
 
+declare global {
+  interface Window {
+    fbq: any;
+  }
+}
+
 const CallToAction: React.FC<CallToActionProps> = ({ scrollToCheckout }) => {
+  const handleCTAClick = () => {
+    // Track the InitiateCheckout event with Meta Pixel
+    if (window.fbq) {
+      window.fbq('track', 'InitiateCheckout');
+    }
+    
+    scrollToCheckout();
+  };
+  
   return (
     <section className="py-8 px-4 md:px-8 bg-gradient-to-r from-stitch-blue to-stitch-darkblue text-white relative z-10">
       <div className="max-w-5xl mx-auto text-center">
@@ -29,7 +44,7 @@ const CallToAction: React.FC<CallToActionProps> = ({ scrollToCheckout }) => {
         </motion.p>
         <motion.button 
           className="bg-stitch-pink hover:bg-stitch-pink/90 text-white font-bold text-base py-3 px-6 rounded-full shadow-lg transition-all duration-300"
-          onClick={scrollToCheckout}
+          onClick={handleCTAClick}
           whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
           whileTap={{ scale: 0.98 }}
           initial={{ opacity: 0, y: 20 }}

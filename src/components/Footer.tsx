@@ -1,8 +1,22 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { Lock, ShieldCheck, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+declare global {
+  interface Window {
+    fbq: any;
+  }
+}
+
 const Footer: React.FC = () => {
+  useEffect(() => {
+    // Ensure Meta Pixel is loaded and fire a PageView event
+    if (window.fbq) {
+      window.fbq('track', 'PageView');
+    }
+  }, []);
+
   return (
     <footer className="py-8 px-6 md:px-12 mt-12 bg-stitch-dark text-white">
       <div className="max-w-7xl mx-auto">

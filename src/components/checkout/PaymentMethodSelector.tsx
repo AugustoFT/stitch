@@ -7,10 +7,27 @@ interface PaymentMethodSelectorProps {
   onChange: (formaPagamento: string) => void;
 }
 
+declare global {
+  interface Window {
+    fbq: any;
+  }
+}
+
 const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({ 
   formaPagamento, 
   onChange 
 }) => {
+  const handlePaymentMethodChange = (method: string) => {
+    // Track payment method selection with Meta Pixel
+    if (window.fbq) {
+      window.fbq('track', 'InitiateCheckout', {
+        payment_method: method
+      });
+    }
+    
+    onChange(method);
+  };
+
   return (
     <div className="mt-6">
       <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -20,7 +37,7 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
       <div className="grid grid-cols-1 gap-4 mb-4">
         <div 
           className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${formaPagamento === 'cartao' ? 'border-stitch-blue bg-stitch-blue/10' : 'border-gray-300 hover:bg-gray-50'}`}
-          onClick={() => onChange('cartao')}
+          onClick={() => handlePaymentMethodChange('cartao')}
         >
           <input 
             type="radio" 
@@ -28,7 +45,7 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
             name="formaPagamento" 
             value="cartao"
             checked={formaPagamento === 'cartao'}
-            onChange={() => onChange('cartao')}
+            onChange={() => handlePaymentMethodChange('cartao')}
             className="sr-only"
           />
           <CreditCard className={`h-5 w-5 ${formaPagamento === 'cartao' ? 'text-stitch-blue' : 'text-gray-500'}`} />
@@ -57,7 +74,7 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
         {/* Opção de PIX */}
         <div 
           className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${formaPagamento === 'pix' ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:bg-gray-50'}`}
-          onClick={() => onChange('pix')}
+          onClick={() => handlePaymentMethodChange('pix')}
         >
           <input 
             type="radio" 
@@ -65,7 +82,7 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
             name="formaPagamento" 
             value="pix"
             checked={formaPagamento === 'pix'}
-            onChange={() => onChange('pix')}
+            onChange={() => handlePaymentMethodChange('pix')}
             className="sr-only"
           />
           <PiggyBank className={`h-5 w-5 ${formaPagamento === 'pix' ? 'text-green-500' : 'text-gray-500'}`} />

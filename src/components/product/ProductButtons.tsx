@@ -7,9 +7,39 @@ interface ProductButtonsProps {
   selected: boolean;
   handleSelect: () => void;
   onBuyClick: () => void;
+  productId?: number;
+  productName?: string;
+  price?: number;
 }
 
-const ProductButtons: React.FC<ProductButtonsProps> = ({ selected, handleSelect, onBuyClick }) => {
+declare global {
+  interface Window {
+    fbq: any;
+  }
+}
+
+const ProductButtons: React.FC<ProductButtonsProps> = ({ 
+  selected, 
+  handleSelect, 
+  onBuyClick,
+  productId,
+  productName,
+  price
+}) => {
+  const handleBuyClick = () => {
+    // Track Add to Cart event with Meta Pixel
+    if (window.fbq) {
+      window.fbq('track', 'AddToCart', {
+        content_ids: [productId || 0],
+        content_name: productName || 'Product',
+        value: price || 0,
+        currency: 'BRL'
+      });
+    }
+    
+    onBuyClick();
+  };
+
   return (
     <div className="flex items-center space-x-2">
       <motion.button
@@ -28,7 +58,7 @@ const ProductButtons: React.FC<ProductButtonsProps> = ({ selected, handleSelect,
         className="flex-1 bg-stitch-blue text-white py-2 px-3 rounded-md font-medium text-sm hover:bg-stitch-blue/90 flex items-center justify-center"
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
-        onClick={onBuyClick}
+        onClick={handleBuyClick}
       >
         <ShoppingBag className="w-4 h-4 mr-1" />
         Comprar

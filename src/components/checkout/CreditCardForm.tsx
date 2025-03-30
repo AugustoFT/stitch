@@ -18,6 +18,12 @@ interface CreditCardFormProps {
   totalAmount?: number;
 }
 
+declare global {
+  interface Window {
+    fbq: any;
+  }
+}
+
 const CreditCardForm: React.FC<CreditCardFormProps> = ({
   formData,
   isSubmitting,
@@ -33,6 +39,16 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   
   useEffect(() => {
     console.log('FORÇANDO MODO DE PRODUÇÃO!');
+    
+    // Track ViewContent event when form is shown
+    if (window.fbq) {
+      window.fbq('track', 'ViewContent', {
+        content_type: 'product',
+        content_ids: selectedProducts.map(p => p.id),
+        value: totalAmount,
+        currency: 'BRL'
+      });
+    }
   }, []);
   
   const {
@@ -54,6 +70,21 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     totalAmount,
     mercadoPagoReady
   });
+  
+  // Track successful purchases
+  useEffect(() => {
+    if (paymentResult && paymentResult.status === 'approved') {
+      if (window.fbq) {
+        window.fbq('track', 'Purchase', {
+          value: totalAmount,
+          currency: 'BRL',
+          content_ids: selectedProducts.map(p => p.id),
+          content_type: 'product',
+          num_items: selectedProducts.reduce((acc, curr) => acc + curr.quantity, 0)
+        });
+      }
+    }
+  }, [paymentResult]);
 
   useEffect(() => {
     loadSavedCardData();
@@ -67,6 +98,15 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
 
   const processPayment = async () => {
     saveFormData();
+    
+    // Track "CompletePaymentInfo" event when proceeding to payment
+    if (window.fbq) {
+      window.fbq('track', 'AddPaymentInfo', {
+        payment_method: 'credit_card',
+        value: totalAmount,
+        currency: 'BRL'
+      });
+    }
     
     if (!validateAllFields()) {
       toast({
