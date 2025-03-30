@@ -37,6 +37,12 @@ interface CheckoutStructureProps {
   onQuantityChange?: (productId: number, quantity: number) => void;
 }
 
+declare global {
+  interface Window {
+    dataLayer: any[];
+  }
+}
+
 const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
   formData,
   isSubmitting,
@@ -61,6 +67,34 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
   }
 
   const hasKitCompleto = products.some(p => p.title && p.title.includes("Kit Completo"));
+  
+  const handleFecharPedidoClick = (e: React.MouseEvent) => {
+    // We don't prevent default because we still want the form to submit
+    
+    // Push to dataLayer
+    if (window.dataLayer) {
+      const isFormValid = validateCheckoutForm(formData);
+      
+      window.dataLayer.push({
+        event: 'fechar_pedido',
+        products: products.map(p => ({
+          id: p.id,
+          name: p.title,
+          price: p.price,
+          quantity: p.quantity
+        })),
+        total: total,
+        paymentMethod: formData.formaPagamento,
+        isFormValid
+      });
+    }
+  };
+  
+  // Simple validation function to check if the form is filled out
+  const validateCheckoutForm = (formData: any) => {
+    const requiredFields = ['nome', 'email', 'telefone', 'cpf', 'cep', 'endereco', 'numero', 'bairro', 'cidade', 'estado', 'formaPagamento'];
+    return requiredFields.every(field => formData[field] && formData[field].trim() !== '');
+  };
 
   return (
     <>
@@ -116,6 +150,7 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
           className="bg-stitch-pink hover:bg-stitch-pink/90 text-white font-semibold"
           disabled={isSubmitting}
           type="submit"
+          onClick={handleFecharPedidoClick}
         >
           <ShoppingBag className="w-4 h-4 mr-2" />
           Fechar Pedido

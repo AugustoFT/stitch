@@ -8,7 +8,25 @@ interface GeneratePixButtonProps {
   onClick: () => void;
 }
 
+declare global {
+  interface Window {
+    dataLayer: any[];
+  }
+}
+
 const GeneratePixButton: React.FC<GeneratePixButtonProps> = ({ isSubmitting, onClick }) => {
+  const handleGeneratePixClick = () => {
+    // Push to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'gerar_qr_code_pix',
+        payment_method: 'pix'
+      });
+    }
+    
+    onClick();
+  };
+  
   return (
     <motion.button 
       type="button"
@@ -16,7 +34,7 @@ const GeneratePixButton: React.FC<GeneratePixButtonProps> = ({ isSubmitting, onC
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       disabled={isSubmitting}
-      onClick={onClick}
+      onClick={handleGeneratePixClick}
     >
       {isSubmitting ? "Gerando PIX..." : (
         <span className="flex items-center justify-center gap-2">

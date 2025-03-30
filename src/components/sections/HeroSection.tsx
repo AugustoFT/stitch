@@ -13,9 +13,27 @@ interface HeroSectionProps {
   scrollToCheckout: () => void;
 }
 
+declare global {
+  interface Window {
+    dataLayer: any[];
+  }
+}
+
 const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout }) => {
   const heroRef = useRef<HTMLDivElement>(null);
   const heroInView = useInView(heroRef, { once: true, margin: "-100px" });
+  
+  const handleComprarClick = () => {
+    // Push to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'comprar_agora',
+        buttonLocation: 'hero_section'
+      });
+    }
+    
+    scrollToCheckout();
+  };
 
   return (
     <section 
@@ -85,7 +103,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
           <div className="flex flex-wrap gap-3">
             <motion.button 
               className="btn-primary mr-3 text-sm py-2 px-4"
-              onClick={scrollToCheckout}
+              onClick={handleComprarClick}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -118,7 +136,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
               className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-stitch-pink text-white py-2 px-6 rounded-full shadow-lg font-bold"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={scrollToCheckout}
+              onClick={handleComprarClick}
             >
               Kit Exclusivo Stitch
             </motion.button>

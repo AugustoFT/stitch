@@ -15,6 +15,7 @@ interface ProductButtonsProps {
 declare global {
   interface Window {
     fbq: any;
+    dataLayer: any[];
   }
 }
 
@@ -34,6 +35,16 @@ const ProductButtons: React.FC<ProductButtonsProps> = ({
         content_name: productName || 'Product',
         value: price || 0,
         currency: 'BRL'
+      });
+    }
+    
+    // Push to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'comprar',
+        productId: productId || 0,
+        productName: productName || 'Product',
+        productPrice: price || 0
       });
     }
     
@@ -57,6 +68,16 @@ const ProductButtons: React.FC<ProductButtonsProps> = ({
         content_name: productName || 'Product',
         value: price || 0,
         currency: 'BRL'
+      });
+    }
+    
+    // Push to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: selected ? 'remover_produto' : 'selecionar_produto',
+        productId: productId || 0,
+        productName: productName || 'Product',
+        productPrice: price || 0
       });
     }
     

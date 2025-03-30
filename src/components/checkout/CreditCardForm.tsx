@@ -21,6 +21,7 @@ interface CreditCardFormProps {
 declare global {
   interface Window {
     fbq: any;
+    dataLayer: any[];
   }
 }
 
@@ -47,6 +48,21 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         content_ids: selectedProducts.map(p => p.id),
         value: totalAmount,
         currency: 'BRL'
+      });
+    }
+    
+    // Push to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'view_payment_form',
+        payment_method: 'credit_card',
+        products: selectedProducts.map(p => ({
+          id: p.id,
+          name: p.title,
+          price: p.price,
+          quantity: p.quantity
+        })),
+        total: totalAmount
       });
     }
   }, []);
@@ -83,6 +99,26 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
           num_items: selectedProducts.reduce((acc, curr) => acc + curr.quantity, 0)
         });
       }
+      
+      // Push successful purchase to dataLayer
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: 'compra_finalizada',
+          payment_method: 'credit_card',
+          transaction_id: paymentResult.id,
+          order_id: paymentResult.orderId,
+          products: selectedProducts.map(p => ({
+            id: p.id,
+            name: p.title,
+            price: p.price,
+            quantity: p.quantity
+          })),
+          total: totalAmount,
+          installments: installments,
+          shipping: 0,
+          tax: 0
+        });
+      }
     }
   }, [paymentResult]);
 
@@ -108,13 +144,42 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       });
     }
     
+    // Push add payment info to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'adicionar_info_pagamento',
+        payment_method: 'credit_card',
+        value: totalAmount,
+        installments: installments
+      });
+    }
+    
     if (!validateAllFields()) {
       toast({
         variant: "destructive",
         title: "Erro de validação",
         description: "Por favor, corrija os erros no formulário antes de continuar."
       });
+      
+      // Push validation error to dataLayer
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: 'erro_validacao_cartao',
+          errors: Object.keys(errors).filter(key => errors[key])
+        });
+      }
+      
       return;
+    }
+    
+    // Push process payment to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'processar_pagamento',
+        payment_method: 'credit_card',
+        value: totalAmount,
+        installments: installments
+      });
     }
     
     await handleCardPayment(cardData, installments);

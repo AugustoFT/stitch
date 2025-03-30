@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import ProductCard from '../ProductCard';
@@ -26,6 +27,12 @@ interface ProductsSectionProps {
   selectedProductIds: number[];
 }
 
+declare global {
+  interface Window {
+    dataLayer: any[];
+  }
+}
+
 const ProductsSection: React.FC<ProductsSectionProps> = ({ 
   products, 
   scrollToCheckout, 
@@ -42,6 +49,30 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
 
   const handleProductQuantityChange = (productId: number, quantity: number) => {
     handleQuantityChange(productId, quantity);
+  };
+  
+  const handleComprarAgora = () => {
+    // Push to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'comprar_agora',
+        buttonLocation: 'products_section'
+      });
+    }
+    
+    scrollToCheckout();
+  };
+  
+  const handleAproveiteOferta = () => {
+    // Push to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'aproveitar_oferta_exclusiva',
+        buttonLocation: 'products_section'
+      });
+    }
+    
+    scrollToCheckout();
   };
 
   return (
@@ -65,7 +96,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
           className="mt-5 bg-stitch-pink text-white py-2 px-6 rounded-md shadow-md font-medium flex items-center mx-auto"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={scrollToCheckout}
+          onClick={handleComprarAgora}
         >
           <ShoppingBag className="w-4 h-4 mr-2" />
           Comprar Agora
@@ -125,7 +156,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
             className="bg-stitch-blue text-white py-2 px-6 rounded-full shadow-md font-bold"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={scrollToCheckout}
+            onClick={handleAproveiteOferta}
           >
             Aproveitar Oferta Exclusiva
           </motion.button>

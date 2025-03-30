@@ -11,6 +11,7 @@ declare global {
   interface Window {
     MercadoPago: any;
     fbq: any;
+    dataLayer: any[];
   }
 }
 
@@ -47,6 +48,20 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         num_items: selectedProducts.length,
         value: totalAmount,
         currency: 'BRL'
+      });
+    }
+    
+    // Push checkout view to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'iniciar_checkout',
+        products: selectedProducts.map(p => ({
+          id: p.id,
+          name: p.title,
+          price: p.price,
+          quantity: p.quantity
+        })),
+        total: totalAmount
       });
     }
   }, []);
@@ -87,6 +102,19 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       }
     }
     
+    // Push to dataLayer
+    if (window.dataLayer) {
+      const product = formState.productsWithQuantity.find(p => p.id === productId);
+      if (product) {
+        window.dataLayer.push({
+          event: 'remover_produto',
+          productId,
+          productName: product.title,
+          productPrice: parseFloat(String(product.price).replace('R$ ', '').replace(',', '.'))
+        });
+      }
+    }
+    
     removeProduct(productId);
     if (onRemoveProduct) {
       onRemoveProduct(productId);
@@ -114,6 +142,19 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       });
     }
     
+    // Push to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: quantity > currentQuantity ? 'aumentar_quantidade' : 'diminuir_quantidade',
+        productId,
+        productName: product ? product.title : 'Product',
+        productPrice: product ? parseFloat(String(product.price).replace('R$ ', '').replace(',', '.')) : 0,
+        oldQuantity: currentQuantity,
+        newQuantity: quantity,
+        quantityDelta: quantity - currentQuantity
+      });
+    }
+    
     updateProductQuantity(productId, quantity);
     if (onQuantityChange) {
       onQuantityChange(productId, quantity);
@@ -132,8 +173,33 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       });
     }
     
+    // Validate form data
+    const isFormValid = validateCheckoutForm(formState.formData);
+    
+    // Push to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'finalizar_compra',
+        products: formState.productsWithQuantity.map(p => ({
+          id: p.id,
+          name: p.title,
+          price: parseFloat(String(p.price).replace('R$ ', '').replace(',', '.')),
+          quantity: p.quantity
+        })),
+        total: formState.calculatedTotal,
+        paymentMethod: formState.formData.formaPagamento,
+        isFormValid
+      });
+    }
+    
     saveCustomerInfo();
     handleSubmit(e);
+  };
+  
+  // Simple validation function to check if the form is filled out properly
+  const validateCheckoutForm = (formData: any) => {
+    const requiredFields = ['nome', 'email', 'telefone', 'cpf', 'cep', 'endereco', 'numero', 'bairro', 'cidade', 'estado', 'formaPagamento'];
+    return requiredFields.every(field => formData[field] && formData[field].trim() !== '');
   };
 
   return (

@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackgroundElements from '../components/BackgroundElements';
@@ -15,9 +15,15 @@ import CheckoutSection from '../components/sections/CheckoutSection';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import { productsList } from '../data/products';
+import { initDataLayer } from '../utils/dataLayer';
 
 const Index: React.FC = () => {
   const checkoutRef = useRef<HTMLDivElement>(null);
+  
+  // Initialize dataLayer
+  useEffect(() => {
+    initDataLayer();
+  }, []);
   
   // Initialize countdown timer
   const timeLeft = useCountdownTimer({

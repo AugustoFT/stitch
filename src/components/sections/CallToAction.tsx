@@ -9,6 +9,7 @@ interface CallToActionProps {
 declare global {
   interface Window {
     fbq: any;
+    dataLayer: any[];
   }
 }
 
@@ -17,6 +18,14 @@ const CallToAction: React.FC<CallToActionProps> = ({ scrollToCheckout }) => {
     // Track the InitiateCheckout event with Meta Pixel
     if (window.fbq) {
       window.fbq('track', 'InitiateCheckout');
+    }
+    
+    // Push to dataLayer
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'comprar_agora',
+        buttonLocation: 'call_to_action_section'
+      });
     }
     
     scrollToCheckout();
