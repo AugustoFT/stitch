@@ -75,7 +75,7 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
           {/* PIX logo */}
           <div className="ml-auto">
             <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Pix_logo.svg/1200px-Pix_logo.svg.png" 
+              src="https://logodownload.org/wp-content/uploads/2020/02/pix-bc-logo-1.png" 
               alt="PIX" 
               className="h-5 w-auto"
             />

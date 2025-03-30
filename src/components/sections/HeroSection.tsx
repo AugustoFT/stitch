@@ -120,7 +120,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
               whileTap={{ scale: 0.95 }}
               onClick={scrollToCheckout}
             >
-              Comprar por R$ 0,10
+              Kit Exclusivo Stitch
             </motion.button>
           </div>
         </motion.div>
