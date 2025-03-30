@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { formatCardNumber, formatExpirationDate, formatCVV } from './CardFormatters';
 
 interface CardInputsProps {
@@ -27,6 +27,31 @@ const CardInputs: React.FC<CardInputsProps> = ({
   setSecurityCode,
   validateField
 }) => {
+  // Use memoized event handlers for better performance
+  const handleCardNumberChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatCardNumber(e.target.value);
+    setCardNumber(formattedValue);
+    validateField('cardNumber', formattedValue);
+  }, [setCardNumber, validateField]);
+
+  const handleCardholderNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toUpperCase();
+    setCardholderName(value);
+    validateField('cardholderName', value);
+  }, [setCardholderName, validateField]);
+
+  const handleExpirationDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatExpirationDate(e.target.value);
+    setExpirationDate(formattedValue);
+    validateField('expirationDate', formattedValue);
+  }, [setExpirationDate, validateField]);
+
+  const handleSecurityCodeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatCVV(e.target.value);
+    setSecurityCode(formattedValue);
+    validateField('securityCode', formattedValue);
+  }, [setSecurityCode, validateField]);
+
   return (
     <>
       <div>
@@ -37,11 +62,7 @@ const CardInputs: React.FC<CardInputsProps> = ({
           type="text"
           id="cardNumber"
           value={cardNumber}
-          onChange={(e) => {
-            const formattedValue = formatCardNumber(e.target.value);
-            setCardNumber(formattedValue);
-            validateField('cardNumber', formattedValue);
-          }}
+          onChange={handleCardNumberChange}
           className={`stitch-input ${errors.cardNumber ? 'border-red-500' : ''}`}
           placeholder="0000 0000 0000 0000"
           required
@@ -59,11 +80,7 @@ const CardInputs: React.FC<CardInputsProps> = ({
           type="text"
           id="cardholderName"
           value={cardholderName}
-          onChange={(e) => {
-            const value = e.target.value.toUpperCase();
-            setCardholderName(value);
-            validateField('cardholderName', value);
-          }}
+          onChange={handleCardholderNameChange}
           className={`stitch-input ${errors.cardholderName ? 'border-red-500' : ''}`}
           placeholder="NOME COMO ESTÁ NO CARTÃO"
           required
@@ -82,11 +99,7 @@ const CardInputs: React.FC<CardInputsProps> = ({
             type="text"
             id="expirationDate"
             value={expirationDate}
-            onChange={(e) => {
-              const formattedValue = formatExpirationDate(e.target.value);
-              setExpirationDate(formattedValue);
-              validateField('expirationDate', formattedValue);
-            }}
+            onChange={handleExpirationDateChange}
             className={`stitch-input ${errors.expirationDate ? 'border-red-500' : ''}`}
             placeholder="MM/AA"
             required
@@ -103,11 +116,7 @@ const CardInputs: React.FC<CardInputsProps> = ({
             type="text"
             id="securityCode"
             value={securityCode}
-            onChange={(e) => {
-              const formattedValue = formatCVV(e.target.value);
-              setSecurityCode(formattedValue);
-              validateField('securityCode', formattedValue);
-            }}
+            onChange={handleSecurityCodeChange}
             className={`stitch-input ${errors.securityCode ? 'border-red-500' : ''}`}
             placeholder="123"
             required
@@ -121,4 +130,4 @@ const CardInputs: React.FC<CardInputsProps> = ({
   );
 };
 
-export default CardInputs;
+export default React.memo(CardInputs);

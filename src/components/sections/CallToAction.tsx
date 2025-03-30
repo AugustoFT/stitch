@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { eventTrackers } from '../../utils/dataLayer';
 
 interface CallToActionProps {
   scrollToCheckout: () => void;
@@ -9,7 +10,6 @@ interface CallToActionProps {
 declare global {
   interface Window {
     fbq: any;
-    dataLayer: any[];
   }
 }
 
@@ -20,13 +20,8 @@ const CallToAction: React.FC<CallToActionProps> = ({ scrollToCheckout }) => {
       window.fbq('track', 'InitiateCheckout');
     }
     
-    // Push to dataLayer
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'comprar_agora',
-        buttonLocation: 'call_to_action_section'
-      });
-    }
+    // Track event with dataLayer
+    eventTrackers.comprarAgora('call_to_action_section');
     
     scrollToCheckout();
   };

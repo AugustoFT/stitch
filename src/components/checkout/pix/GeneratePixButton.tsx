@@ -2,27 +2,17 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { QrCode } from 'lucide-react';
+import { eventTrackers } from '../../../utils/dataLayer';
 
 interface GeneratePixButtonProps {
   isSubmitting: boolean;
   onClick: () => void;
 }
 
-declare global {
-  interface Window {
-    dataLayer: any[];
-  }
-}
-
 const GeneratePixButton: React.FC<GeneratePixButtonProps> = ({ isSubmitting, onClick }) => {
   const handleGeneratePixClick = () => {
-    // Push to dataLayer
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'gerar_qr_code_pix',
-        payment_method: 'pix'
-      });
-    }
+    // Track event with dataLayer
+    eventTrackers.gerarQrCodePix();
     
     onClick();
   };

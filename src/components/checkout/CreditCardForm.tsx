@@ -1,11 +1,12 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import CardPaymentSuccess from './CardPaymentSuccess';
 import CardPaymentWrapper from './card/CardPaymentWrapper';
 import { useCardFormValidation } from './hooks/useCardFormValidation';
 import { useCardPayment } from './hooks/useCardPayment';
+import { pushToDataLayer, eventTrackers } from '../../utils/dataLayer';
 
 interface CreditCardFormProps {
   formData: any;
@@ -18,13 +19,6 @@ interface CreditCardFormProps {
   totalAmount?: number;
 }
 
-declare global {
-  interface Window {
-    fbq: any;
-    dataLayer: any[];
-  }
-}
-
 const CreditCardForm: React.FC<CreditCardFormProps> = ({
   formData,
   isSubmitting,
@@ -35,7 +29,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   selectedProducts = [],
   totalAmount = 139.99
 }) => {
-  const [installments, setInstallments] = useState(1);
+  const [installments, setInstallments] = React.useState(1);
   const { toast } = useToast();
   
   useEffect(() => {
@@ -52,19 +46,16 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     }
     
     // Push to dataLayer
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'view_payment_form',
-        payment_method: 'credit_card',
-        products: selectedProducts.map(p => ({
-          id: p.id,
-          name: p.title,
-          price: p.price,
-          quantity: p.quantity
-        })),
-        total: totalAmount
-      });
-    }
+    pushToDataLayer('view_payment_form', {
+      payment_method: 'credit_card',
+      products: selectedProducts.map(p => ({
+        id: p.id,
+        name: p.title,
+        price: p.price,
+        quantity: p.quantity
+      })),
+      total: totalAmount
+    });
   }, []);
   
   const {
@@ -101,24 +92,12 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       }
       
       // Push successful purchase to dataLayer
-      if (window.dataLayer) {
-        window.dataLayer.push({
-          event: 'compra_finalizada',
-          payment_method: 'credit_card',
-          transaction_id: paymentResult.id,
-          order_id: paymentResult.orderId,
-          products: selectedProducts.map(p => ({
-            id: p.id,
-            name: p.title,
-            price: p.price,
-            quantity: p.quantity
-          })),
-          total: totalAmount,
-          installments: installments,
-          shipping: 0,
-          tax: 0
-        });
-      }
+      eventTrackers.finalizarCompra(
+        selectedProducts,
+        totalAmount,
+        'credit_card',
+        paymentResult.id
+      );
     }
   }, [paymentResult]);
 
@@ -145,14 +124,11 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     }
     
     // Push add payment info to dataLayer
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'adicionar_info_pagamento',
-        payment_method: 'credit_card',
-        value: totalAmount,
-        installments: installments
-      });
-    }
+    pushToDataLayer('adicionar_info_pagamento', {
+      payment_method: 'credit_card',
+      value: totalAmount,
+      installments: installments
+    });
     
     if (!validateAllFields()) {
       toast({
@@ -162,25 +138,19 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       });
       
       // Push validation error to dataLayer
-      if (window.dataLayer) {
-        window.dataLayer.push({
-          event: 'erro_validacao_cartao',
-          errors: Object.keys(errors).filter(key => errors[key])
-        });
-      }
+      pushToDataLayer('erro_validacao_cartao', {
+        errors: Object.keys(errors).filter(key => errors[key])
+      });
       
       return;
     }
     
     // Push process payment to dataLayer
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'processar_pagamento',
-        payment_method: 'credit_card',
-        value: totalAmount,
-        installments: installments
-      });
-    }
+    pushToDataLayer('processar_pagamento', {
+      payment_method: 'credit_card',
+      value: totalAmount,
+      installments: installments
+    });
     
     await handleCardPayment(cardData, installments);
   };

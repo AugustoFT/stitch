@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { CreditCard, PiggyBank } from 'lucide-react';
+import { pushToDataLayer } from '../../utils/dataLayer';
 
 interface PaymentMethodSelectorProps {
   formaPagamento: string;
@@ -17,7 +18,7 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
   formaPagamento, 
   onChange 
 }) => {
-  const handlePaymentMethodChange = (method: string) => {
+  const handlePaymentMethodChange = useCallback((method: string) => {
     // Track payment method selection with Meta Pixel
     if (window.fbq) {
       window.fbq('track', 'InitiateCheckout', {
@@ -25,8 +26,15 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
       });
     }
     
+    // Push to dataLayer
+    pushToDataLayer('selecionar_metodo_pagamento', {
+      categoria: 'E-commerce',
+      acao: 'Selecionar Método de Pagamento',
+      payment_method: method
+    });
+    
     onChange(method);
-  };
+  }, [onChange]);
 
   return (
     <div className="mt-6">
@@ -103,4 +111,4 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
   );
 };
 
-export default PaymentMethodSelector;
+export default React.memo(PaymentMethodSelector);

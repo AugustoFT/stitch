@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 export interface CustomerInfoData {
   nome: string;
@@ -57,23 +57,24 @@ export const useCustomerInfo = () => {
     customerInfoLoaded.current = true;
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  // Use memoized version of handleChange to prevent unnecessary re-renders
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
 
-  const handlePaymentMethodChange = (method: string) => {
+  const handlePaymentMethodChange = useCallback((method: string) => {
     setFormData(prev => ({
       ...prev,
       formaPagamento: method
     }));
-  };
+  }, []);
 
   // Save customer info to localStorage
-  const saveCustomerInfo = () => {
+  const saveCustomerInfo = useCallback(() => {
     if (formData.nome && formData.email) {
       const dataToSave = {
         nome: formData.nome,
@@ -90,7 +91,7 @@ export const useCustomerInfo = () => {
       };
       localStorage.setItem('customerInfo', JSON.stringify(dataToSave));
     }
-  };
+  }, [formData]);
 
   return {
     formData,

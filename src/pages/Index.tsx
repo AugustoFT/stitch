@@ -15,7 +15,7 @@ import CheckoutSection from '../components/sections/CheckoutSection';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import { productsList } from '../data/products';
-import { initDataLayer } from '../utils/dataLayer';
+import { initDataLayer, pushToDataLayer } from '../utils/dataLayer';
 
 const Index: React.FC = () => {
   const checkoutRef = useRef<HTMLDivElement>(null);
@@ -23,6 +23,13 @@ const Index: React.FC = () => {
   // Initialize dataLayer
   useEffect(() => {
     initDataLayer();
+    
+    // Track page view
+    pushToDataLayer('pageView', {
+      page_type: 'landing_page',
+      page_name: 'Stitch Landing Page',
+      page_path: window.location.pathname
+    });
   }, []);
   
   // Initialize countdown timer
@@ -45,6 +52,12 @@ const Index: React.FC = () => {
 
   const scrollToCheckout = () => {
     checkoutRef.current?.scrollIntoView({ behavior: 'smooth' });
+    
+    // Track scroll to checkout event
+    pushToDataLayer('scrollToCheckout', {
+      categoria: 'Navegacao',
+      acao: 'Scroll para Checkout'
+    });
   };
 
   return (

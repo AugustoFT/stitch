@@ -1,10 +1,9 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import ProductCard from '../ProductCard';
-import { Button } from '../ui/button';
 import { ShoppingBag, Clock, Award, Users, TruckIcon } from 'lucide-react';
-import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
+import { eventTrackers } from '../../utils/dataLayer';
 
 interface ProductInfo {
   id: number;
@@ -27,12 +26,6 @@ interface ProductsSectionProps {
   selectedProductIds: number[];
 }
 
-declare global {
-  interface Window {
-    dataLayer: any[];
-  }
-}
-
 const ProductsSection: React.FC<ProductsSectionProps> = ({ 
   products, 
   scrollToCheckout, 
@@ -45,32 +38,43 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
 
   const handleProductSelect = (productId: number, selected: boolean) => {
     toggleProductSelection(productId, selected);
+    
+    // Find the product
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      if (selected) {
+        // Track product selected
+        eventTrackers.addToCart(product);
+      } else {
+        // Track product deselected
+        eventTrackers.removeFromCart(product);
+      }
+    }
   };
 
   const handleProductQuantityChange = (productId: number, quantity: number) => {
     handleQuantityChange(productId, quantity);
+    
+    // Track quantity change
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      eventTrackers.addToCart({
+        ...product,
+        quantity
+      });
+    }
   };
   
   const handleComprarAgora = () => {
-    // Push to dataLayer
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'comprar_agora',
-        buttonLocation: 'products_section'
-      });
-    }
+    // Track comprar agora click
+    eventTrackers.comprarAgora('products_section');
     
     scrollToCheckout();
   };
   
   const handleAproveiteOferta = () => {
-    // Push to dataLayer
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'aproveitar_oferta_exclusiva',
-        buttonLocation: 'products_section'
-      });
-    }
+    // Track aproveite oferta click
+    eventTrackers.comprarAgora('oferta_exclusiva_section');
     
     scrollToCheckout();
   };

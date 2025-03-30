@@ -1,7 +1,7 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Clock, Star } from 'lucide-react';
+import { eventTrackers } from '../../utils/dataLayer';
 
 interface HeroSectionProps {
   timeLeft: {
@@ -13,24 +13,13 @@ interface HeroSectionProps {
   scrollToCheckout: () => void;
 }
 
-declare global {
-  interface Window {
-    dataLayer: any[];
-  }
-}
-
 const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout }) => {
   const heroRef = useRef<HTMLDivElement>(null);
   const heroInView = useInView(heroRef, { once: true, margin: "-100px" });
   
   const handleComprarClick = () => {
-    // Push to dataLayer
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'comprar_agora',
-        buttonLocation: 'hero_section'
-      });
-    }
+    // Track comprar button click
+    eventTrackers.comprarAgora('hero_section');
     
     scrollToCheckout();
   };
