@@ -2,11 +2,13 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
-import CardPaymentSuccess from './CardPaymentSuccess';
+import CardSuccessState from './card/CardSuccessState';
 import CardPaymentWrapper from './card/CardPaymentWrapper';
 import { useCardFormValidation } from './hooks/useCardFormValidation';
 import { useCardPayment } from './hooks/useCardPayment';
-import { pushToDataLayer, eventTrackers } from '../../utils/dataLayer';
+import { pushToDataLayer } from '../../utils/dataLayer';
+import { usePaymentTracking } from './hooks/usePaymentTracking';
+import { useFormTracking } from './hooks/useFormTracking';
 
 interface CreditCardFormProps {
   formData: any;
@@ -32,31 +34,8 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   const [installments, setInstallments] = React.useState(1);
   const { toast } = useToast();
   
-  useEffect(() => {
-    console.log('FORÇANDO MODO DE PRODUÇÃO!');
-    
-    // Track ViewContent event when form is shown
-    if (window.fbq) {
-      window.fbq('track', 'ViewContent', {
-        content_type: 'product',
-        content_ids: selectedProducts.map(p => p.id),
-        value: totalAmount,
-        currency: 'BRL'
-      });
-    }
-    
-    // Push to dataLayer
-    pushToDataLayer('view_payment_form', {
-      payment_method: 'credit_card',
-      products: selectedProducts.map(p => ({
-        id: p.id,
-        name: p.title,
-        price: p.price,
-        quantity: p.quantity
-      })),
-      total: totalAmount
-    });
-  }, []);
+  // Use our new tracking hooks
+  useFormTracking({ selectedProducts, totalAmount });
   
   const {
     cardData,
@@ -78,28 +57,8 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     mercadoPagoReady
   });
   
-  // Track successful purchases
-  useEffect(() => {
-    if (paymentResult && paymentResult.status === 'approved') {
-      if (window.fbq) {
-        window.fbq('track', 'Purchase', {
-          value: totalAmount,
-          currency: 'BRL',
-          content_ids: selectedProducts.map(p => p.id),
-          content_type: 'product',
-          num_items: selectedProducts.reduce((acc, curr) => acc + curr.quantity, 0)
-        });
-      }
-      
-      // Push successful purchase to dataLayer
-      eventTrackers.finalizarCompra(
-        selectedProducts,
-        totalAmount,
-        'credit_card',
-        paymentResult.id
-      );
-    }
-  }, [paymentResult]);
+  // Use our new payment tracking hook
+  usePaymentTracking({ paymentResult, totalAmount, selectedProducts });
 
   useEffect(() => {
     loadSavedCardData();
@@ -163,7 +122,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       transition={{ duration: 0.3 }}
       className="space-y-4 border-t pt-4"
     >
-      <CardPaymentSuccess paymentResult={paymentResult} />
+      <CardSuccessState paymentResult={paymentResult} />
       
       {(!paymentResult || paymentResult.status !== 'approved') && (
         <CardPaymentWrapper
