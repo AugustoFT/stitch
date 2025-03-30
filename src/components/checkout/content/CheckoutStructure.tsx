@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, ShieldCheck, ShoppingBag } from 'lucide-react';
+import { Award, ShieldCheck, ShoppingBag, PiggyBank } from 'lucide-react';
 import PaymentSuccessMessage from '../PaymentSuccessMessage';
 import CartDisplay from '../cart/CartDisplay';
 import CustomerInfoForm from '../CustomerInfoForm';
@@ -95,6 +95,24 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
           <ShoppingBag className="w-4 h-4 mr-2" />
           Fechar Pedido
         </Button>
+      </div>
+      
+      {/* Selos de segurança */}
+      <div className="my-4 p-3 bg-gray-50 rounded-lg">
+        <div className="flex justify-center items-center gap-6 flex-wrap">
+          <div className="flex flex-col items-center text-center">
+            <ShieldCheck className="h-6 w-6 text-green-600 mb-1" />
+            <span className="text-xs font-medium">Compra Segura</span>
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <ShieldCheck className="h-6 w-6 text-green-600 mb-1" />
+            <span className="text-xs font-medium">Ambiente Protegido</span>
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <ShieldCheck className="h-6 w-6 text-green-600 mb-1" />
+            <span className="text-xs font-medium">Dados Criptografados</span>
+          </div>
+        </div>
       </div>
       
       <CustomerInfoForm 
