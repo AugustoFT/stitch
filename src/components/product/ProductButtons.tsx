@@ -40,6 +40,30 @@ const ProductButtons: React.FC<ProductButtonsProps> = ({
     onBuyClick();
   };
 
+  const handleSelectClick = () => {
+    // Handle tracking here based on current selection state
+    if (!selected && window.fbq) {
+      // If not already selected, track as an add to cart event
+      window.fbq('track', 'AddToCart', {
+        content_ids: [productId || 0],
+        content_name: productName || 'Product',
+        value: price || 0,
+        currency: 'BRL'
+      });
+    } else if (selected && window.fbq) {
+      // If already selected, track as remove from cart
+      window.fbq('track', 'RemoveFromCart', {
+        content_ids: [productId || 0],
+        content_name: productName || 'Product',
+        value: price || 0,
+        currency: 'BRL'
+      });
+    }
+    
+    // Call the original handleSelect function
+    handleSelect();
+  };
+
   return (
     <div className="flex items-center space-x-2">
       <motion.button
@@ -49,7 +73,7 @@ const ProductButtons: React.FC<ProductButtonsProps> = ({
             : 'bg-stitch-light text-stitch-blue hover:bg-stitch-light/80'
         }`}
         whileTap={{ scale: 0.95 }}
-        onClick={handleSelect}
+        onClick={handleSelectClick}
       >
         {selected ? 'Selecionado' : 'Selecionar'}
       </motion.button>

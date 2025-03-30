@@ -81,7 +81,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         window.fbq('track', 'RemoveFromCart', {
           content_ids: [productId],
           content_name: product.title,
-          value: parseFloat(product.price.replace('R$ ', '').replace(',', '.')),
+          value: parseFloat(String(product.price).replace('R$ ', '').replace(',', '.')),
           currency: 'BRL'
         });
       }
@@ -103,7 +103,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       window.fbq('track', 'AddToCart', {
         content_ids: [productId],
         content_name: product ? product.title : 'Product',
-        value: product ? parseFloat(product.price.replace('R$ ', '').replace(',', '.')) : 0,
+        value: product ? parseFloat(String(product.price).replace('R$ ', '').replace(',', '.')) : 0,
         currency: 'BRL',
         contents: [
           {
@@ -156,7 +156,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       {/* Show success message if payment is approved */}
       <PaymentSuccessMessage paymentResult={formState.paymentResult} />
       
-      {/* Don't show the form if payment was already approved */}
+      {/* The form is now wrapped in a form tag, but the cart functionality is independent */}
       {(!formState.paymentResult || formState.paymentResult.status !== 'approved') && (
         <form onSubmit={enhancedHandleSubmit} className="space-y-3">
           <CheckoutFormContent

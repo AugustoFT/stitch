@@ -79,11 +79,36 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
         </motion.div>
       )}
       
+      {/* Cart Display moved to the top for independent interaction */}
       <CartDisplay 
         products={products}
         total={total}
         onRemoveProduct={onRemoveProduct}
         onQuantityChange={onQuantityChange}
+      />
+      
+      {/* Customer info form section */}
+      <CustomerInfoForm 
+        formData={formData}
+        handleChange={handleChange}
+        handlePhoneChange={handlePhoneChange}
+        handleCPFChange={handleCPFChange}
+        handleCEPChange={handleCEPChange}
+      />
+      
+      {/* Payment section */}
+      <PaymentSection 
+        formData={formData}
+        isSubmitting={isSubmitting}
+        cardFormVisible={cardFormVisible}
+        mercadoPagoReady={mercadoPagoReady}
+        paymentResult={paymentResult}
+        setIsSubmitting={setIsSubmitting}
+        setPaymentResult={setPaymentResult}
+        setCardPaymentStatus={setCardPaymentStatus}
+        handlePaymentMethodChange={handlePaymentMethodChange}
+        selectedProducts={products}
+        totalAmount={total}
       />
       
       <div className="my-4 text-center">
@@ -114,28 +139,6 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
           </div>
         </div>
       </div>
-      
-      <CustomerInfoForm 
-        formData={formData}
-        handleChange={handleChange}
-        handlePhoneChange={handlePhoneChange}
-        handleCPFChange={handleCPFChange}
-        handleCEPChange={handleCEPChange}
-      />
-      
-      <PaymentSection 
-        formData={formData}
-        isSubmitting={isSubmitting}
-        cardFormVisible={cardFormVisible}
-        mercadoPagoReady={mercadoPagoReady}
-        paymentResult={paymentResult}
-        setIsSubmitting={setIsSubmitting}
-        setPaymentResult={setPaymentResult}
-        setCardPaymentStatus={setCardPaymentStatus}
-        handlePaymentMethodChange={handlePaymentMethodChange}
-        selectedProducts={products}
-        totalAmount={total}
-      />
       
       <CheckoutTerms />
     </>
