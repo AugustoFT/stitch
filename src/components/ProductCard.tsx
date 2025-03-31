@@ -83,6 +83,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           src={imageUrl} 
           alt={title} 
           className="w-full h-48 object-contain p-4"
+          width={300}
+          height={200}
         />
         <ProductBadges 
           discount={discount} 

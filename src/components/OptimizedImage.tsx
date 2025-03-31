@@ -75,7 +75,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         onLoad={onImageLoad}
         onError={onImageError}
         loading={loadingAttribute}
-        fetchpriority={fetchPriority}
+        fetchPriority={fetchPriority}
         {...dimensions}
       />
     </div>
