@@ -34,7 +34,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   const [installments, setInstallments] = React.useState(1);
   const { toast } = useToast();
   
-  // Use our new tracking hooks
   useFormTracking({ selectedProducts, totalAmount });
   
   const {
@@ -57,7 +56,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
     mercadoPagoReady
   });
   
-  // Use our new payment tracking hook
   usePaymentTracking({ paymentResult, totalAmount, selectedProducts });
 
   useEffect(() => {
@@ -73,16 +71,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
   const processPayment = async () => {
     saveFormData();
     
-    // Track "CompletePaymentInfo" event when proceeding to payment
-    if (window.fbq) {
-      window.fbq('track', 'AddPaymentInfo', {
-        payment_method: 'credit_card',
-        value: totalAmount,
-        currency: 'BRL'
-      });
-    }
-    
-    // Push add payment info to dataLayer
     pushToDataLayer('adicionar_info_pagamento', {
       payment_method: 'credit_card',
       value: totalAmount,
@@ -96,7 +84,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
         description: "Por favor, corrija os erros no formulário antes de continuar."
       });
       
-      // Push validation error to dataLayer
       pushToDataLayer('erro_validacao_cartao', {
         errors: Object.keys(errors).filter(key => errors[key])
       });
@@ -104,7 +91,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({
       return;
     }
     
-    // Push process payment to dataLayer
     pushToDataLayer('processar_pagamento', {
       payment_method: 'credit_card',
       value: totalAmount,

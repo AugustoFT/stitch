@@ -7,7 +7,7 @@ import ProductQuantitySelector from '../../ProductQuantitySelector';
 interface ProductInfo {
   id: number;
   title: string;
-  price: number;
+  price: number | string;
   imageUrl: string;
   quantity: number;
 }
@@ -41,7 +41,7 @@ const CartProductItem: React.FC<CartProductItemProps> = ({
         <div>
           <p className="text-sm font-medium">{product.title}</p>
           <p className="text-xs text-gray-600">
-            R$ {typeof product.price === 'number' ? product.price.toFixed(2).replace('.', ',') : product.price}
+            R$ {typeof product.price === 'number' ? product.price.toFixed(2).replace('.', ',') : product.price.toString().replace('.', ',')}
           </p>
         </div>
       </div>
@@ -50,7 +50,7 @@ const CartProductItem: React.FC<CartProductItemProps> = ({
         <ProductQuantitySelector 
           quantity={product.quantity} 
           onQuantityChange={(qty) => onQuantityChange(product.id, qty)} 
-          maxQuantity={20} // Increase max quantity
+          maxQuantity={20}
         />
         
         <motion.button 
