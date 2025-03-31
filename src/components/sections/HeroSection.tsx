@@ -1,8 +1,9 @@
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, memo } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Clock, Star } from 'lucide-react';
 import { eventTrackers } from '../../utils/dataLayer';
+import OptimizedImage from '../OptimizedImage';
 
 interface HeroSectionProps {
   timeLeft: {
@@ -14,25 +15,15 @@ interface HeroSectionProps {
   scrollToCheckout: () => void;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout }) => {
+const HeroSection: React.FC<HeroSectionProps> = memo(({ timeLeft, scrollToCheckout }) => {
   const heroRef = useRef<HTMLDivElement>(null);
   const heroInView = useInView(heroRef, { once: true, margin: "-100px" });
   
   const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
   
   useEffect(() => {
-    const preloadImages = async () => {
-      try {
-        const heroImage = new Image();
-        heroImage.src = "/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png";
-        heroImage.onload = () => setImagesLoaded(true);
-      } catch (err) {
-        console.error("Failed to preload images:", err);
-        setImagesLoaded(true);
-      }
-    };
-    
-    preloadImages();
+    // Mark as loaded immediately to prevent UI delay
+    setImagesLoaded(true);
   }, []);
   
   const handleComprarClick = () => {
@@ -69,14 +60,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
             className="mb-6"
           >
             <div className="relative">
-              <img 
+              <OptimizedImage 
                 src="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
                 alt="Pelúcia Stitch" 
-                width="400"
-                height="400"
+                width={400}
+                height={400}
                 className="w-4/5 max-w-sm mx-auto drop-shadow-xl"
-                loading="eager"
-                fetchPriority="high"
+                priority={true}
+                placeholder="blur"
               />
               <motion.div 
                 className="absolute -right-5 top-5 bg-stitch-yellow text-stitch-dark p-2 rounded-full shadow-lg font-bold text-sm transform rotate-12"
@@ -112,12 +103,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
           
           <div className="flex flex-wrap gap-3">
             <motion.button 
-              className="btn-primary mr-3 text-sm py-2 px-4"
+              className="btn-primary mr-3 text-sm py-2 px-4 text-white"
               onClick={handleComprarClick}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
               aria-label="Comprar Agora"
-              style={{backgroundColor: "#ff4c8f", color: "#ffffff"}}
             >
               Comprar Agora
             </motion.button>
@@ -140,13 +130,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
           className="hidden md:block"
         >
           <div className="relative">
-            <img 
+            <OptimizedImage 
               src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
               alt="Kit Completo Stitch"
-              width="500"
-              height="500" 
+              width={500}
+              height={470} 
               className="w-4/5 max-w-sm mx-auto drop-shadow-xl"
-              loading="lazy"
+              priority={false}
             />
             <motion.button 
               className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-stitch-pink text-white py-2 px-6 rounded-full shadow-lg font-bold"
@@ -154,7 +144,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
               whileTap={{ scale: 0.95 }}
               onClick={handleComprarClick}
               aria-label="Kit Exclusivo Stitch"
-              style={{backgroundColor: "#ff4c8f", color: "#ffffff"}}
             >
               Kit Exclusivo Stitch
             </motion.button>
@@ -163,6 +152,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
       </div>
     </section>
   );
-};
+});
+
+HeroSection.displayName = 'HeroSection';
 
 export default HeroSection;

@@ -5,6 +5,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { imagetools } from "vite-imagetools";
 import { VitePWA } from "vite-plugin-pwa";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -14,11 +15,22 @@ export default defineConfig(({ mode }) => ({
     https: {}, // Use empty object instead of boolean to enable HTTPS with default settings
   },
   plugins: [
-    react(),
-    imagetools(), // Add imagetools for image optimization
+    react({
+      // Enable fast refresh
+      swcPlugins: [
+        ['swc-plugin-react-remove-props', { props: ['data-testid'] }]
+      ]
+    }),
+    imagetools({
+      include: ['**/*.{jpeg,jpg,png,webp}'],
+      defaultDirectives: new URLSearchParams([
+        ['format', 'webp'],
+        ['quality', '80']
+      ])
+    }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', '*.png', '*.svg'],
+      includeAssets: ['favicon.ico', '*.png', '*.svg', '*.webp'],
       manifest: {
         name: 'Stitch Store',
         short_name: 'Stitch',
@@ -31,9 +43,59 @@ export default defineConfig(({ mode }) => ({
             type: 'image/x-icon'
           }
         ]
+      },
+      workbox: {
+        // Cache images for 30 days
+        runtimeCaching: [
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+              },
+            },
+          },
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 24 * 60 * 60, // 1 day
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+              expiration: {
+                maxEntries: 5,
+                maxAgeSeconds: 7 * 24 * 60 * 60, // 1 week
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
+              },
+            },
+          },
+        ],
       }
     }),
-    mode === 'development' && componentTagger()
+    mode === 'development' && componentTagger(),
+    mode === 'production' && visualizer({ filename: 'stats.html' })
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -41,11 +103,17 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    // Enable source maps for production to help debugging
+    sourcemap: mode === 'development',
+    // Optimize build
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'framer-motion'],
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          framer: ['framer-motion'],
+          ui: ['@radix-ui/react-accordion', '@radix-ui/react-alert-dialog'],
           utils: ['./src/utils/dataLayer.ts'],
+          components: ['./src/components/ui/button.tsx', './src/components/ui/card.tsx'],
         },
         // Minimize JS chunk size
         chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -62,14 +130,24 @@ export default defineConfig(({ mode }) => ({
       },
     },
     cssCodeSplit: true,
-    sourcemap: false, // Disable sourcemaps in production
     // Enable these for better performance
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
-        drop_debugger: true,
-      }
+        drop_console: mode === 'production',
+        drop_debugger: mode === 'production',
+        passes: 2,
+      },
+      mangle: true,
     },
+    // Target modern browsers for smaller bundle size
+    target: 'es2020',
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'framer-motion', 'react-router-dom'],
+    exclude: ['vite-plugin-pwa/vue', 'vite-plugin-pwa/info'],
+    esbuildOptions: {
+      target: 'es2020',
+    }
   },
 }));

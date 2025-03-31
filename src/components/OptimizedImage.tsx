@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
 interface OptimizedImageProps {
   src: string;
@@ -11,7 +11,7 @@ interface OptimizedImageProps {
   placeholder?: 'blur' | 'empty';
 }
 
-const OptimizedImage: React.FC<OptimizedImageProps> = ({
+const OptimizedImage: React.FC<OptimizedImageProps> = memo(({
   src,
   alt,
   width,
@@ -23,26 +23,40 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   
+  // Convert PNG to WebP if from lovable-uploads
+  const optimizedSrc = src.includes('/lovable-uploads/') && src.endsWith('.png') 
+    ? src.replace('.png', '.webp') 
+    : src;
+  
   // Generate dimensions
   const dimensions = {
     width: width || undefined,
     height: height || undefined,
   };
   
-  // Determine loading attribute
+  // Determine loading attribute based on priority
   const loadingAttribute = priority ? 'eager' : 'lazy';
   
   // Determine fetch priority
   const fetchPriority = priority ? 'high' : 'auto';
   
+  // Preload high priority images
   useEffect(() => {
     if (priority) {
       const img = new Image();
-      img.src = src;
+      img.src = optimizedSrc;
       img.onload = () => setIsLoaded(true);
-      img.onerror = () => setIsError(true);
+      img.onerror = () => {
+        setIsError(true);
+        // Fallback to original format if WebP fails
+        if (optimizedSrc !== src) {
+          const fallbackImg = new Image();
+          fallbackImg.src = src;
+          fallbackImg.onload = () => setIsLoaded(true);
+        }
+      };
     }
-  }, [src, priority]);
+  }, [optimizedSrc, priority, src]);
   
   const onImageLoad = () => {
     setIsLoaded(true);
@@ -50,6 +64,12 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   
   const onImageError = () => {
     setIsError(true);
+    // If WebP format fails, try original
+    if (optimizedSrc !== src && !isLoaded) {
+      const imgElement = document.createElement('img');
+      imgElement.src = src;
+      imgElement.onload = onImageLoad;
+    }
   };
   
   // Generate a placeholder for the image
@@ -68,18 +88,27 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   return (
     <div className={`relative ${className}`} style={{ width, height }}>
       {renderPlaceholder()}
-      <img
-        src={src}
-        alt={alt}
-        className={className}
-        onLoad={onImageLoad}
-        onError={onImageError}
-        loading={loadingAttribute}
-        fetchPriority={fetchPriority}
-        {...dimensions}
-      />
+      <picture>
+        {optimizedSrc !== src && (
+          <source srcSet={optimizedSrc} type="image/webp" />
+        )}
+        <img
+          src={src}
+          alt={alt}
+          className={className}
+          onLoad={onImageLoad}
+          onError={onImageError}
+          loading={loadingAttribute}
+          fetchPriority={fetchPriority}
+          width={dimensions.width}
+          height={dimensions.height}
+          decoding={priority ? "sync" : "async"}
+        />
+      </picture>
     </div>
   );
-};
+});
+
+OptimizedImage.displayName = 'OptimizedImage';
 
 export default OptimizedImage;

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
 import { TruckIcon } from 'lucide-react';
 import ProductQuantitySelector from './ProductQuantitySelector';
@@ -23,7 +23,7 @@ interface ProductCardProps {
   isSelected: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
+const ProductCard: React.FC<ProductCardProps> = memo(({
   title,
   price,
   originalPrice,
@@ -65,8 +65,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
   
   // Check if the price is over the free shipping threshold
-  const priceStr = typeof price === 'string' ? price : String(price);
-  const priceNumber = parseFloat(priceStr.replace('R$ ', '').replace(',', '.'));
+  const priceNumber = typeof price === 'number' 
+    ? price 
+    : parseFloat(String(price).replace('R$ ', '').replace(',', '.'));
   const hasFreeShipping = priceNumber >= 99.98;
   
   return (
@@ -78,6 +79,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      layout
     >
       <div className="relative">
         <OptimizedImage 
@@ -126,6 +128,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
     </motion.div>
   );
-};
+});
+
+ProductCard.displayName = 'ProductCard';
 
 export default ProductCard;
