@@ -1,20 +1,7 @@
-
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import CheckoutForm from '../CheckoutForm';
-
-interface ProductInfo {
-  id: number;
-  title: string;
-  price: string;
-  originalPrice: string;
-  description: string;
-  imageUrl: string;
-  size: string;
-  discount: string;
-  additionalInfo?: string;
-  quantity: number;
-}
+import { ProductInfo } from '../../hooks/useProductSelection';
 
 interface CheckoutSectionProps {
   productsWithQuantity: ProductInfo[];

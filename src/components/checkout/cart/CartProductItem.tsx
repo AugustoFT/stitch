@@ -3,14 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import ProductQuantitySelector from '../../ProductQuantitySelector';
-
-interface ProductInfo {
-  id: number;
-  title: string;
-  price: number | string;
-  imageUrl: string;
-  quantity: number;
-}
+import { ProductInfo } from '../../../hooks/useProductSelection';
 
 interface CartProductItemProps {
   product: ProductInfo;
@@ -41,7 +34,7 @@ const CartProductItem: React.FC<CartProductItemProps> = ({
         <div>
           <p className="text-sm font-medium">{product.title}</p>
           <p className="text-xs text-gray-600">
-            R$ {typeof product.price === 'number' ? product.price.toFixed(2).replace('.', ',') : product.price.toString().replace('.', ',')}
+            R$ {typeof product.price === 'number' ? product.price.toFixed(2).replace('.', ',') : product.price.toString().replace('R$ ', '').replace('.', ',')}
           </p>
         </div>
       </div>
