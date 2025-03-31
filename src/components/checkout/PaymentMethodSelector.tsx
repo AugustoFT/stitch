@@ -95,7 +95,6 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
           />
           <PiggyBank className={`h-5 w-5 ${formaPagamento === 'pix' ? 'text-green-500' : 'text-gray-500'}`} />
           <label htmlFor="pix" className="cursor-pointer font-medium">PIX</label>
-          <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded ml-2">Desconto 5%</span>
           
           {/* PIX logo */}
           <div className="ml-auto">
