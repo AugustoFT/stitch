@@ -1,12 +1,11 @@
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TruckIcon } from 'lucide-react';
 import ProductQuantitySelector from './ProductQuantitySelector';
 import ProductPrice from './product/ProductPrice';
 import ProductBadges from './product/ProductBadges';
 import ProductButtons from './product/ProductButtons';
-import OptimizedImage from './OptimizedImage';
 
 interface ProductCardProps {
   title: string;
@@ -23,7 +22,7 @@ interface ProductCardProps {
   isSelected: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = memo(({
+const ProductCard: React.FC<ProductCardProps> = ({
   title,
   price,
   originalPrice,
@@ -65,9 +64,8 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
   };
   
   // Check if the price is over the free shipping threshold
-  const priceNumber = typeof price === 'number' 
-    ? price 
-    : parseFloat(String(price).replace('R$ ', '').replace(',', '.'));
+  const priceStr = typeof price === 'string' ? price : String(price);
+  const priceNumber = parseFloat(priceStr.replace('R$ ', '').replace(',', '.'));
   const hasFreeShipping = priceNumber >= 99.98;
   
   return (
@@ -79,14 +77,11 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      layout
     >
       <div className="relative">
-        <OptimizedImage 
+        <img 
           src={imageUrl} 
           alt={title} 
-          width={300}
-          height={200}
           className="w-full h-48 object-contain p-4"
         />
         <ProductBadges 
@@ -128,8 +123,6 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
       </div>
     </motion.div>
   );
-});
-
-ProductCard.displayName = 'ProductCard';
+};
 
 export default ProductCard;

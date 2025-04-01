@@ -1,9 +1,7 @@
-
-import React, { useRef, useState, useEffect, memo } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Clock, Star } from 'lucide-react';
 import { eventTrackers } from '../../utils/dataLayer';
-import OptimizedImage from '../OptimizedImage';
 
 interface HeroSectionProps {
   timeLeft: {
@@ -15,19 +13,14 @@ interface HeroSectionProps {
   scrollToCheckout: () => void;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = memo(({ timeLeft, scrollToCheckout }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout }) => {
   const heroRef = useRef<HTMLDivElement>(null);
   const heroInView = useInView(heroRef, { once: true, margin: "-100px" });
   
-  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
-  
-  useEffect(() => {
-    // Mark as loaded immediately to prevent UI delay
-    setImagesLoaded(true);
-  }, []);
-  
   const handleComprarClick = () => {
+    // Track comprar button click
     eventTrackers.comprarAgora('hero_section');
+    
     scrollToCheckout();
   };
 
@@ -40,10 +33,9 @@ const HeroSection: React.FC<HeroSectionProps> = memo(({ timeLeft, scrollToChecko
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={heroInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="bg-stitch-pink text-white text-xs font-bold py-1 px-3 rounded-full mb-4 inline-block" 
-               style={{backgroundColor: "#ff4c8f", color: "#ffffff"}}>
+          <div className="bg-stitch-pink text-white text-xs font-bold py-1 px-3 rounded-full mb-4 inline-block">
             LANÇAMENTO OFICIAL DISNEY
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-stitch-blue leading-tight mb-4">
@@ -56,18 +48,14 @@ const HeroSection: React.FC<HeroSectionProps> = memo(({ timeLeft, scrollToChecko
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="mb-6"
           >
             <div className="relative">
-              <OptimizedImage 
+              <img 
                 src="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
                 alt="Pelúcia Stitch" 
-                width={400}
-                height={400}
-                className="w-4/5 max-w-sm mx-auto drop-shadow-xl"
-                priority={true}
-                placeholder="blur"
+                className="w-4/5 max-w-sm mx-auto drop-shadow-xl animate-float"
               />
               <motion.div 
                 className="absolute -right-5 top-5 bg-stitch-yellow text-stitch-dark p-2 rounded-full shadow-lg font-bold text-sm transform rotate-12"
@@ -103,11 +91,10 @@ const HeroSection: React.FC<HeroSectionProps> = memo(({ timeLeft, scrollToChecko
           
           <div className="flex flex-wrap gap-3">
             <motion.button 
-              className="btn-primary mr-3 text-sm py-2 px-4 text-white"
+              className="btn-primary mr-3 text-sm py-2 px-4"
               onClick={handleComprarClick}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
-              aria-label="Comprar Agora"
             >
               Comprar Agora
             </motion.button>
@@ -116,7 +103,6 @@ const HeroSection: React.FC<HeroSectionProps> = memo(({ timeLeft, scrollToChecko
               className="inline-block py-2 px-4 text-sm text-stitch-blue border border-stitch-blue/30 rounded-md hover:bg-stitch-blue/10 transition-colors"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
-              aria-label="Saiba Mais"
             >
               Saiba Mais
             </motion.a>
@@ -126,24 +112,20 @@ const HeroSection: React.FC<HeroSectionProps> = memo(({ timeLeft, scrollToChecko
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={heroInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
           className="hidden md:block"
         >
           <div className="relative">
-            <OptimizedImage 
+            <img 
               src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
-              alt="Kit Completo Stitch"
-              width={500}
-              height={470} 
-              className="w-4/5 max-w-sm mx-auto drop-shadow-xl"
-              priority={false}
+              alt="Kit Completo Stitch" 
+              className="w-4/5 max-w-sm mx-auto drop-shadow-xl animate-float"
             />
             <motion.button 
               className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-stitch-pink text-white py-2 px-6 rounded-full shadow-lg font-bold"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleComprarClick}
-              aria-label="Kit Exclusivo Stitch"
             >
               Kit Exclusivo Stitch
             </motion.button>
@@ -152,8 +134,6 @@ const HeroSection: React.FC<HeroSectionProps> = memo(({ timeLeft, scrollToChecko
       </div>
     </section>
   );
-});
-
-HeroSection.displayName = 'HeroSection';
+};
 
 export default HeroSection;

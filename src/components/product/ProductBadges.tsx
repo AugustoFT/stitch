@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React from 'react';
 import { Award, TruckIcon } from 'lucide-react';
 import { Badge } from '../ui/badge';
 
@@ -9,7 +9,7 @@ interface ProductBadgesProps {
   hasFreeShipping: boolean;
 }
 
-const ProductBadges: React.FC<ProductBadgesProps> = memo(({ discount, title, hasFreeShipping }) => {
+const ProductBadges: React.FC<ProductBadgesProps> = ({ discount, title, hasFreeShipping }) => {
   return (
     <>
       <div className="absolute top-2 right-2 bg-stitch-pink text-white text-xs font-bold py-1 px-2 rounded-full">
@@ -35,8 +35,6 @@ const ProductBadges: React.FC<ProductBadgesProps> = memo(({ discount, title, has
       </div>
     </>
   );
-});
-
-ProductBadges.displayName = 'ProductBadges';
+};
 
 export default ProductBadges;

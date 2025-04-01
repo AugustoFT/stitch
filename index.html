@@ -1,126 +1,44 @@
 
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stitch - Produtos Oficiais Disney</title>
-    <meta name="description" content="Adquira produtos oficiais do Stitch da Disney. Pelúcias, óculos e muito mais com frete grátis para todo Brasil!" />
-    <meta name="author" content="Stitch Store" />
+    <title>stitchy-landing-creator</title>
+    <meta name="description" content="Lovable Generated Project" />
+    <meta name="author" content="Lovable" />
 
-    <meta property="og:title" content="Stitch - Produtos Oficiais Disney" />
-    <meta property="og:description" content="Adquira produtos oficiais do Stitch da Disney. Pelúcias, óculos e muito mais com frete grátis para todo Brasil!" />
+    <meta property="og:title" content="Lovable Generated Project" />
+    <meta property="og:description" content="Lovable Generated Project" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@stitch_store" />
+    <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
-    <!-- Preconnect to necessary domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.gpteng.co" crossorigin />
-    
-    <!-- Preload critical assets -->
-    <link rel="preload" href="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.webp" as="image" fetchpriority="high" />
-    
-    <!-- Inline critical CSS -->
-    <style>
-      /* Critical CSS inline */
-      :root {
-        --stitch-blue: #16a4e8;
-        --stitch-pink: #ff4c8f;
-        --stitch-light: #f2f7ff;
-        --stitch-dark: #1A1F2C;
-        --stitch-yellow: #ffcd29;
-        --stitch-coral: #ff8c6b;
-      }
-      body {
-        margin: 0;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        background: linear-gradient(to bottom, #F2F7FF, #fff);
-        overflow-x: hidden;
-        color: #333;
-      }
-      .btn-primary {
-        background: linear-gradient(to right, #ff4c8f, #ff8c6b);
-        color: white;
-        font-weight: 500;
-        padding: 0.75rem 1.5rem;
-        border-radius: 9999px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s;
-        cursor: pointer;
-        border: none;
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      }
-      .glass-card {
-        background-color: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-radius: 16px;
-      }
-      .skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: skeleton 1.5s infinite;
-      }
-      @keyframes skeleton {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
-      }
-    </style>
-    
-    <!-- Defer non-critical CSS -->
-    <link rel="stylesheet" href="/assets/index-DHPT2Uor.css" media="print" onload="this.media='all'" />
-    <noscript><link rel="stylesheet" href="/assets/index-DHPT2Uor.css" /></noscript>
-    
-    <!-- Font loading with display=swap -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-    <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
-    </noscript>
-
-    <!-- Async load 3rd party scripts -->
+    <!-- Meta Pixel Code -->
     <script>
-      window.addEventListener('load', function() {
-        // Facebook Pixel
-        setTimeout(function() {
-          const fbScript = document.createElement('script');
-          fbScript.innerHTML = `
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '629312673598780');
-            fbq('track', 'PageView');
-          `;
-          document.head.appendChild(fbScript);
-        }, 3000);
-        
-        // Google Tag Manager
-        setTimeout(function() {
-          const gtmScript = document.createElement('script');
-          gtmScript.innerHTML = `
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-MTQM7DJ2');
-          `;
-          document.head.appendChild(gtmScript);
-        }, 3000);
-      });
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '629312673598780');
+    fbq('track', 'PageView');
     </script>
+    <!-- End Meta Pixel Code -->
+    
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-MTQM7DJ2');</script>
+    <!-- End Google Tag Manager -->
   </head>
 
   <body>
@@ -136,7 +54,6 @@
     <!-- End Meta Pixel Code -->
     
     <div id="root"></div>
-    
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>

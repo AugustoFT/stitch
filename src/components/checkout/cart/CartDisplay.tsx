@@ -1,5 +1,4 @@
-
-import React, { memo } from 'react';
+import React from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 import CartProductItem from './CartProductItem';
@@ -14,8 +13,7 @@ interface CartDisplayProps {
   onQuantityChange: (productId: number, quantity: number) => void;
 }
 
-// Use memo to prevent unnecessary re-renders
-const CartDisplay = memo<CartDisplayProps>(({
+const CartDisplay: React.FC<CartDisplayProps> = ({
   products,
   total,
   onRemoveProduct,
@@ -27,8 +25,7 @@ const CartDisplay = memo<CartDisplayProps>(({
 
   return (
     <div className="mb-6">
-      <h3 className="font-medium text-stitch-pink mb-3 text-base flex items-center"
-          style={{color: "#ff4c8f"}}>
+      <h3 className="font-medium text-stitch-pink mb-3 text-base flex items-center">
         <ShoppingBag className="w-4 h-4 mr-2" />
         Carrinho de Compras
       </h3>
@@ -49,8 +46,6 @@ const CartDisplay = memo<CartDisplayProps>(({
       <CartTotal total={total} />
     </div>
   );
-});
-
-CartDisplay.displayName = 'CartDisplay';
+};
 
 export default CartDisplay;

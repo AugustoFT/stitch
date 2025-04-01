@@ -1,35 +1,21 @@
 
-import React, { useRef, useEffect, lazy, Suspense } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackgroundElements from '../components/BackgroundElements';
 import HeroSection from '../components/sections/HeroSection';
+import ProductsSection from '../components/sections/ProductsSection';
+import BenefitsSection from '../components/sections/BenefitsSection';
+import FeatureCards from '../components/sections/FeatureCards';
+import TestimonialsSection from '../components/sections/TestimonialsSection';
+import FAQSection from '../components/sections/FAQSection';
+import CallToAction from '../components/sections/CallToAction';
+import CheckoutSection from '../components/sections/CheckoutSection';
+
 import { useProductSelection } from '../hooks/useProductSelection';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import { productsList } from '../data/products';
 import { initDataLayer, pushToDataLayer } from '../utils/dataLayer';
-
-// Lazy load non-critical components
-const ProductsSection = lazy(() => import('../components/sections/ProductsSection'));
-const BenefitsSection = lazy(() => import('../components/sections/BenefitsSection'));
-const FeatureCards = lazy(() => import('../components/sections/FeatureCards'));
-const TestimonialsSection = lazy(() => import('../components/sections/TestimonialsSection'));
-const FAQSection = lazy(() => import('../components/sections/FAQSection'));
-const CallToAction = lazy(() => import('../components/sections/CallToAction'));
-const CheckoutSection = lazy(() => import('../components/sections/CheckoutSection'));
-
-// Fallback components
-const SectionSkeleton = () => (
-  <div className="py-10 px-4 animate-pulse">
-    <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto mb-6"></div>
-    <div className="h-4 bg-gray-200 rounded w-2/3 mx-auto mb-12"></div>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="h-64 bg-gray-200 rounded"></div>
-      <div className="h-64 bg-gray-200 rounded"></div>
-      <div className="h-64 bg-gray-200 rounded"></div>
-    </div>
-  </div>
-);
 
 const Index: React.FC = () => {
   const checkoutRef = useRef<HTMLDivElement>(null);
@@ -87,45 +73,31 @@ const Index: React.FC = () => {
         />
       </div>
       
-      <Suspense fallback={<SectionSkeleton />}>
-        <ProductsSection 
-          products={productsList}
-          scrollToCheckout={scrollToCheckout}
-          toggleProductSelection={toggleProductSelection}
-          handleQuantityChange={handleQuantityChange}
-          selectedProductIds={selectedProductIds}
-        />
-      </Suspense>
+      <ProductsSection 
+        products={productsList}
+        scrollToCheckout={scrollToCheckout}
+        toggleProductSelection={toggleProductSelection}
+        handleQuantityChange={handleQuantityChange}
+        selectedProductIds={selectedProductIds}
+      />
       
-      <Suspense fallback={<SectionSkeleton />}>
-        <BenefitsSection />
-      </Suspense>
+      <BenefitsSection />
       
-      <Suspense fallback={<SectionSkeleton />}>
-        <FeatureCards />
-      </Suspense>
+      <FeatureCards />
       
-      <Suspense fallback={<SectionSkeleton />}>
-        <TestimonialsSection />
-      </Suspense>
+      <TestimonialsSection />
       
-      <Suspense fallback={<SectionSkeleton />}>
-        <FAQSection />
-      </Suspense>
+      <FAQSection />
       
-      <Suspense fallback={<SectionSkeleton />}>
-        <CallToAction scrollToCheckout={scrollToCheckout} />
-      </Suspense>
+      <CallToAction scrollToCheckout={scrollToCheckout} />
       
       <div ref={checkoutRef}>
-        <Suspense fallback={<SectionSkeleton />}>
-          <CheckoutSection 
-            productsWithQuantity={productsWithQuantity}
-            totalAmount={totalAmount}
-            onRemoveProduct={handleRemoveProduct}
-            onQuantityChange={handleQuantityChange}
-          />
-        </Suspense>
+        <CheckoutSection 
+          productsWithQuantity={productsWithQuantity}
+          totalAmount={totalAmount}
+          onRemoveProduct={handleRemoveProduct}
+          onQuantityChange={handleQuantityChange}
+        />
       </div>
       
       <Footer />
