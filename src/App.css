@@ -20,6 +20,11 @@ html, body {
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #F2F7FF, #fff);
+  color: #1a1a1a;
+  position: relative;
+  overflow-x: hidden;
 }
 
 /* Estilos para o modo de depuração */
@@ -38,6 +43,8 @@ html, body {
 .app-container {
   background-color: #ffffff;
   color: #1a1a1a;
+  position: relative;
+  z-index: 1;
 }
 
 /* Estilos para garantir que componentes principais estejam visíveis */
@@ -45,6 +52,8 @@ html, body {
   width: 100%;
   display: flex;
   padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 10;
 }
 
 .main-content {
@@ -52,4 +61,44 @@ html, body {
   width: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 5;
+}
+
+/* Estilos para garantir visibilidade em caso de problema com CSS externo */
+body:not(:has(.app-container)) #root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff;
+  color: #000;
+  padding: 20px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Fallback para garantir que botões sejam visíveis */
+button {
+  cursor: pointer;
+  background-color: #16a4e8;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Estilos de fallback para garantir que texto seja visível */
+h1, h2, h3, h4, h5, h6 {
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+p, span, a {
+  color: #333;
 }

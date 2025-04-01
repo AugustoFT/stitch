@@ -20,8 +20,30 @@ function displayError(element, error) {
   `;
 }
 
+// Implementando uma função de retry para CSS falhos
+function retryFailedCssLoad() {
+  window.addEventListener('error', function(e) {
+    // Verifica se o erro está relacionado a carregamento de CSS
+    if (e.target && (e.target.tagName === 'LINK' || e.target.tagName === 'STYLE')) {
+      console.warn('Erro ao carregar recurso CSS:', e.target.href || 'inline style');
+      
+      // Se for um link, tenta recarregar
+      if (e.target.tagName === 'LINK' && e.target.href) {
+        const newLink = document.createElement('link');
+        newLink.rel = 'stylesheet';
+        newLink.href = e.target.href + '?retry=' + new Date().getTime(); // Adiciona timestamp para evitar cache
+        document.head.appendChild(newLink);
+        console.log('Tentando recarregar CSS:', newLink.href);
+      }
+    }
+  }, true);
+}
+
 // Inicialização da aplicação com mais verificações de erro
 function initApp() {
+  // Implementa retry para CSS
+  retryFailedCssLoad();
+  
   const rootElement = document.getElementById("root");
   
   if (!rootElement) {
