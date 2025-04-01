@@ -20,23 +20,76 @@ function displayError(element: HTMLElement, error: Error | unknown) {
   `;
 }
 
-// Implementando uma função de retry para CSS falhos
+// Implementando uma função de retry avançada para CSS falhos
 function retryFailedCssLoad() {
+  // Contador para tentativas de CSS
+  const cssRetryAttempts = new Map();
+  const MAX_RETRIES = 3;
+  
   window.addEventListener('error', function(e) {
     // Verifica se o erro está relacionado a carregamento de CSS
     if (e.target && (e.target instanceof HTMLLinkElement || e.target instanceof HTMLStyleElement)) {
-      console.warn('Erro ao carregar recurso CSS:', e.target instanceof HTMLLinkElement ? e.target.href : 'inline style');
+      const cssPath = e.target instanceof HTMLLinkElement ? e.target.href : 'inline-style';
+      console.warn('Erro ao carregar recurso CSS:', cssPath);
       
-      // Se for um link, tenta recarregar
+      // Se for um link, tenta recarregar com estratégia de fallback
       if (e.target instanceof HTMLLinkElement && e.target.href) {
-        const newLink = document.createElement('link');
-        newLink.rel = 'stylesheet';
-        newLink.href = e.target.href + '?retry=' + new Date().getTime(); // Adiciona timestamp para evitar cache
-        document.head.appendChild(newLink);
-        console.log('Tentando recarregar CSS:', newLink.href);
+        // Contagem de tentativas para este CSS específico
+        const currentAttempts = cssRetryAttempts.get(e.target.href) || 0;
+        
+        if (currentAttempts < MAX_RETRIES) {
+          cssRetryAttempts.set(e.target.href, currentAttempts + 1);
+          
+          const newLink = document.createElement('link');
+          newLink.rel = 'stylesheet';
+          newLink.href = e.target.href + '?retry=' + new Date().getTime(); // Adiciona timestamp para evitar cache
+          
+          // Adiciona um evento onload para confirmar sucesso
+          newLink.onload = () => {
+            console.log('CSS recarregado com sucesso:', newLink.href);
+          };
+          
+          document.head.appendChild(newLink);
+          console.log('Tentativa ' + (currentAttempts + 1) + ' de recarregar CSS:', newLink.href);
+        } else {
+          console.warn('Número máximo de tentativas atingido para:', e.target.href);
+          // Carrega o CSS básico inline como fallback
+          const fallbackStyle = document.createElement('style');
+          fallbackStyle.textContent = `
+            body { font-family: sans-serif; }
+            .app-container { display: flex; flex-direction: column; min-height: 100vh; }
+            .content-container { flex: 1; }
+          `;
+          document.head.appendChild(fallbackStyle);
+        }
       }
     }
   }, true);
+  
+  // Adiciona um timeout para verificar se a aplicação carregou
+  setTimeout(() => {
+    const root = document.getElementById('root');
+    if (root && (root.children.length === 0 || 
+        (root.children.length === 1 && root.children[0].classList.contains('loading-container')))) {
+      console.warn('Aplicação não carregou completamente após timeout, aplicando fallbacks');
+      
+      // Injeta CSS básico de fallback
+      const emergencyStyle = document.createElement('style');
+      emergencyStyle.textContent = `
+        body { font-family: sans-serif; background: white; color: black; }
+        #root { padding: 20px; }
+        button { cursor: pointer; background: #0066ff; color: white; border: none; padding: 8px 16px; border-radius: 4px; }
+      `;
+      document.head.appendChild(emergencyStyle);
+      
+      // Tenta inicializar a aplicação novamente
+      try {
+        initApp();
+      } catch (error) {
+        console.error('Falha na reinicialização de emergência:', error);
+      }
+    }
+  }, 5000);
 }
 
 // Inicialização da aplicação com mais verificações de erro
