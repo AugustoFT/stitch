@@ -17,31 +17,41 @@ export function useProgressiveLoading(delay: number = 100) {
       return;
     }
     
-    let timeoutId: number;
+    let timeoutId: number | NodeJS.Timeout;
     
     // Em dispositivos móveis com conexões mais lentas
     if (typeof window !== 'undefined') {
       // Verificar suporte para requestIdleCallback
       if ('requestIdleCallback' in window) {
-        timeoutId = window.requestIdleCallback(
-          () => {
+        try {
+          timeoutId = window.requestIdleCallback(
+            () => {
+              setShouldLoad(true);
+            },
+            { timeout: delay }
+          );
+          
+          return () => {
+            if ('cancelIdleCallback' in window) {
+              window.cancelIdleCallback(timeoutId as number);
+            }
+          };
+        } catch (error) {
+          console.warn('Error using requestIdleCallback, falling back to setTimeout:', error);
+          // Se requestIdleCallback falhar, usa setTimeout como fallback
+          timeoutId = setTimeout(() => {
             setShouldLoad(true);
-          },
-          { timeout: delay }
-        );
-        
-        return () => {
-          if ('cancelIdleCallback' in window) {
-            window.cancelIdleCallback(timeoutId);
-          }
-        };
+          }, delay);
+          
+          return () => clearTimeout(timeoutId as NodeJS.Timeout);
+        }
       } else {
         // Fallback para setTimeout em navegadores que não suportam requestIdleCallback
-        const timer = setTimeout(() => {
+        timeoutId = setTimeout(() => {
           setShouldLoad(true);
         }, delay);
         
-        return () => clearTimeout(timer);
+        return () => clearTimeout(timeoutId as NodeJS.Timeout);
       }
     } else {
       // Caso window não esteja disponível (SSR)

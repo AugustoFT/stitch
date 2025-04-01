@@ -149,17 +149,17 @@ export default defineConfig(({ mode }) => ({
           // Chunking específico para mobile
           critical: ['./src/hooks/use-mobile.tsx', './src/components/MobileOptimizedImage.tsx'],
         },
-        // Corrigindo a estrutura de diretórios para evitar paths incorretos
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
+        // Simplificando a estrutura de diretórios para evitar paths incorretos
+        chunkFileNames: '[name].[hash].js',
+        entryFileNames: '[name].[hash].js',
         assetFileNames: ({ name }) => {
           if (/\.(gif|jpe?g|png|svg|webp)$/.test(name ?? '')) {
-            return 'assets/images/[name]-[hash][extname]';
+            return 'images/[name].[hash][extname]';
           }
           if (/\.css$/.test(name ?? '')) {
-            return 'assets/css/[name]-[hash][extname]';
+            return 'css/[name].[hash][extname]';
           }
-          return 'assets/[name]-[hash][extname]';
+          return 'assets/[name].[hash][extname]';
         },
       },
     },
