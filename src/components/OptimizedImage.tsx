@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useRef } from 'react';
 
 interface OptimizedImageProps {
   src: string;
@@ -22,17 +22,13 @@ const OptimizedImage: React.FC<OptimizedImageProps> = memo(({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const imageRef = useRef<HTMLDivElement>(null);
   
   // Convert PNG to WebP if from lovable-uploads
   const optimizedSrc = src.includes('/lovable-uploads/') && src.endsWith('.png') 
     ? src.replace('.png', '.webp') 
     : src;
-  
-  // Generate dimensions
-  const dimensions = {
-    width: width || undefined,
-    height: height || undefined,
-  };
   
   // Determine loading attribute based on priority
   const loadingAttribute = priority ? 'eager' : 'lazy';
@@ -40,9 +36,10 @@ const OptimizedImage: React.FC<OptimizedImageProps> = memo(({
   // Determine fetch priority
   const fetchPriority = priority ? 'high' : 'auto';
   
-  // Preload high priority images
+  // Use Intersection Observer for non-priority images
   useEffect(() => {
     if (priority) {
+      setIsInView(true);
       const img = new Image();
       img.src = optimizedSrc;
       img.onload = () => setIsLoaded(true);
@@ -55,7 +52,32 @@ const OptimizedImage: React.FC<OptimizedImageProps> = memo(({
           fallbackImg.onload = () => setIsLoaded(true);
         }
       };
+      return;
     }
+    
+    const currentRef = imageRef.current;
+    if (!currentRef) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: '200px',
+        threshold: 0.01
+      }
+    );
+    
+    observer.observe(currentRef);
+    
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
   }, [optimizedSrc, priority, src]);
   
   const onImageLoad = () => {
@@ -86,25 +108,32 @@ const OptimizedImage: React.FC<OptimizedImageProps> = memo(({
   };
 
   return (
-    <div className={`relative ${className}`} style={{ width, height }}>
+    <div 
+      ref={imageRef}
+      className={`relative ${className}`} 
+      style={{ width, height }}
+    >
       {renderPlaceholder()}
-      <picture>
-        {optimizedSrc !== src && (
-          <source srcSet={optimizedSrc} type="image/webp" />
-        )}
-        <img
-          src={src}
-          alt={alt}
-          className={className}
-          onLoad={onImageLoad}
-          onError={onImageError}
-          loading={loadingAttribute}
-          fetchPriority={fetchPriority}
-          width={dimensions.width}
-          height={dimensions.height}
-          decoding={priority ? "sync" : "async"}
-        />
-      </picture>
+      
+      {(isInView || priority) && (
+        <picture>
+          {optimizedSrc !== src && (
+            <source srcSet={optimizedSrc} type="image/webp" />
+          )}
+          <img
+            src={isInView ? src : ''}
+            alt={alt}
+            className={`${className} transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={onImageLoad}
+            onError={onImageError}
+            loading={loadingAttribute}
+            fetchPriority={fetchPriority}
+            width={width}
+            height={height}
+            decoding={priority ? "sync" : "async"}
+          />
+        </picture>
+      )}
     </div>
   );
 });

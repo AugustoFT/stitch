@@ -17,13 +17,41 @@ export function useProgressiveLoading(delay: number = 100) {
       return;
     }
     
-    // Em mobile, carrega após um pequeno delay para priorizar conteúdo crítico
-    const timer = setTimeout(() => {
-      setShouldLoad(true);
-    }, delay);
-    
-    return () => clearTimeout(timer);
+    // Em dispositivos móveis com conexões mais lentas, usar requestIdleCallback
+    // para carregar durante períodos ociosos do navegador
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const timeoutId = window.requestIdleCallback(
+        () => {
+          setShouldLoad(true);
+        },
+        { timeout: delay }
+      );
+      
+      return () => {
+        if ('cancelIdleCallback' in window) {
+          window.cancelIdleCallback(timeoutId);
+        }
+      };
+    } else {
+      // Fallback para setTimeout em navegadores que não suportam requestIdleCallback
+      const timer = setTimeout(() => {
+        setShouldLoad(true);
+      }, delay);
+      
+      return () => clearTimeout(timer);
+    }
   }, [isMobile, delay]);
   
   return shouldLoad;
+}
+
+// Adicionar tipos para TypeScript
+declare global {
+  interface Window {
+    requestIdleCallback: (
+      callback: IdleRequestCallback,
+      options?: IdleRequestOptions
+    ) => number;
+    cancelIdleCallback: (handle: number) => void;
+  }
 }

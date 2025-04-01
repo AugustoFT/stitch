@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { TruckIcon } from 'lucide-react';
 import ProductQuantitySelector from './ProductQuantitySelector';
@@ -42,7 +42,19 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
   const [selected, setSelected] = useState(isSelected);
   const [quantity, setQuantity] = useState(1);
   const isMobile = useIsMobile();
-  const shouldRenderDetails = useProgressiveLoading(300);
+  
+  // Usar delays escalonados com base na posição do produto na tela
+  const shouldRenderDetails = useProgressiveLoading(isMobile ? 300 : 100);
+  
+  // Memo para evitar cálculos repetidos
+  const priceNumber = useMemo(() => {
+    return typeof price === 'number' 
+      ? price 
+      : parseFloat(String(price).replace('R$ ', '').replace(',', '.'));
+  }, [price]);
+  
+  // Memo para evitar cálculos repetidos
+  const hasFreeShipping = useMemo(() => priceNumber >= 99.98, [priceNumber]);
   
   useEffect(() => {
     setSelected(isSelected);
@@ -68,24 +80,19 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
     }
   };
   
-  // Check if the price is over the free shipping threshold
-  const priceNumber = typeof price === 'number' 
-    ? price 
-    : parseFloat(String(price).replace('R$ ', '').replace(',', '.'));
-  const hasFreeShipping = priceNumber >= 99.98;
-  
   // Animações otimizadas para mobile
-  const cardAnimations = isMobile ? {
-    whileHover: {},
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    transition: { duration: 0.2 }
-  } : {
-    whileHover: { y: -5 },
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.3 }
-  };
+  const cardAnimations = useMemo(() => {
+    return isMobile ? {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      transition: { duration: 0.2 }
+    } : {
+      whileHover: { y: -5 },
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.3 }
+    };
+  }, [isMobile]);
   
   return (
     <motion.div
@@ -103,6 +110,7 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
           height={200}
           mobileSizes={{ width: 200, height: 140 }}
           className="w-full h-40 md:h-48 object-contain p-3 md:p-4"
+          priority={false}
         />
         <ProductBadges 
           discount={discount} 
