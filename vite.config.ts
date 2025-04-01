@@ -23,7 +23,9 @@ export default defineConfig(({ mode }) => ({
       include: ['**/*.{jpeg,jpg,png,webp}'],
       defaultDirectives: new URLSearchParams([
         ['format', 'webp'],
-        ['quality', '80']
+        ['quality', mode === 'production' ? '75' : '80'], // Reduzir qualidade em produção
+        ['width', '800'], // Limitar largura máxima
+        ['progressive', ''] // Ativar carregamento progressivo
       ])
     }),
     VitePWA({
@@ -39,11 +41,28 @@ export default defineConfig(({ mode }) => ({
             src: '/favicon.ico',
             sizes: '64x64',
             type: 'image/x-icon'
+          },
+          {
+            src: '/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
           }
-        ]
+        ],
+        display_override: ['standalone', 'fullscreen'],
+        display: 'standalone',
+        orientation: 'portrait',
+        background_color: '#16a4e8',
+        prefer_related_applications: false
       },
       workbox: {
-        // Cache images for 30 days
+        // Estratégias de cache otimizadas para mobile
         runtimeCaching: [
           {
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
@@ -54,6 +73,9 @@ export default defineConfig(({ mode }) => ({
                 maxEntries: 60,
                 maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
               },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
             },
           },
           {
@@ -65,6 +87,9 @@ export default defineConfig(({ mode }) => ({
                 maxEntries: 30,
                 maxAgeSeconds: 24 * 60 * 60, // 1 day
               },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
             },
           },
           {
@@ -76,6 +101,9 @@ export default defineConfig(({ mode }) => ({
                 maxEntries: 5,
                 maxAgeSeconds: 7 * 24 * 60 * 60, // 1 week
               },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
             },
           },
           {
@@ -87,9 +115,18 @@ export default defineConfig(({ mode }) => ({
                 maxEntries: 20,
                 maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
               },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
             },
           },
         ],
+        // Pré-carregamento de recursos críticos
+        navigationPreload: true,
+        // Estratégia de fallback para offline
+        offlineGoogleAnalytics: true,
+        skipWaiting: true,
+        clientsClaim: true
       }
     }),
     mode === 'development' && componentTagger(),
@@ -112,6 +149,8 @@ export default defineConfig(({ mode }) => ({
           ui: ['@radix-ui/react-accordion', '@radix-ui/react-alert-dialog'],
           utils: ['./src/utils/dataLayer.ts'],
           components: ['./src/components/ui/button.tsx', './src/components/ui/card.tsx'],
+          // Chunking específico para mobile
+          critical: ['./src/hooks/use-mobile.tsx', './src/components/MobileOptimizedImage.tsx'],
         },
         // Minimize JS chunk size
         chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -135,17 +174,36 @@ export default defineConfig(({ mode }) => ({
         drop_console: mode === 'production',
         drop_debugger: mode === 'production',
         passes: 2,
+        ecma: 2020
       },
       mangle: true,
+      format: {
+        comments: false
+      }
     },
     // Target modern browsers for smaller bundle size
     target: 'es2020',
+    // Otimização para mobile
+    assetsInlineLimit: 4096, // Inline arquivos pequenos (< 4kb)
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'framer-motion', 'react-router-dom'],
     exclude: ['vite-plugin-pwa/vue', 'vite-plugin-pwa/info'],
     esbuildOptions: {
       target: 'es2020',
+      supported: {
+        'top-level-await': true
+      }
     }
   },
+  // Configuração específica para melhorar carregamento em 3G
+  experimental: {
+    renderBuiltUrl(filename, { hostType }) {
+      if (hostType === 'js' && /\.(png|jpe?g|gif|svg|webp)$/.test(filename)) {
+        // Use URLs relativas para recursos de imagem em JS
+        return { relative: true };
+      }
+      return filename;
+    }
+  }
 }));

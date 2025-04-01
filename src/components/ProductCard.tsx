@@ -6,7 +6,9 @@ import ProductQuantitySelector from './ProductQuantitySelector';
 import ProductPrice from './product/ProductPrice';
 import ProductBadges from './product/ProductBadges';
 import ProductButtons from './product/ProductButtons';
-import OptimizedImage from './OptimizedImage';
+import MobileOptimizedImage from './MobileOptimizedImage';
+import { useIsMobile } from '../hooks/use-mobile';
+import { useProgressiveLoading } from '../hooks/useProgressiveLoading';
 
 interface ProductCardProps {
   title: string;
@@ -39,6 +41,8 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
 }) => {
   const [selected, setSelected] = useState(isSelected);
   const [quantity, setQuantity] = useState(1);
+  const isMobile = useIsMobile();
+  const shouldRenderDetails = useProgressiveLoading(300);
   
   useEffect(() => {
     setSelected(isSelected);
@@ -70,24 +74,35 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
     : parseFloat(String(price).replace('R$ ', '').replace(',', '.'));
   const hasFreeShipping = priceNumber >= 99.98;
   
+  // Animações otimizadas para mobile
+  const cardAnimations = isMobile ? {
+    whileHover: {},
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    transition: { duration: 0.2 }
+  } : {
+    whileHover: { y: -5 },
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.3 }
+  };
+  
   return (
     <motion.div
       className={`bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 ${
         selected ? 'ring-2 ring-stitch-blue' : ''
       }`}
-      whileHover={{ y: -5 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      layout
+      {...cardAnimations}
+      layout={!isMobile}
     >
       <div className="relative">
-        <OptimizedImage 
+        <MobileOptimizedImage 
           src={imageUrl} 
           alt={title} 
           width={300}
           height={200}
-          className="w-full h-48 object-contain p-4"
+          mobileSizes={{ width: 200, height: 140 }}
+          className="w-full h-40 md:h-48 object-contain p-3 md:p-4"
         />
         <ProductBadges 
           discount={discount} 
@@ -96,23 +111,27 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
         />
       </div>
       
-      <div className="p-4">
-        <h3 className="text-lg font-medium mb-1">{title}</h3>
+      <div className="p-3 md:p-4">
+        <h3 className="text-sm md:text-lg font-medium mb-1">{title}</h3>
         <ProductPrice 
           price={price} 
           originalPrice={originalPrice} 
           quantity={quantity} 
         />
         
-        <p className="text-gray-600 text-sm mb-2 line-clamp-2">{description}</p>
-        
-        {additionalInfo && (
-          <span className="text-xs text-stitch-pink block mb-2">{additionalInfo}</span>
+        {shouldRenderDetails && (
+          <>
+            <p className="text-gray-600 text-xs md:text-sm mb-2 line-clamp-2">{description}</p>
+            
+            {additionalInfo && (
+              <span className="text-xs text-stitch-pink block mb-2">{additionalInfo}</span>
+            )}
+          </>
         )}
         
-        <div className="flex flex-col space-y-3">
+        <div className="flex flex-col space-y-2 md:space-y-3">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-gray-700">Quantidade:</label>
+            <label className="text-xs md:text-sm font-medium text-gray-700">Quantidade:</label>
             <ProductQuantitySelector 
               quantity={quantity} 
               onQuantityChange={handleQuantityChange} 
