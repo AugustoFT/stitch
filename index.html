@@ -17,64 +17,6 @@
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
-    <!-- Critical CSS inline to prevent FOUC -->
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Inter', sans-serif;
-        background: linear-gradient(to bottom, #F2F7FF, #fff);
-      }
-      .loading-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #ffffff;
-      }
-      .loading-content {
-        text-align: center;
-      }
-      /* Critical fallback styles */
-      #root {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      .app-container {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        width: 100%;
-      }
-      .content-container {
-        flex: 1;
-        width: 100%;
-      }
-      /* Error message styles */
-      .css-error-message {
-        padding: 10px;
-        margin: 10px;
-        background-color: #fff8e1;
-        border: 1px solid #ffe082;
-        border-radius: 4px;
-        color: #ff8f00;
-        font-size: 14px;
-        display: none;
-      }
-    </style>
-    
-    <!-- Preconnect for faster loading -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Preload critical CSS with onerror handling -->
-    <link rel="stylesheet" href="/src/index.css" onerror="this.onerror=null;this.href='/src/index.css?fallback=true';console.warn('Retrying CSS load with fallback:',this.href);" />
-    <link rel="stylesheet" href="/src/App.css" onerror="this.onerror=null;this.href='/src/App.css?fallback=true';console.warn('Retrying CSS load with fallback:',this.href);" />
-    
-    <!-- Google Fonts with display=swap for better loading experience -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" />
-
     <!-- Meta Pixel Code -->
     <script>
     !function(f,b,e,v,n,t,s)
@@ -111,41 +53,7 @@
     /></noscript>
     <!-- End Meta Pixel Code -->
     
-    <!-- CSS Error indicator (hidden by default) -->
-    <div id="css-error-message" class="css-error-message">
-      Estamos com problemas para carregar alguns recursos. 
-      <button onclick="window.location.reload()">Recarregar página</button>
-    </div>
-    
-    <div id="root">
-      <!-- Fallback loading indicator -->
-      <div class="loading-container">
-        <div class="loading-content">
-          <h2 style="font-family: sans-serif; color: #333;">Carregando aplicação...</h2>
-          <p style="font-family: sans-serif; color: #666;">Por favor, aguarde um momento...</p>
-          <div style="margin-top: 20px; width: 40px; height: 40px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Animation for spinner -->
-    <style>
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
-    
-    <!-- Script to detect CSS loading issues -->
-    <script>
-      // Function to verify CSS loading
-      window.addEventListener('error', function(e) {
-        if (e.target && (e.target.tagName === 'LINK' || e.target.tagName === 'STYLE')) {
-          document.getElementById('css-error-message').style.display = 'block';
-        }
-      }, true);
-    </script>
-    
+    <div id="root"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
