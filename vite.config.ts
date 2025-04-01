@@ -15,10 +15,7 @@ export default defineConfig(({ mode }) => ({
     https: {}, // Use empty object instead of boolean to enable HTTPS with default settings
   },
   plugins: [
-    react({
-      // Enable fast refresh
-      // Remove the problematic plugin configuration
-    }),
+    react(),
     imagetools({
       include: ['**/*.{jpeg,jpg,png,webp}'],
       defaultDirectives: new URLSearchParams([
@@ -152,9 +149,9 @@ export default defineConfig(({ mode }) => ({
           // Chunking específico para mobile
           critical: ['./src/hooks/use-mobile.tsx', './src/components/MobileOptimizedImage.tsx'],
         },
-        // Minimize JS chunk size
-        chunkFileNames: 'assets/js/[name]-[hash].js',
-        entryFileNames: 'assets/js/[name]-[hash].js',
+        // Corrigindo a estrutura de diretórios para evitar paths incorretos
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
         assetFileNames: ({ name }) => {
           if (/\.(gif|jpe?g|png|svg|webp)$/.test(name ?? '')) {
             return 'assets/images/[name]-[hash][extname]';

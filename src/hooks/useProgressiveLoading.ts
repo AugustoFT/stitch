@@ -17,28 +17,35 @@ export function useProgressiveLoading(delay: number = 100) {
       return;
     }
     
-    // Em dispositivos móveis com conexões mais lentas, usar requestIdleCallback
-    // para carregar durante períodos ociosos do navegador
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      const timeoutId = window.requestIdleCallback(
-        () => {
+    let timeoutId: number;
+    
+    // Em dispositivos móveis com conexões mais lentas
+    if (typeof window !== 'undefined') {
+      // Verificar suporte para requestIdleCallback
+      if ('requestIdleCallback' in window) {
+        timeoutId = window.requestIdleCallback(
+          () => {
+            setShouldLoad(true);
+          },
+          { timeout: delay }
+        );
+        
+        return () => {
+          if ('cancelIdleCallback' in window) {
+            window.cancelIdleCallback(timeoutId);
+          }
+        };
+      } else {
+        // Fallback para setTimeout em navegadores que não suportam requestIdleCallback
+        const timer = setTimeout(() => {
           setShouldLoad(true);
-        },
-        { timeout: delay }
-      );
-      
-      return () => {
-        if ('cancelIdleCallback' in window) {
-          window.cancelIdleCallback(timeoutId);
-        }
-      };
+        }, delay);
+        
+        return () => clearTimeout(timer);
+      }
     } else {
-      // Fallback para setTimeout em navegadores que não suportam requestIdleCallback
-      const timer = setTimeout(() => {
-        setShouldLoad(true);
-      }, delay);
-      
-      return () => clearTimeout(timer);
+      // Caso window não esteja disponível (SSR)
+      setShouldLoad(true);
     }
   }, [isMobile, delay]);
   
