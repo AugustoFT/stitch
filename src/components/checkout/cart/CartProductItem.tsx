@@ -41,7 +41,7 @@ const CartProductItem: React.FC<CartProductItemProps> = ({
         <div>
           <p className="text-sm font-medium">{product.title}</p>
           <p className="text-xs text-gray-600">
-            R$ {typeof product.price === 'number' ? product.price.toFixed(2).replace('.', ',') : product.price}
+            R$ {product.price.toFixed(2).replace('.', ',')} cada
           </p>
         </div>
       </div>

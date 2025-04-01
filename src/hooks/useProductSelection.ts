@@ -16,8 +16,7 @@ export interface ProductInfo {
 }
 
 export const useProductSelection = (initialProducts: ProductInfo[]) => {
-  // Iniciar com o ID 2 (Kit Completo Stitch) selecionado por padrão
-  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([2]);
+  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([0]);
   const [productsWithQuantity, setProductsWithQuantity] = useState<ProductInfo[]>([]);
   const [totalAmount, setTotalAmount] = useState(0);
   

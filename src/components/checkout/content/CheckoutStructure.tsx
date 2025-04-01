@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, ShieldCheck } from 'lucide-react';
+import { Award, ShieldCheck, ShoppingBag, PiggyBank } from 'lucide-react';
 import PaymentSuccessMessage from '../PaymentSuccessMessage';
 import CartDisplay from '../cart/CartDisplay';
 import CustomerInfoForm from '../CustomerInfoForm';
@@ -109,6 +109,8 @@ const CheckoutStructure: React.FC<CheckoutStructureProps> = ({
         selectedProducts={products}
         totalAmount={total}
       />
+      
+      {/* Note: Fechar Pedido button removed as requested */}
       
       {/* Selos de segurança */}
       <div className="my-4 p-3 bg-gray-50 rounded-lg">
