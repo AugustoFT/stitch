@@ -17,6 +17,13 @@
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
+    <!-- Preload critical CSS -->
+    <link rel="stylesheet" href="/src/index.css" />
+    <link rel="stylesheet" href="/src/App.css" />
+    
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" />
+
     <!-- Meta Pixel Code -->
     <script>
     !function(f,b,e,v,n,t,s)
@@ -53,7 +60,16 @@
     /></noscript>
     <!-- End Meta Pixel Code -->
     
-    <div id="root"></div>
+    <div id="root">
+      <!-- Fallback loading indicator -->
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #ffffff;">
+        <div style="text-align: center;">
+          <h2 style="font-family: sans-serif; color: #333;">Carregando aplicação...</h2>
+          <p style="font-family: sans-serif; color: #666;">Por favor, aguarde um momento...</p>
+        </div>
+      </div>
+    </div>
+    
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
