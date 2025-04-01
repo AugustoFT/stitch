@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Clock, Star } from 'lucide-react';
@@ -17,10 +18,25 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
   const heroRef = useRef<HTMLDivElement>(null);
   const heroInView = useInView(heroRef, { once: true, margin: "-100px" });
   
-  const handleComprarClick = () => {
-    // Track comprar button click
-    eventTrackers.comprarAgora('hero_section');
+  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+  
+  useEffect(() => {
+    const preloadImages = async () => {
+      try {
+        const heroImage = new Image();
+        heroImage.src = "/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png";
+        heroImage.onload = () => setImagesLoaded(true);
+      } catch (err) {
+        console.error("Failed to preload images:", err);
+        setImagesLoaded(true);
+      }
+    };
     
+    preloadImages();
+  }, []);
+  
+  const handleComprarClick = () => {
+    eventTrackers.comprarAgora('hero_section');
     scrollToCheckout();
   };
 
@@ -33,9 +49,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={heroInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.5 }}
         >
-          <div className="bg-stitch-pink text-white text-xs font-bold py-1 px-3 rounded-full mb-4 inline-block">
+          <div className="bg-stitch-pink text-white text-xs font-bold py-1 px-3 rounded-full mb-4 inline-block" 
+               style={{backgroundColor: "#ff4c8f", color: "#ffffff"}}>
             LANÇAMENTO OFICIAL DISNEY
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-stitch-blue leading-tight mb-4">
@@ -48,14 +65,18 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="mb-6"
           >
             <div className="relative">
               <img 
                 src="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
                 alt="Pelúcia Stitch" 
-                className="w-4/5 max-w-sm mx-auto drop-shadow-xl animate-float"
+                width="400"
+                height="400"
+                className="w-4/5 max-w-sm mx-auto drop-shadow-xl"
+                loading="eager"
+                fetchPriority="high"
               />
               <motion.div 
                 className="absolute -right-5 top-5 bg-stitch-yellow text-stitch-dark p-2 rounded-full shadow-lg font-bold text-sm transform rotate-12"
@@ -95,6 +116,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
               onClick={handleComprarClick}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
+              aria-label="Comprar Agora"
+              style={{backgroundColor: "#ff4c8f", color: "#ffffff"}}
             >
               Comprar Agora
             </motion.button>
@@ -103,6 +126,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
               className="inline-block py-2 px-4 text-sm text-stitch-blue border border-stitch-blue/30 rounded-md hover:bg-stitch-blue/10 transition-colors"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
+              aria-label="Saiba Mais"
             >
               Saiba Mais
             </motion.a>
@@ -112,20 +136,25 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={heroInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className="hidden md:block"
         >
           <div className="relative">
             <img 
               src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
-              alt="Kit Completo Stitch" 
-              className="w-4/5 max-w-sm mx-auto drop-shadow-xl animate-float"
+              alt="Kit Completo Stitch"
+              width="500"
+              height="500" 
+              className="w-4/5 max-w-sm mx-auto drop-shadow-xl"
+              loading="lazy"
             />
             <motion.button 
               className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-stitch-pink text-white py-2 px-6 rounded-full shadow-lg font-bold"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleComprarClick}
+              aria-label="Kit Exclusivo Stitch"
+              style={{backgroundColor: "#ff4c8f", color: "#ffffff"}}
             >
               Kit Exclusivo Stitch
             </motion.button>

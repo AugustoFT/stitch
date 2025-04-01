@@ -1,20 +1,20 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, lazy, Suspense } from 'react';
 import { motion, useInView } from 'framer-motion';
-import CheckoutForm from '../CheckoutForm';
+import { ProductInfo } from '../../hooks/useProductSelection';
 
-interface ProductInfo {
-  id: number;
-  title: string;
-  price: string;
-  originalPrice: string;
-  description: string;
-  imageUrl: string;
-  size: string;
-  discount: string;
-  additionalInfo?: string;
-  quantity: number;
-}
+// Lazy load CheckoutForm component
+const CheckoutForm = lazy(() => import('../CheckoutForm'));
+
+// Fallback component for CheckoutForm
+const CheckoutFormSkeleton = () => (
+  <div className="animate-pulse p-6 rounded-xl bg-white shadow-lg">
+    <div className="h-8 bg-gray-200 rounded w-2/3 mb-6"></div>
+    <div className="h-40 bg-gray-200 rounded mb-6"></div>
+    <div className="h-72 bg-gray-200 rounded mb-6"></div>
+    <div className="h-12 bg-gray-200 rounded w-1/3 mx-auto"></div>
+  </div>
+);
 
 interface CheckoutSectionProps {
   productsWithQuantity: ProductInfo[];
@@ -41,7 +41,7 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={checkoutInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.5 }}
         className="text-center mb-8"
       >
         <h2 className="text-2xl md:text-3xl font-display font-bold mb-3">Garanta seus Produtos Stitch</h2>
@@ -50,12 +50,14 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
         </p>
       </motion.div>
       
-      <CheckoutForm 
-        selectedProducts={productsWithQuantity}
-        totalAmount={totalAmount}
-        onRemoveProduct={onRemoveProduct}
-        onQuantityChange={onQuantityChange}
-      />
+      <Suspense fallback={<CheckoutFormSkeleton />}>
+        <CheckoutForm 
+          selectedProducts={productsWithQuantity}
+          totalAmount={totalAmount}
+          onRemoveProduct={onRemoveProduct}
+          onQuantityChange={onQuantityChange}
+        />
+      </Suspense>
     </section>
   );
 };

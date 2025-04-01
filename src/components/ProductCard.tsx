@@ -6,10 +6,11 @@ import ProductQuantitySelector from './ProductQuantitySelector';
 import ProductPrice from './product/ProductPrice';
 import ProductBadges from './product/ProductBadges';
 import ProductButtons from './product/ProductButtons';
+import OptimizedImage from './OptimizedImage';
 
 interface ProductCardProps {
   title: string;
-  price: string;
+  price: string | number;
   originalPrice: string;
   description: string;
   imageUrl: string;
@@ -79,9 +80,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       transition={{ duration: 0.3 }}
     >
       <div className="relative">
-        <img 
+        <OptimizedImage 
           src={imageUrl} 
           alt={title} 
+          width={300}
+          height={200}
           className="w-full h-48 object-contain p-4"
         />
         <ProductBadges 

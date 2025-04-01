@@ -1,18 +1,11 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 import CartProductItem from './CartProductItem';
 import CartTotal from './CartTotal';
 import EmptyCart from './EmptyCart';
-
-interface ProductInfo {
-  id: number;
-  title: string;
-  price: number;
-  imageUrl: string;
-  quantity: number;
-}
+import { ProductInfo } from '../../../hooks/useProductSelection';
 
 interface CartDisplayProps {
   products: ProductInfo[];
@@ -21,7 +14,8 @@ interface CartDisplayProps {
   onQuantityChange: (productId: number, quantity: number) => void;
 }
 
-const CartDisplay: React.FC<CartDisplayProps> = ({
+// Use memo to prevent unnecessary re-renders
+const CartDisplay = memo<CartDisplayProps>(({
   products,
   total,
   onRemoveProduct,
@@ -33,7 +27,8 @@ const CartDisplay: React.FC<CartDisplayProps> = ({
 
   return (
     <div className="mb-6">
-      <h3 className="font-medium text-stitch-pink mb-3 text-base flex items-center">
+      <h3 className="font-medium text-stitch-pink mb-3 text-base flex items-center"
+          style={{color: "#ff4c8f"}}>
         <ShoppingBag className="w-4 h-4 mr-2" />
         Carrinho de Compras
       </h3>
@@ -54,6 +49,8 @@ const CartDisplay: React.FC<CartDisplayProps> = ({
       <CartTotal total={total} />
     </div>
   );
-};
+});
+
+CartDisplay.displayName = 'CartDisplay';
 
 export default CartDisplay;

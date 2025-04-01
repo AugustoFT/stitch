@@ -1,16 +1,9 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import ProductQuantitySelector from '../../ProductQuantitySelector';
-
-interface ProductInfo {
-  id: number;
-  title: string;
-  price: number;
-  imageUrl: string;
-  quantity: number;
-}
+import { ProductInfo } from '../../../hooks/useProductSelection';
 
 interface CartProductItemProps {
   product: ProductInfo;
@@ -18,11 +11,19 @@ interface CartProductItemProps {
   onQuantityChange: (productId: number, quantity: number) => void;
 }
 
-const CartProductItem: React.FC<CartProductItemProps> = ({ 
+// Use memo to prevent unnecessary re-renders
+const CartProductItem = memo<CartProductItemProps>(({ 
   product, 
   onRemoveProduct, 
   onQuantityChange 
 }) => {
+  const formatPrice = (price: string | number): string => {
+    if (typeof price === 'number') {
+      return price.toFixed(2).replace('.', ',');
+    }
+    return price.toString().replace('R$ ', '').replace('.', ',');
+  };
+
   return (
     <motion.div 
       key={product.id} 
@@ -35,13 +36,20 @@ const CartProductItem: React.FC<CartProductItemProps> = ({
     >
       <div className="flex items-center">
         <div className="h-12 w-12 rounded overflow-hidden flex-shrink-0 mr-3 bg-white p-1">
-          <img src={product.imageUrl} alt={product.title} className="h-full w-full object-contain" />
+          <img 
+            src={product.imageUrl} 
+            alt={product.title} 
+            className="h-full w-full object-contain"
+            width="48" 
+            height="48"
+            loading="lazy"
+          />
         </div>
         
         <div>
           <p className="text-sm font-medium">{product.title}</p>
           <p className="text-xs text-gray-600">
-            R$ {product.price.toFixed(2).replace('.', ',')} cada
+            R$ {formatPrice(product.price)}
           </p>
         </div>
       </div>
@@ -50,7 +58,7 @@ const CartProductItem: React.FC<CartProductItemProps> = ({
         <ProductQuantitySelector 
           quantity={product.quantity} 
           onQuantityChange={(qty) => onQuantityChange(product.id, qty)} 
-          maxQuantity={20} // Increase max quantity
+          maxQuantity={20}
         />
         
         <motion.button 
@@ -64,6 +72,8 @@ const CartProductItem: React.FC<CartProductItemProps> = ({
       </div>
     </motion.div>
   );
-};
+});
+
+CartProductItem.displayName = 'CartProductItem';
 
 export default CartProductItem;
