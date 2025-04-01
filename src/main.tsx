@@ -6,12 +6,12 @@ import './index.css'
 console.log("Iniciando aplicação...");
 
 // Função auxiliar para exibir erros na tela
-function displayError(element, error) {
+function displayError(element: HTMLElement, error: Error | unknown) {
   console.error("Erro na aplicação:", error);
   element.innerHTML = `
     <div style="padding: 20px; color: red; text-align: center; font-family: sans-serif;">
       <h2>Erro ao carregar aplicação</h2>
-      <p>${error?.message || 'Erro desconhecido'}</p>
+      <p>${error instanceof Error ? error.message : 'Erro desconhecido'}</p>
       <button onclick="window.location.reload()" 
               style="margin-top: 20px; padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
         Tentar novamente
@@ -24,11 +24,11 @@ function displayError(element, error) {
 function retryFailedCssLoad() {
   window.addEventListener('error', function(e) {
     // Verifica se o erro está relacionado a carregamento de CSS
-    if (e.target && (e.target.tagName === 'LINK' || e.target.tagName === 'STYLE')) {
-      console.warn('Erro ao carregar recurso CSS:', e.target.href || 'inline style');
+    if (e.target && (e.target instanceof HTMLLinkElement || e.target instanceof HTMLStyleElement)) {
+      console.warn('Erro ao carregar recurso CSS:', e.target instanceof HTMLLinkElement ? e.target.href : 'inline style');
       
       // Se for um link, tenta recarregar
-      if (e.target.tagName === 'LINK' && e.target.href) {
+      if (e.target instanceof HTMLLinkElement && e.target.href) {
         const newLink = document.createElement('link');
         newLink.rel = 'stylesheet';
         newLink.href = e.target.href + '?retry=' + new Date().getTime(); // Adiciona timestamp para evitar cache
