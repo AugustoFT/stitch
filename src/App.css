@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +40,88 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Emergency fallback styles if Tailwind fails to load */
+body.css-loading-error {
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+  color: #333;
+  background: #f5f8fd;
+}
+
+.css-loading-error .container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.css-loading-error .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.css-loading-error .hero {
+  padding: 4rem 1rem;
+  text-align: center;
+  background: linear-gradient(to bottom, #F2F7FF, #ffffff);
+}
+
+.css-loading-error .button {
+  display: inline-block;
+  background: linear-gradient(to right, #ff4c8f, #ff8c6b);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+.css-loading-error .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem 1rem;
+}
+
+.css-loading-error .card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+}
+
+/* Add error notification for CSS loading issues */
+#css-error-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff4c8f;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9999;
+  max-width: 300px;
+  font-size: 14px;
+  display: none;
+}
+
+#css-error-notification.visible {
+  display: block;
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

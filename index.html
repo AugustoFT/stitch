@@ -17,12 +17,9 @@
     <meta name="twitter:site" content="@stitch_store" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
-    <!-- Preload critical assets -->
-    <link rel="preload" href="/assets/index-DHPT2Uor.css" as="style" />
-    <link rel="preload" href="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" as="image" fetchpriority="high" />
-    
-    <!-- Direct CSS import to prevent loading issues -->
-    <link rel="stylesheet" href="/assets/index-DHPT2Uor.css" />
+    <!-- Preconnect to necessary domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
     <!-- Inline critical CSS -->
     <style>
@@ -30,13 +27,15 @@
       :root {
         --stitch-blue: #16a4e8;
         --stitch-pink: #ff4c8f;
+        --stitch-coral: #ff8c6b;
         --stitch-light: #f2f7ff;
       }
       body {
         margin: 0;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         background: linear-gradient(to bottom, #F2F7FF, #fff);
         overflow-x: hidden;
+        min-height: 100vh;
       }
       .btn-primary {
         background: linear-gradient(to right, #ff4c8f, #ff8c6b);
@@ -46,40 +45,80 @@
         border-radius: 9999px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         transition: all 0.3s;
+        border: none;
+        cursor: pointer;
       }
       .btn-primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       }
-      
-      /* Fallback styles in case of CSS loading errors */
-      .app-fallback {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        color: #333333;
-        line-height: 1.5;
+      /* App loading state */
+      .app-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #F2F7FF, #fff);
       }
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #16a4e8;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      /* More fallback styles */
       .container-fallback {
         width: 100%;
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 1rem;
       }
-      .text-center-fallback {
-        text-align: center;
+      .header-fallback {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+      .products-grid-fallback {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem;
+      }
+      .product-card-fallback {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: transform 0.3s;
+      }
+      .product-card-fallback:hover {
+        transform: translateY(-5px);
       }
     </style>
     
-    <!-- Preconnect to necessary domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/src/index.css" as="style" />
+    <link rel="preload" href="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" as="image" fetchpriority="high" />
     
-    <!-- Load fonts asynchronously -->
+    <!-- Load fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
     <!-- Meta Pixel Code - defer loading -->
     <script>
       window.addEventListener('load', function() {
         setTimeout(function() {
+          if (window.fbq) return; // Prevent duplicate initialization
           const script = document.createElement('script');
           script.innerHTML = `
             !function(f,b,e,v,n,t,s)
@@ -94,7 +133,7 @@
             fbq('track', 'PageView');
           `;
           document.head.appendChild(script);
-        }, 2000); // Delay para garantir que a página esteja carregada primeiro
+        }, 2000);
       });
     </script>
     
@@ -102,6 +141,7 @@
     <script>
       window.addEventListener('load', function() {
         setTimeout(function() {
+          if (window.dataLayer && window.dataLayer.length > 0) return; // Prevent duplicate initialization
           const script = document.createElement('script');
           script.innerHTML = `
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -111,7 +151,7 @@
             })(window,document,'script','dataLayer','GTM-MTQM7DJ2');
           `;
           document.head.appendChild(script);
-        }, 2500); // Delay ligeiramente maior para o GTM
+        }, 2500);
       });
     </script>
   </head>
@@ -128,7 +168,13 @@
     /></noscript>
     <!-- End Meta Pixel Code -->
     
-    <div id="root" class="app-fallback"></div>
+    <div id="root" class="app-fallback">
+      <!-- App loading state - shown while JS loads -->
+      <div class="app-loading">
+        <div class="loading-spinner"></div>
+        <p>Carregando produtos Stitch...</p>
+      </div>
+    </div>
     
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>

@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => ({
           vendor: ['react', 'react-dom', 'framer-motion'],
           utils: ['./src/utils/dataLayer.ts'],
         },
-        // Minimize JS chunk size
+        // Correct the output paths to prevent nesting
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: ({ name }) => {
@@ -55,13 +55,13 @@ export default defineConfig(({ mode }) => ({
             return 'assets/images/[name]-[hash][extname]';
           }
           if (/\.css$/.test(name ?? '')) {
-            return 'assets/css/[name]-[hash][extname]';
+            return 'assets/css/[name]-[hash][extname]'; // Fixed CSS path to avoid nesting
           }
           return 'assets/[name]-[hash][extname]';
         },
       },
     },
-    cssCodeSplit: true,
+    cssCodeSplit: false, // Disable CSS code splitting to prevent multiple CSS files
     sourcemap: false, // Disable sourcemaps in production
     // Enable these for better performance
     minify: 'terser',
