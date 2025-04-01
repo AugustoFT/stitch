@@ -4,12 +4,14 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  font-family: 'Inter', sans-serif;
 }
 
-#root {
+#root, .app-container {
   height: 100%;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 /* Estilos para garantir que o conteúdo seja visível */
@@ -17,6 +19,7 @@ html, body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 /* Estilos para o modo de depuração */
@@ -29,4 +32,24 @@ html, body {
   padding: 5px;
   font-size: 12px;
   z-index: 9999;
+}
+
+/* Garante que o aplicativo seja visível independente do tema */
+.app-container {
+  background-color: #ffffff;
+  color: #1a1a1a;
+}
+
+/* Estilos para garantir que componentes principais estejam visíveis */
+.header, .footer {
+  width: 100%;
+  display: flex;
+  padding: 1rem;
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
