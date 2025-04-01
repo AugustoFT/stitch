@@ -17,9 +17,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       // Enable fast refresh
-      plugins: [
-        ['swc-plugin-react-remove-props', { props: ['data-testid'] }]
-      ]
+      // Remove the problematic plugin configuration
     }),
     imagetools({
       include: ['**/*.{jpeg,jpg,png,webp}'],
