@@ -1,5 +1,5 @@
 
-import { eventTrackers } from '../../../utils/dataLayer';
+import { eventTrackers } from '../../utils/dataLayer';
 
 interface UseProductInteractionsProps {
   onRemoveProduct?: (productId: number) => void;

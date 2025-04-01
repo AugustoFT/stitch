@@ -8,8 +8,6 @@ import { useFormatterHandlers } from './checkout/FormatterHandlers';
 import { useCheckoutTracking } from './checkout/hooks/useCheckoutTracking';
 import { useProductInteractions } from './checkout/hooks/useProductInteractions';
 import { useSubmitHandler } from './checkout/hooks/useSubmitHandler';
-import CheckoutHeader from './checkout/ui/CheckoutHeader';
-import PromoMessage from './checkout/ui/PromoMessage';
 
 // Declare MercadoPago in the window object
 declare global {
@@ -84,8 +82,15 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
     >
-      <CheckoutHeader />
-      <PromoMessage />
+      <h2 className="text-xl font-display font-bold text-stitch-pink mb-4 text-center">
+        Preencha para comprar
+      </h2>
+      
+      <div className="text-center mb-4">
+        <div className="inline-block bg-stitch-pink text-white text-xs font-bold py-1 px-3 rounded-full mb-2">
+          Promoção por tempo limitado!
+        </div>
+      </div>
       
       {/* Show success message if payment is approved */}
       <PaymentSuccessMessage paymentResult={formState.paymentResult} />

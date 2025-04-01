@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Menu, X } from 'lucide-react';
+import { ShoppingBag, Menu, X, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
@@ -9,6 +9,16 @@ const Header: React.FC = () => {
 
   return (
     <>
+      <motion.div 
+        className="w-full bg-stitch-blue py-2 text-white text-center text-sm flex justify-center items-center"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Truck className="h-4 w-4 mr-2" /> 
+        <span>Frete Grátis para todo Brasil em compras acima de R$ 99,98</span>
+      </motion.div>
+      
       <motion.header 
         className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 bg-white/80 backdrop-blur-md"
         initial={{ y: -20, opacity: 0 }}

@@ -1,6 +1,6 @@
 
 import { useEffect } from 'react';
-import { pushToDataLayer } from '../../../utils/dataLayer';
+import { pushToDataLayer } from '../../utils/dataLayer';
 
 interface UseCheckoutTrackingProps {
   selectedProducts: any[];
