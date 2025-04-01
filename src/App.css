@@ -142,3 +142,76 @@ p, span, a {
   visibility: visible !important;
   opacity: 1 !important;
 }
+
+/* Adicionando estilos específicos para garantir que elementos principais sejam visíveis mesmo com falhas de CSS */
+.app-container, .content-container, #root {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+}
+
+/* Fallback para shadcn components */
+[class*="button"] {
+  cursor: pointer !important;
+  background-color: #16a4e8 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 10px 16px !important;
+  font-weight: 500 !important;
+  margin: 4px !important;
+}
+
+[class*="input"] {
+  padding: 8px 12px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  background-color: white !important;
+  color: #333 !important;
+  font-size: 14px !important;
+}
+
+/* Ensures that headings and text content are always visible */
+[class*="heading"], [class*="title"], [class*="header"], h1, h2, h3, h4, h5, h6 {
+  color: #1a1a1a !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+[class*="text"], [class*="paragraph"], p, span {
+  color: #333 !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+  visibility: visible !important;
+  display: inline !important;
+}
+
+/* Ensure components are visible even if their CSS fails */
+.HeroSection, .FAQSection, .ProductsSection, .TestimonialsSection, 
+.BenefitsSection, .CallToAction, .CheckoutSection, .FeatureCards {
+  display: block !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 2rem 1rem !important;
+}
+
+/* Critical error-tolerant layout */
+html.css-error body {
+  font-family: system-ui, -apple-system, sans-serif !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #333 !important;
+  background-color: #f9f9f9 !important;
+  line-height: 1.5 !important;
+}
+
+/* Fix for flexbox not rendering properly */
+.flex {
+  display: flex !important;
+}
+
+.flex-col {
+  flex-direction: column !important;
+}
