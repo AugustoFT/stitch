@@ -3,13 +3,17 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Make sure the root element exists before rendering
+// Certificando-se de que o elemento root existe antes de renderizar
 const rootElement = document.getElementById("root");
 
 if (rootElement) {
-  // Log successful mounting
-  console.log("Mounting React app to DOM");
-  createRoot(rootElement).render(<App />);
+  console.log("Montando aplicação React no DOM");
+  try {
+    createRoot(rootElement).render(<App />);
+    console.log("Aplicação React montada com sucesso");
+  } catch (error) {
+    console.error("Erro ao montar aplicação React:", error);
+  }
 } else {
-  console.error("Root element not found in DOM");
+  console.error("Elemento root não encontrado no DOM!");
 }
