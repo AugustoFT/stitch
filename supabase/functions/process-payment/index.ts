@@ -5,7 +5,10 @@ import { processCardPayment, createPixPayment, checkPaymentStatus } from "./hand
 import { handleCorsRequest } from "./utils.ts";
 
 serve(async (req) => {
-  // Handle CORS preflight requests
+  // Add debug logs for all requests
+  console.log(`Received ${req.method} request for ${req.url}`);
+  
+  // Handle CORS preflight requests (this is critical for browser preflight checks)
   if (req.method === 'OPTIONS') {
     console.log('Handling OPTIONS request (CORS preflight)');
     return handleCorsRequest();

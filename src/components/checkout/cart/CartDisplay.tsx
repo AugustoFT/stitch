@@ -1,10 +1,18 @@
+
 import React from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 import CartProductItem from './CartProductItem';
 import CartTotal from './CartTotal';
 import EmptyCart from './EmptyCart';
-import { ProductInfo } from '../../../hooks/useProductSelection';
+
+interface ProductInfo {
+  id: number;
+  title: string;
+  price: number;
+  imageUrl: string;
+  quantity: number;
+}
 
 interface CartDisplayProps {
   products: ProductInfo[];

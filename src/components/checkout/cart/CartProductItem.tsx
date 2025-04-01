@@ -3,7 +3,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import ProductQuantitySelector from '../../ProductQuantitySelector';
-import { ProductInfo } from '../../../hooks/useProductSelection';
+
+interface ProductInfo {
+  id: number;
+  title: string;
+  price: number;
+  imageUrl: string;
+  quantity: number;
+}
 
 interface CartProductItemProps {
   product: ProductInfo;
@@ -34,7 +41,7 @@ const CartProductItem: React.FC<CartProductItemProps> = ({
         <div>
           <p className="text-sm font-medium">{product.title}</p>
           <p className="text-xs text-gray-600">
-            R$ {typeof product.price === 'number' ? product.price.toFixed(2).replace('.', ',') : product.price.toString().replace('R$ ', '').replace('.', ',')}
+            R$ {typeof product.price === 'number' ? product.price.toFixed(2).replace('.', ',') : product.price}
           </p>
         </div>
       </div>
@@ -43,7 +50,7 @@ const CartProductItem: React.FC<CartProductItemProps> = ({
         <ProductQuantitySelector 
           quantity={product.quantity} 
           onQuantityChange={(qty) => onQuantityChange(product.id, qty)} 
-          maxQuantity={20}
+          maxQuantity={20} // Increase max quantity
         />
         
         <motion.button 

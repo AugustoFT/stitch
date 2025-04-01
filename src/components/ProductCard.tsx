@@ -9,7 +9,7 @@ import ProductButtons from './product/ProductButtons';
 
 interface ProductCardProps {
   title: string;
-  price: string | number;
+  price: string;
   originalPrice: string;
   description: string;
   imageUrl: string;

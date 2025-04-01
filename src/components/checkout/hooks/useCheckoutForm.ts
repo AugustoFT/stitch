@@ -19,7 +19,6 @@ interface CheckoutFormState {
     cep: string;
     formaPagamento: string;
     cpf: string;
-    numero: string;
   };
   isSubmitting: boolean;
   cardFormVisible: boolean;
@@ -31,6 +30,7 @@ interface CheckoutFormState {
 }
 
 export const useCheckoutForm = (initialProducts: any[] = [], initialTotalAmount: number = 139.99) => {
+  // Use the smaller, more focused hooks
   const { 
     productsWithQuantity, 
     calculatedTotal, 
@@ -59,6 +59,7 @@ export const useCheckoutForm = (initialProducts: any[] = [], initialTotalAmount:
     setCardPaymentStatus 
   } = usePaymentState(formData.formaPagamento);
 
+  // Combine all the individual states into a single formState for backwards compatibility
   const [formState, setFormState] = useState<CheckoutFormState>({
     formData,
     isSubmitting,
@@ -96,6 +97,7 @@ export const useCheckoutForm = (initialProducts: any[] = [], initialTotalAmount:
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     saveCustomerInfo();
+    // Form submission handled by payment components
   };
 
   // Handle product removal with toast notification

@@ -1,9 +1,22 @@
+
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import ProductCard from '../ProductCard';
 import { ShoppingBag, Clock, Award, Users, TruckIcon } from 'lucide-react';
 import { eventTrackers } from '../../utils/dataLayer';
-import { ProductInfo } from '../../hooks/useProductSelection';
+
+interface ProductInfo {
+  id: number;
+  title: string;
+  price: string;
+  originalPrice: string;
+  description: string;
+  imageUrl: string;
+  size: string;
+  discount: string;
+  additionalInfo?: string;
+  quantity: number;
+}
 
 interface ProductsSectionProps {
   products: ProductInfo[];

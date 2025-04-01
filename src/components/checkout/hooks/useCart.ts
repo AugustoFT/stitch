@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 interface ProductWithQuantity {
   id: number;
   title: string;
-  price: number | string;
+  price: number;
   imageUrl: string;
   quantity: number;
 }
@@ -22,7 +22,7 @@ export const useCart = (initialProducts: any[] = [], initialTotalAmount: number 
     try {
       const processedProducts = initialProducts.map(product => {
         // Garantir que o preço seja convertido para número corretamente
-        let priceValue: number;
+        let priceValue = 0;
         
         if (typeof product.price === 'string') {
           // Remove "R$ " e substitui vírgula por ponto para converter para número
@@ -44,7 +44,7 @@ export const useCart = (initialProducts: any[] = [], initialTotalAmount: number 
       });
       
       const total = processedProducts.reduce(
-        (sum, product) => sum + (typeof product.price === 'number' ? product.price * product.quantity : 0), 
+        (sum, product) => sum + (product.price * product.quantity), 
         0
       );
       
@@ -64,12 +64,7 @@ export const useCart = (initialProducts: any[] = [], initialTotalAmount: number 
       );
       
       const newTotal = updatedProducts.reduce(
-        (sum, product) => {
-          const price = typeof product.price === 'string' 
-            ? parseFloat(product.price.replace('R$ ', '').replace(',', '.'))
-            : product.price;
-          return sum + (price * product.quantity);
-        }, 
+        (sum, product) => sum + (product.price * product.quantity), 
         0
       );
       
@@ -86,12 +81,7 @@ export const useCart = (initialProducts: any[] = [], initialTotalAmount: number 
       );
       
       const newTotal = updatedProducts.reduce(
-        (sum, product) => {
-          const price = typeof product.price === 'string' 
-            ? parseFloat(product.price.replace('R$ ', '').replace(',', '.'))
-            : product.price;
-          return sum + (price * product.quantity);
-        }, 
+        (sum, product) => sum + (product.price * product.quantity), 
         0
       );
       
