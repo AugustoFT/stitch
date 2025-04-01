@@ -21,6 +21,9 @@
     <link rel="preload" href="/assets/index-DHPT2Uor.css" as="style" />
     <link rel="preload" href="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" as="image" fetchpriority="high" />
     
+    <!-- Direct CSS import to prevent loading issues -->
+    <link rel="stylesheet" href="/assets/index-DHPT2Uor.css" />
+    
     <!-- Inline critical CSS -->
     <style>
       /* Critical CSS inline */
@@ -48,53 +51,67 @@
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       }
+      
+      /* Fallback styles in case of CSS loading errors */
+      .app-fallback {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        color: #333333;
+        line-height: 1.5;
+      }
+      .container-fallback {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      .text-center-fallback {
+        text-align: center;
+      }
     </style>
-    
-    <!-- Defer non-critical CSS -->
-    <link rel="stylesheet" href="/assets/index-DHPT2Uor.css" media="print" onload="this.media='all'" />
     
     <!-- Preconnect to necessary domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
     <!-- Load fonts asynchronously -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-    <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    </noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
     <!-- Meta Pixel Code - defer loading -->
     <script>
       window.addEventListener('load', function() {
-        const script = document.createElement('script');
-        script.innerHTML = `
-          !function(f,b,e,v,n,t,s)
-          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-          n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t,s)}(window, document,'script',
-          'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '629312673598780');
-          fbq('track', 'PageView');
-        `;
-        document.head.appendChild(script);
+        setTimeout(function() {
+          const script = document.createElement('script');
+          script.innerHTML = `
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '629312673598780');
+            fbq('track', 'PageView');
+          `;
+          document.head.appendChild(script);
+        }, 2000); // Delay para garantir que a página esteja carregada primeiro
       });
     </script>
     
     <!-- Google Tag Manager - defer loading -->
     <script>
       window.addEventListener('load', function() {
-        const script = document.createElement('script');
-        script.innerHTML = `
-          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer','GTM-MTQM7DJ2');
-        `;
-        document.head.appendChild(script);
+        setTimeout(function() {
+          const script = document.createElement('script');
+          script.innerHTML = `
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-MTQM7DJ2');
+          `;
+          document.head.appendChild(script);
+        }, 2500); // Delay ligeiramente maior para o GTM
       });
     </script>
   </head>
@@ -111,7 +128,7 @@
     /></noscript>
     <!-- End Meta Pixel Code -->
     
-    <div id="root"></div>
+    <div id="root" class="app-fallback"></div>
     
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>

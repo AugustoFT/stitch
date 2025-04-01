@@ -4,37 +4,86 @@ import { motion } from 'framer-motion';
 
 interface ProductPriceProps {
   price: string | number;
-  originalPrice: string;
+  originalPrice?: string;
   quantity: number;
 }
 
-const ProductPrice: React.FC<ProductPriceProps> = ({ price, originalPrice, quantity }) => {
-  // Convert price to string if it's a number
-  const priceStr = typeof price === 'string' ? price : `R$ ${price.toFixed(2).replace('.', ',')}`;
+const ProductPrice: React.FC<ProductPriceProps> = ({ 
+  price, 
+  originalPrice = '', 
+  quantity = 1 
+}) => {
+  // Função segura para formatação de preço
+  const formatPrice = (value: string | number): string => {
+    try {
+      // Se já for uma string formatada, retorna ela
+      if (typeof value === 'string' && value.startsWith('R$')) {
+        return value.trim();
+      }
+      
+      // Converte para número se for string
+      const numValue = typeof value === 'number' 
+        ? value 
+        : parseFloat(value.replace(/[^\d.,]/g, '').replace(',', '.'));
+      
+      // Verifica se é um número válido
+      if (isNaN(numValue)) {
+        console.warn('Valor de preço inválido:', value);
+        return 'R$ 0,00';
+      }
+      
+      // Formata o número como moeda brasileira
+      return `R$ ${numValue.toFixed(2).replace('.', ',')}`;
+    } catch (error) {
+      console.error('Erro ao formatar preço:', error);
+      return 'R$ 0,00';
+    }
+  };
   
-  // Convert price string to number (removing "R$ " and replacing comma with dot)
-  const priceNumber = typeof price === 'number' 
-    ? price 
-    : parseFloat(priceStr.replace('R$ ', '').replace(',', '.'));
-    
-  const totalPrice = priceNumber * quantity;
+  // Formata o preço principal
+  const formattedPrice = formatPrice(price);
+  
+  // Calcula o preço total com segurança
+  const calculateTotal = (): string => {
+    try {
+      // Extrai o número do preço formatado
+      const priceValue = typeof price === 'number' 
+        ? price 
+        : parseFloat(formattedPrice.replace('R$ ', '').replace(',', '.'));
+      
+      // Calcula o total
+      const total = priceValue * quantity;
+      
+      // Formata o total
+      return formatPrice(total);
+    } catch (error) {
+      console.error('Erro ao calcular total:', error);
+      return formattedPrice; // Fallback para o preço unitário
+    }
+  };
+  
+  const totalPrice = calculateTotal();
 
   return (
     <>
       <div className="flex items-center mb-2">
-        <p className="text-stitch-blue font-bold">{priceStr}</p>
-        <p className="text-gray-400 text-sm line-through ml-2">{originalPrice}</p>
+        <p className="text-stitch-blue font-bold">{formattedPrice}</p>
+        {originalPrice && (
+          <p className="text-gray-400 text-sm line-through ml-2">{originalPrice}</p>
+        )}
       </div>
       
-      <motion.div
-        key={totalPrice}
-        className="text-right font-bold text-stitch-blue"
-        initial={{ opacity: 0.7, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        Total: R$ {totalPrice.toFixed(2).replace('.', ',')}
-      </motion.div>
+      {quantity > 1 && (
+        <motion.div
+          key={totalPrice}
+          className="text-right font-bold text-stitch-blue"
+          initial={{ opacity: 0.7, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          Total: {totalPrice}
+        </motion.div>
+      )}
     </>
   );
 };
