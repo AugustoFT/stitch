@@ -9,7 +9,15 @@ export async function processCardPayment(req: Request) {
   try {
     console.log('Initiating card payment processing');
     
-    const { token, paymentMethod, installments, transactionAmount, description, payer } = await req.json();
+    const data = await req.json();
+    console.log('Received data:', JSON.stringify(data));
+    
+    const { token, paymentMethod, installments, transactionAmount, description, payer } = data;
+    
+    if (!token || !paymentMethod || !installments || !transactionAmount || !description || !payer) {
+      console.error('Missing required payment fields:', JSON.stringify(data));
+      return createErrorResponse('Missing required payment fields', 400);
+    }
     
     console.log('Processing card payment:', { 
       paymentMethod, 
@@ -31,7 +39,7 @@ export async function processCardPayment(req: Request) {
       }
     };
     
-    console.log('Sending data to Mercado Pago API');
+    console.log('Sending data to Mercado Pago API with token:', MERCADO_PAGO_ACCESS_TOKEN ? 'Present' : 'Missing');
     
     // Send to Mercado Pago API
     const mpResponse = await fetch('https://api.mercadopago.com/v1/payments', {

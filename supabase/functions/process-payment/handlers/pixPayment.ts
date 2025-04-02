@@ -9,7 +9,15 @@ export async function createPixPayment(req: Request) {
   try {
     console.log('Initiating PIX payment creation');
     
-    const { transactionAmount, description, payer } = await req.json();
+    const data = await req.json();
+    console.log('Received PIX data:', JSON.stringify(data));
+    
+    const { transactionAmount, description, payer } = data;
+    
+    if (!transactionAmount || !description || !payer) {
+      console.error('Missing required PIX payment fields:', JSON.stringify(data));
+      return createErrorResponse('Missing required PIX payment fields', 400);
+    }
     
     console.log('Creating PIX payment:', { 
       transactionAmount, 
@@ -28,6 +36,8 @@ export async function createPixPayment(req: Request) {
         identification: payer.identification
       }
     };
+    
+    console.log('Sending PIX data to Mercado Pago API with token:', MERCADO_PAGO_ACCESS_TOKEN ? 'Present' : 'Missing');
     
     // Send to Mercado Pago API
     const mpResponse = await fetch('https://api.mercadopago.com/v1/payments', {

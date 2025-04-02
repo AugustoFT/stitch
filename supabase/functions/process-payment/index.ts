@@ -13,9 +13,11 @@ serve(async (req) => {
 
   try {
     // Parse the JSON body
-    const { pathname, ...data } = await req.json();
+    const requestData = await req.json();
+    const { pathname, ...data } = requestData;
+    
     console.log(`Processing request for path: ${pathname}`);
-    console.log('Request data:', data);
+    console.log('Request data:', JSON.stringify(data));
     
     // Route requests based on path
     if (pathname === '/card') {
