@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { formatCPF, formatPhoneNumber, formatCEP } from './InputFormatters';
 
 interface FormatterHandlersProps {
@@ -9,27 +9,34 @@ interface FormatterHandlersProps {
 }
 
 export const useFormatterHandlers = ({ formData, handleChange, setFormData }: FormatterHandlersProps) => {
-  // Handle formatted input changes
-  const handleCPFChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Memorize os manipuladores de eventos para evitar recreações em cada renderização
+  const handleCPFChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatCPF(e.target.value);
-    setFormData(prev => ({ ...prev, cpf: formattedValue }));
-  };
+    if (formData.cpf !== formattedValue) {
+      setFormData(prev => ({ ...prev, cpf: formattedValue }));
+    }
+  }, [formData.cpf, setFormData]);
   
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatPhoneNumber(e.target.value);
-    setFormData(prev => ({ ...prev, telefone: formattedValue }));
-  };
+    if (formData.telefone !== formattedValue) {
+      setFormData(prev => ({ ...prev, telefone: formattedValue }));
+    }
+  }, [formData.telefone, setFormData]);
   
-  const handleCEPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCEPChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatCEP(e.target.value);
-    setFormData(prev => ({ ...prev, cep: formattedValue }));
-  };
+    if (formData.cep !== formattedValue) {
+      setFormData(prev => ({ ...prev, cep: formattedValue }));
+    }
+  }, [formData.cep, setFormData]);
 
-  return {
+  // Retornar funções memoizadas
+  return useMemo(() => ({
     handleCPFChange,
     handlePhoneChange,
     handleCEPChange
-  };
+  }), [handleCPFChange, handlePhoneChange, handleCEPChange]);
 };
 
 export default useFormatterHandlers;

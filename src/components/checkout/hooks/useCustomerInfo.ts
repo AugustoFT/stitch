@@ -32,10 +32,10 @@ export const useCustomerInfo = () => {
     cpf: '',
   });
 
-  // Ref for tracking initialization state
+  // Ref para rastrear o estado de inicialização
   const customerInfoLoaded = useRef(false);
 
-  // Load customer data from localStorage on component mount
+  // Carregar dados do cliente do localStorage na montagem do componente
   useEffect(() => {
     if (customerInfoLoaded.current) return;
     
@@ -46,7 +46,7 @@ export const useCustomerInfo = () => {
         setFormData(prev => ({
           ...prev,
           ...parsedData,
-          // Keep current payment method
+          // Manter o método de pagamento atual
           formaPagamento: prev.formaPagamento
         }));
       } catch (e) {
@@ -57,23 +57,34 @@ export const useCustomerInfo = () => {
     customerInfoLoaded.current = true;
   }, []);
 
-  // Use memoized version of handleChange to prevent unnecessary re-renders
+  // Usar versão memoizada do handleChange para evitar re-renderizações desnecessárias
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      // Verificar se o valor mudou para evitar atualizações desnecessárias
+      if (prev[name as keyof CustomerInfoData] === value) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [name]: value
+      };
+    });
   }, []);
 
   const handlePaymentMethodChange = useCallback((method: string) => {
-    setFormData(prev => ({
-      ...prev,
-      formaPagamento: method
-    }));
+    setFormData(prev => {
+      if (prev.formaPagamento === method) {
+        return prev;
+      }
+      return {
+        ...prev,
+        formaPagamento: method
+      };
+    });
   }, []);
 
-  // Save customer info to localStorage
+  // Salvar informações do cliente no localStorage
   const saveCustomerInfo = useCallback(() => {
     if (formData.nome && formData.email) {
       const dataToSave = {

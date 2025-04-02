@@ -3,45 +3,42 @@
 
 // Format CPF (Brazilian individual taxpayer ID)
 export const formatCPF = (value: string): string => {
+  // Limpar qualquer caractere que não seja número
   const cleaned = value.replace(/\D/g, '');
-  let formatted = cleaned;
   
-  if (cleaned.length > 3) {
-    formatted = cleaned.slice(0, 3) + '.' + formatted.slice(3);
-  }
-  if (cleaned.length > 6) {
-    formatted = formatted.slice(0, 7) + '.' + formatted.slice(7);
-  }
-  if (cleaned.length > 9) {
-    formatted = formatted.slice(0, 11) + '-' + formatted.slice(11);
-  }
+  // Aplicar a formatação apenas se necessário
+  if (cleaned.length <= 3) return cleaned;
   
-  return formatted.slice(0, 14); // 000.000.000-00 format
+  if (cleaned.length <= 6) 
+    return `${cleaned.slice(0, 3)}.${cleaned.slice(3)}`;
+  
+  if (cleaned.length <= 9)
+    return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6)}`;
+  
+  return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9, 11)}`;
 };
 
 // Format phone number (Brazilian format)
 export const formatPhoneNumber = (value: string): string => {
+  // Limpar qualquer caractere que não seja número
   const cleaned = value.replace(/\D/g, '');
-  let formatted = cleaned;
   
-  if (cleaned.length > 2) {
-    formatted = '(' + cleaned.slice(0, 2) + ') ' + formatted.slice(2);
-  }
-  if (cleaned.length > 7) {
-    formatted = formatted.slice(0, 10) + '-' + formatted.slice(10);
-  }
+  // Aplicar formatação apenas se necessário
+  if (cleaned.length <= 2) return cleaned;
   
-  return formatted.slice(0, 16); // (00) 00000-0000 format
+  if (cleaned.length <= 7)
+    return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2)}`;
+  
+  return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7, 11)}`;
 };
 
 // Format CEP (Brazilian postal code)
 export const formatCEP = (value: string): string => {
+  // Limpar qualquer caractere que não seja número
   const cleaned = value.replace(/\D/g, '');
-  let formatted = cleaned;
   
-  if (cleaned.length > 5) {
-    formatted = cleaned.slice(0, 5) + '-' + cleaned.slice(5);
-  }
+  // Aplicar formatação apenas se necessário
+  if (cleaned.length <= 5) return cleaned;
   
-  return formatted.slice(0, 9); // 00000-000 format
+  return `${cleaned.slice(0, 5)}-${cleaned.slice(5, 8)}`;
 };

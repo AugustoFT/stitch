@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { memo } from 'react';
+import { Input } from '../ui/input';
 
 interface CustomerInfoFormProps {
   formData: any;
@@ -9,6 +10,82 @@ interface CustomerInfoFormProps {
   handleCEPChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+// Componente para um campo de formulário individual para reduzir renderizações
+const FormField = memo(({ 
+  id, 
+  label, 
+  required = false, 
+  value, 
+  onChange, 
+  placeholder, 
+  type = "text" 
+}: { 
+  id: string; 
+  label: string; 
+  required?: boolean; 
+  value: string; 
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; 
+  placeholder: string; 
+  type?: string;
+}) => (
+  <div>
+    <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+      {label}{required && '*'}
+    </label>
+    <Input
+      type={type}
+      id={id}
+      name={id}
+      required={required}
+      value={value}
+      onChange={onChange}
+      className="stitch-input"
+      placeholder={placeholder}
+    />
+  </div>
+));
+
+FormField.displayName = 'FormField';
+
+// Componente para um campo Select
+const SelectField = memo(({ 
+  id, 
+  label, 
+  required = false, 
+  value, 
+  onChange, 
+  options 
+}: { 
+  id: string; 
+  label: string; 
+  required?: boolean; 
+  value: string; 
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; 
+  options: { value: string; label: string }[];
+}) => (
+  <div>
+    <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+      {label}{required && '*'}
+    </label>
+    <select
+      id={id}
+      name={id}
+      required={required}
+      value={value}
+      onChange={onChange}
+      className="stitch-select"
+    >
+      {options.map(option => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+));
+
+SelectField.displayName = 'SelectField';
+
 const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
   formData,
   handleChange,
@@ -16,196 +93,133 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
   handleCPFChange,
   handleCEPChange
 }) => {
+  // Opções para o select de estados
+  const stateOptions = [
+    { value: "", label: "Selecione" },
+    { value: "AC", label: "AC" },
+    { value: "AL", label: "AL" },
+    { value: "AP", label: "AP" },
+    { value: "AM", label: "AM" },
+    { value: "BA", label: "BA" },
+    { value: "CE", label: "CE" },
+    { value: "DF", label: "DF" },
+    { value: "ES", label: "ES" },
+    { value: "GO", label: "GO" },
+    { value: "MA", label: "MA" },
+    { value: "MT", label: "MT" },
+    { value: "MS", label: "MS" },
+    { value: "MG", label: "MG" },
+    { value: "PA", label: "PA" },
+    { value: "PB", label: "PB" },
+    { value: "PR", label: "PR" },
+    { value: "PE", label: "PE" },
+    { value: "PI", label: "PI" },
+    { value: "RJ", label: "RJ" },
+    { value: "RN", label: "RN" },
+    { value: "RS", label: "RS" },
+    { value: "RO", label: "RO" },
+    { value: "RR", label: "RR" },
+    { value: "SC", label: "SC" },
+    { value: "SP", label: "SP" },
+    { value: "SE", label: "SE" },
+    { value: "TO", label: "TO" }
+  ];
+
   return (
     <div className="space-y-4">
-      <div>
-        <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
-          Nome*
-        </label>
-        <input
-          type="text"
-          id="nome"
-          name="nome"
-          required
-          value={formData.nome}
-          onChange={handleChange}
-          className="stitch-input"
-          placeholder="Seu nome completo"
-        />
-      </div>
+      <FormField
+        id="nome"
+        label="Nome"
+        required
+        value={formData.nome}
+        onChange={handleChange}
+        placeholder="Seu nome completo"
+      />
       
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-          Email*
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          required
-          value={formData.email}
-          onChange={handleChange}
-          className="stitch-input"
-          placeholder="seu@email.com"
-        />
-      </div>
+      <FormField
+        id="email"
+        label="Email"
+        required
+        value={formData.email}
+        onChange={handleChange}
+        placeholder="seu@email.com"
+        type="email"
+      />
       
-      <div>
-        <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-1">
-          Telefone*
-        </label>
-        <input
-          type="tel"
-          id="telefone"
-          name="telefone"
-          required
-          value={formData.telefone}
-          onChange={handlePhoneChange}
-          className="stitch-input"
-          placeholder="(00) 00000-0000"
-        />
-      </div>
+      <FormField
+        id="telefone"
+        label="Telefone"
+        required
+        value={formData.telefone}
+        onChange={handlePhoneChange}
+        placeholder="(00) 00000-0000"
+      />
       
-      <div>
-        <label htmlFor="cpf" className="block text-sm font-medium text-gray-700 mb-1">
-          CPF*
-        </label>
-        <input
-          type="text"
-          id="cpf"
-          name="cpf"
-          required
-          value={formData.cpf}
-          onChange={handleCPFChange}
-          className="stitch-input"
-          placeholder="000.000.000-00"
-        />
-      </div>
+      <FormField
+        id="cpf"
+        label="CPF"
+        required
+        value={formData.cpf}
+        onChange={handleCPFChange}
+        placeholder="000.000.000-00"
+      />
       
-      <div>
-        <label htmlFor="endereco" className="block text-sm font-medium text-gray-700 mb-1">
-          Rua*
-        </label>
-        <input
-          type="text"
-          id="endereco"
-          name="endereco"
-          required
-          value={formData.endereco}
-          onChange={handleChange}
-          className="stitch-input"
-          placeholder="Nome da rua"
-        />
-      </div>
+      <FormField
+        id="endereco"
+        label="Rua"
+        required
+        value={formData.endereco}
+        onChange={handleChange}
+        placeholder="Nome da rua"
+      />
       
-      <div>
-        <label htmlFor="numero" className="block text-sm font-medium text-gray-700 mb-1">
-          Número*
-        </label>
-        <input
-          type="text"
-          id="numero"
-          name="numero"
-          required
-          value={formData.numero || ''}
-          onChange={handleChange}
-          className="stitch-input"
-          placeholder="Número"
-        />
-      </div>
+      <FormField
+        id="numero"
+        label="Número"
+        required
+        value={formData.numero || ''}
+        onChange={handleChange}
+        placeholder="Número"
+      />
       
-      <div>
-        <label htmlFor="complemento" className="block text-sm font-medium text-gray-700 mb-1">
-          Complemento
-        </label>
-        <input
-          type="text"
-          id="complemento"
-          name="complemento"
-          value={formData.complemento}
-          onChange={handleChange}
-          className="stitch-input"
-          placeholder="Apartamento, bloco, etc"
-        />
-      </div>
+      <FormField
+        id="complemento"
+        label="Complemento"
+        value={formData.complemento}
+        onChange={handleChange}
+        placeholder="Apartamento, bloco, etc"
+      />
       
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="cidade" className="block text-sm font-medium text-gray-700 mb-1">
-            Cidade*
-          </label>
-          <input
-            type="text"
-            id="cidade"
-            name="cidade"
-            required
-            value={formData.cidade}
-            onChange={handleChange}
-            className="stitch-input"
-            placeholder="Sua cidade"
-          />
-        </div>
-        <div>
-          <label htmlFor="estado" className="block text-sm font-medium text-gray-700 mb-1">
-            Estado*
-          </label>
-          <select
-            id="estado"
-            name="estado"
-            required
-            value={formData.estado}
-            onChange={handleChange}
-            className="stitch-select"
-          >
-            <option value="">Selecione</option>
-            <option value="AC">AC</option>
-            <option value="AL">AL</option>
-            <option value="AP">AP</option>
-            <option value="AM">AM</option>
-            <option value="BA">BA</option>
-            <option value="CE">CE</option>
-            <option value="DF">DF</option>
-            <option value="ES">ES</option>
-            <option value="GO">GO</option>
-            <option value="MA">MA</option>
-            <option value="MT">MT</option>
-            <option value="MS">MS</option>
-            <option value="MG">MG</option>
-            <option value="PA">PA</option>
-            <option value="PB">PB</option>
-            <option value="PR">PR</option>
-            <option value="PE">PE</option>
-            <option value="PI">PI</option>
-            <option value="RJ">RJ</option>
-            <option value="RN">RN</option>
-            <option value="RS">RS</option>
-            <option value="RO">RO</option>
-            <option value="RR">RR</option>
-            <option value="SC">SC</option>
-            <option value="SP">SP</option>
-            <option value="SE">SE</option>
-            <option value="TO">TO</option>
-          </select>
-        </div>
-      </div>
-      
-      <div>
-        <label htmlFor="cep" className="block text-sm font-medium text-gray-700 mb-1">
-          CEP*
-        </label>
-        <input
-          type="text"
-          id="cep"
-          name="cep"
+        <FormField
+          id="cidade"
+          label="Cidade"
           required
-          value={formData.cep}
-          onChange={handleCEPChange}
-          className="stitch-input"
-          placeholder="00000-000"
+          value={formData.cidade}
+          onChange={handleChange}
+          placeholder="Sua cidade"
+        />
+        
+        <SelectField
+          id="estado"
+          label="Estado"
+          required
+          value={formData.estado}
+          onChange={handleChange}
+          options={stateOptions}
         />
       </div>
+      
+      <FormField
+        id="cep"
+        label="CEP"
+        required
+        value={formData.cep}
+        onChange={handleCEPChange}
+        placeholder="00000-000"
+      />
     </div>
   );
 };
 
-export default CustomerInfoForm;
+export default memo(CustomerInfoForm);
