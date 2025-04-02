@@ -1,6 +1,7 @@
 
 import { toast } from 'sonner';
 import { isDevelopmentEnvironment, getSupabaseEndpoint, forceProductionMode } from './environment';
+import { supabase } from '../../integrations/supabase/client';
 
 // Função auxiliar para determinar o endpoint correto
 export const getApiEndpoint = () => {
@@ -16,21 +17,24 @@ export const processCardPaymentRequest = async (paymentData: any) => {
     const endpoint = `${getApiEndpoint()}/card`;
     console.log('Enviando solicitação de pagamento com cartão para o backend:', paymentData);
     
-    const response = await fetch(endpoint, {
+    // Use supabase.functions.invoke to call the edge function
+    const { data, error } = await supabase.functions.invoke('process-payment', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(paymentData),
+      body: {
+        pathname: '/card',
+        ...paymentData
+      }
     });
     
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido no servidor' }));
-      console.error('Erro na resposta do servidor:', errorData);
-      throw new Error(errorData.message || `Erro ${response.status}: ${response.statusText}`);
+    if (error) {
+      console.error('Erro na resposta do servidor:', error);
+      throw new Error(error.message || `Erro ao processar pagamento`);
     }
     
-    return await response.json();
+    return data;
   } catch (error: any) {
     console.error('Erro na requisição de pagamento:', error);
     throw error;
@@ -43,21 +47,24 @@ export const createPixPaymentRequest = async (paymentData: any) => {
     const endpoint = `${getApiEndpoint()}/pix`;
     console.log('Enviando solicitação de pagamento PIX para o backend:', paymentData);
     
-    const response = await fetch(endpoint, {
+    // Use supabase.functions.invoke to call the edge function
+    const { data, error } = await supabase.functions.invoke('process-payment', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(paymentData),
+      body: {
+        pathname: '/pix',
+        ...paymentData
+      }
     });
     
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido no servidor' }));
-      console.error('Erro na resposta do servidor:', errorData);
-      throw new Error(errorData.message || `Erro ${response.status}: ${response.statusText}`);
+    if (error) {
+      console.error('Erro na resposta do servidor:', error);
+      throw new Error(error.message || `Erro ao processar pagamento PIX`);
     }
     
-    return await response.json();
+    return data;
   } catch (error: any) {
     console.error('Erro na requisição de pagamento PIX:', error);
     throw error;
@@ -70,20 +77,24 @@ export const checkPaymentStatusRequest = async (paymentId: string) => {
     const endpoint = `${getApiEndpoint()}/status?id=${paymentId}`;
     console.log('Verificando status do pagamento:', paymentId);
     
-    const response = await fetch(endpoint, {
+    // Use supabase.functions.invoke to call the edge function
+    const { data, error } = await supabase.functions.invoke('process-payment', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
+      body: {
+        pathname: '/status',
+        id: paymentId
+      }
     });
     
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido no servidor' }));
-      console.error('Erro na resposta do servidor:', errorData);
-      throw new Error(errorData.message || `Erro ${response.status}: ${response.statusText}`);
+    if (error) {
+      console.error('Erro na resposta do servidor:', error);
+      throw new Error(error.message || `Erro ao verificar status do pagamento`);
     }
     
-    return await response.json();
+    return data;
   } catch (error: any) {
     console.error('Erro ao verificar status do pagamento:', error);
     throw error;

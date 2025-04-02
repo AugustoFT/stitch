@@ -12,21 +12,38 @@ serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const pathParts = url.pathname.split('/');
-    const path = pathParts[pathParts.length - 1];
+    // Parse the JSON body
+    const { pathname, ...data } = await req.json();
+    console.log(`Processing request for path: ${pathname}`);
     
-    console.log(`Processing ${req.method} request for path: ${path}`);
-    
-    // Route requests based on path and method
-    if (req.method === 'POST') {
-      if (path === 'card') {
-        return await processCardPayment(req);
-      } else if (path === 'pix') {
-        return await createPixPayment(req);
-      }
-    } else if (req.method === 'GET' && path === 'status') {
-      return await checkPaymentStatus(req, url);
+    // Route requests based on path
+    if (pathname === '/card') {
+      // Create a new request object to pass to the handler
+      const cardReq = new Request(req.url, {
+        method: 'POST',
+        headers: req.headers,
+        body: JSON.stringify(data)
+      });
+      return await processCardPayment(cardReq);
+    } else if (pathname === '/pix') {
+      // Create a new request object to pass to the handler
+      const pixReq = new Request(req.url, {
+        method: 'POST',
+        headers: req.headers,
+        body: JSON.stringify(data)
+      });
+      return await createPixPayment(pixReq);
+    } else if (pathname === '/status') {
+      // Create a URL with the ID as a query parameter
+      const statusUrl = new URL(req.url);
+      statusUrl.searchParams.set('id', data.id);
+      
+      // Create a new request object with the updated URL
+      const statusReq = new Request(statusUrl.toString(), {
+        method: 'GET',
+        headers: req.headers
+      });
+      return await checkPaymentStatus(statusReq, statusUrl);
     }
     
     // Default error response for unhandled routes

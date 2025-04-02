@@ -1,4 +1,6 @@
 
+import { supabase } from '../../integrations/supabase/client';
+
 // Função para verificar ambiente de desenvolvimento
 export const isDevelopmentEnvironment = () => {
   return import.meta.env.DEV;
