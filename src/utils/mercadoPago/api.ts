@@ -14,15 +14,10 @@ export const getApiEndpoint = () => {
 // Requisição à API para processamento de pagamento com cartão
 export const processCardPaymentRequest = async (paymentData: any) => {
   try {
-    const endpoint = `${getApiEndpoint()}/card`;
     console.log('Enviando solicitação de pagamento com cartão para o backend:', paymentData);
     
-    // Use supabase.functions.invoke to call the edge function
+    // Usar supabase.functions.invoke para tratar autorização automaticamente
     const { data, error } = await supabase.functions.invoke('process-payment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: {
         pathname: '/card',
         ...paymentData
@@ -44,15 +39,10 @@ export const processCardPaymentRequest = async (paymentData: any) => {
 // Requisição à API para processamento de pagamento PIX
 export const createPixPaymentRequest = async (paymentData: any) => {
   try {
-    const endpoint = `${getApiEndpoint()}/pix`;
     console.log('Enviando solicitação de pagamento PIX para o backend:', paymentData);
     
-    // Use supabase.functions.invoke to call the edge function
+    // Usar supabase.functions.invoke para tratar autorização automaticamente
     const { data, error } = await supabase.functions.invoke('process-payment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: {
         pathname: '/pix',
         ...paymentData
@@ -74,15 +64,10 @@ export const createPixPaymentRequest = async (paymentData: any) => {
 // Requisição à API para verificar status do pagamento
 export const checkPaymentStatusRequest = async (paymentId: string) => {
   try {
-    const endpoint = `${getApiEndpoint()}/status?id=${paymentId}`;
     console.log('Verificando status do pagamento:', paymentId);
     
-    // Use supabase.functions.invoke to call the edge function
+    // Usar supabase.functions.invoke para tratar autorização automaticamente
     const { data, error } = await supabase.functions.invoke('process-payment', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: {
         pathname: '/status',
         id: paymentId

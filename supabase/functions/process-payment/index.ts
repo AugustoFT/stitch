@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { corsHeaders } from "./_shared/cors.ts";
 import { processCardPayment, createPixPayment, checkPaymentStatus } from "./handlers.ts";
-import { handleCorsRequest } from "./utils.ts";
+import { handleCorsRequest, createErrorResponse } from "./utils.ts";
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -15,6 +15,7 @@ serve(async (req) => {
     // Parse the JSON body
     const { pathname, ...data } = await req.json();
     console.log(`Processing request for path: ${pathname}`);
+    console.log('Request data:', data);
     
     // Route requests based on path
     if (pathname === '/card') {
@@ -47,30 +48,9 @@ serve(async (req) => {
     }
     
     // Default error response for unhandled routes
-    return new Response(
-      JSON.stringify({ error: 'Endpoint not found' }),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json'
-        }, 
-        status: 404 
-      }
-    );
+    return createErrorResponse('Endpoint not found', 404);
   } catch (error) {
     console.error('Error processing request:', error);
-    return new Response(
-      JSON.stringify({ 
-        error: 'Internal server error', 
-        details: error.message 
-      }),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json'
-        },
-        status: 500 
-      }
-    );
+    return createErrorResponse(error.message || 'Internal server error', 500);
   }
 });

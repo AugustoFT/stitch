@@ -22,6 +22,7 @@ export const forceProductionMode = () => {
 
 // Função para obter URL da Supabase Function
 export const getSupabaseEndpoint = () => {
-  // Obter a URL correta do .env
-  return import.meta.env.VITE_SUPABASE_FUNCTION_URL;
+  // Como estamos usando supabase.functions.invoke, não precisamos mais da URL completa
+  // apenas o nome da função é necessário
+  return 'process-payment';
 };
