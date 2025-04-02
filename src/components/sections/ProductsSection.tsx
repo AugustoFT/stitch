@@ -83,6 +83,14 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
     scrollToCheckout();
   };
 
+  // Find the kit completo product to use its price
+  const kitCompletoProduct = products.find(p => p.id === 2);
+  const kitPrice = kitCompletoProduct ? 
+    (typeof kitCompletoProduct.price === 'string' ? 
+      kitCompletoProduct.price : 
+      `R$ ${kitCompletoProduct.price}`) : 
+    'R$ 0,05';
+
   return (
     <section 
       id="produtos"
@@ -147,7 +155,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
             <h3 className="font-bold text-stitch-blue" style={{color: "#16a4e8"}}>Oferta Exclusiva - Produto Oficial Disney!</h3>
           </div>
           
-          <p className="text-gray-700 mb-3">Kit Completo Stitch por apenas <span className="text-stitch-pink font-bold" style={{color: "#ff4c8f"}}>R$ 0,05</span> com frete grátis!</p>
+          <p className="text-gray-700 mb-3">Kit Completo Stitch por apenas <span className="text-stitch-pink font-bold" style={{color: "#ff4c8f"}}>{kitPrice}</span> com frete grátis!</p>
           
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-3">
             <div className="bg-white px-3 py-1 rounded-full text-xs border border-stitch-blue/20 flex items-center">

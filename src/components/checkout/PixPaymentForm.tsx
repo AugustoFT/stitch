@@ -34,7 +34,7 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({
   isSubmitting,
   setIsSubmitting,
   selectedProducts = [],
-  totalAmount = 139.99
+  totalAmount
 }) => {
   const [pixData, setPixData] = useState<PixData | null>(null);
   const [pixError, setPixError] = useState<string | null>(null);

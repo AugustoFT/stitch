@@ -22,9 +22,14 @@ const ProductPrice: React.FC<ProductPriceProps> = ({
       }
       
       // Converte para número se for string
-      const numValue = typeof value === 'number' 
-        ? value 
-        : parseFloat(value.replace(/[^\d.,]/g, '').replace(',', '.'));
+      let numValue: number;
+      if (typeof value === 'string') {
+        // Remove caracteres não numéricos exceto ponto e vírgula
+        const cleanValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
+        numValue = parseFloat(cleanValue);
+      } else {
+        numValue = value;
+      }
       
       // Verifica se é um número válido
       if (isNaN(numValue)) {
@@ -47,9 +52,20 @@ const ProductPrice: React.FC<ProductPriceProps> = ({
   const calculateTotal = (): string => {
     try {
       // Extrai o número do preço formatado
-      const priceValue = typeof price === 'number' 
-        ? price 
-        : parseFloat(formattedPrice.replace('R$ ', '').replace(',', '.'));
+      let priceValue: number;
+      
+      if (typeof price === 'number') {
+        priceValue = price;
+      } else if (typeof price === 'string') {
+        if (price.startsWith('R$')) {
+          priceValue = parseFloat(price.replace('R$ ', '').replace(',', '.'));
+        } else {
+          priceValue = parseFloat(price.replace(',', '.'));
+        }
+      } else {
+        console.warn('Tipo de preço inesperado:', typeof price);
+        return formattedPrice;
+      }
       
       // Calcula o total
       const total = priceValue * quantity;

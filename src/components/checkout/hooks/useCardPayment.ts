@@ -20,7 +20,7 @@ export const useCardPayment = ({
   setPaymentResult,
   setCardPaymentStatus,
   selectedProducts = [],
-  totalAmount = 139.98,
+  totalAmount,
   mercadoPagoReady
 }: UseCardPaymentProps) => {
   const [paymentResult, setLocalPaymentResult] = useState<any>(null);
@@ -96,13 +96,23 @@ export const useCardPayment = ({
   };
 
   const createOrderAfterPayment = async (result: any) => {
-    const orderProducts = selectedProducts.map(product => ({
-      id: product.id,
-      name: product.title,
-      quantity: product.quantity,
-      price: parseFloat(product.price.replace('R$ ', '').replace(',', '.')),
-      imageUrl: product.imageUrl
-    }));
+    const orderProducts = selectedProducts.map(product => {
+      // Ensure we're getting the correct price from product data
+      let price;
+      if (typeof product.price === 'string') {
+        price = parseFloat(product.price.replace('R$ ', '').replace(',', '.'));
+      } else {
+        price = product.price;
+      }
+      
+      return {
+        id: product.id,
+        name: product.title,
+        quantity: product.quantity,
+        price: price,
+        imageUrl: product.imageUrl
+      };
+    });
     
     const customerInfo = {
       name: formData.nome,

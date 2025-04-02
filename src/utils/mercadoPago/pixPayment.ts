@@ -4,7 +4,7 @@ import { createPixPaymentRequest, simulatePixPaymentResponse } from './api';
 import { isDevelopmentEnvironment, forceProductionMode } from './environment';
 
 // Função para criar pagamento PIX
-export const createPixPayment = async (formData: any, amount: number = 139.99, description: string = 'Pelúcia Stitch', products?: any[]): Promise<any> => {
+export const createPixPayment = async (formData: any, amount: number = 0.05, description: string = 'Pelúcia Stitch', products?: any[]): Promise<any> => {
   try {
     console.log('Iniciando criação de pagamento PIX');
     console.log('MODO DE PRODUÇÃO ATIVO!');

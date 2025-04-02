@@ -10,7 +10,7 @@ import { isDevelopmentEnvironment, forceProductionMode } from './environment';
 setupProcessPolyfill();
 
 // Main function to process card payment
-export const processCardPayment = async (cardData: any, formData: any, installments: number = 1, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
+export const processCardPayment = async (cardData: any, formData: any, installments: number = 1, amount: number = 0.05, description: string = 'Pelúcia Stitch') => {
   try {
     console.log('Processando pagamento com cartão no valor de:', amount, 'e descrição:', description);
     console.log('MODO DE PRODUÇÃO ATIVO!');
@@ -101,7 +101,7 @@ export const processCardPayment = async (cardData: any, formData: any, installme
 };
 
 // Offline version for testing
-export const processCardPaymentOffline = async (cardData: any, formData: any, installments: number = 1, amount: number = 139.99, description: string = 'Pelúcia Stitch') => {
+export const processCardPaymentOffline = async (cardData: any, formData: any, installments: number = 1, amount: number = 0.05, description: string = 'Pelúcia Stitch') => {
   // No modo de produção, sempre tenta processar via API
   return processCardPayment(cardData, formData, installments, amount, description);
 };
