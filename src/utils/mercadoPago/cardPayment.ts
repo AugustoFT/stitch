@@ -45,12 +45,15 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       
       console.log('Token do cartão gerado com sucesso:', cardToken.id);
       
+      // Ensure amount is a valid number and positive
+      const validAmount = Math.max(Number(amount) || 0.05, 0.01);
+      
       // Prepare payment data
       const paymentData = {
         token: cardToken.id,
         paymentMethod: determineCardType(cardData.cardNumber),
         installments: installments,
-        transactionAmount: amount,
+        transactionAmount: validAmount, // Make sure it's a valid number
         description: description,
         payer: {
           email: formData.email,
@@ -61,8 +64,9 @@ export const processCardPayment = async (cardData: any, formData: any, installme
         }
       };
       
-      // Sempre tentar processar via API em modo de produção
       console.log('Processando pagamento em ambiente de PRODUÇÃO');
+      console.log('Dados de pagamento formatados:', paymentData);
+      
       const paymentResult = await processCardPaymentRequest(paymentData);
       
       console.log('Resposta do processamento de pagamento:', paymentResult);

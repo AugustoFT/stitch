@@ -61,12 +61,18 @@ export const useCardPayment = ({
       console.log('Total amount:', totalAmount);
       console.log('Installments:', installments);
       
+      // Ensure totalAmount is a valid number
+      const validAmount = Number(totalAmount);
+      if (isNaN(validAmount) || validAmount <= 0) {
+        throw new Error("Valor de pagamento inválido. Por favor, verifique o valor da compra.");
+      }
+      
       console.log('Processando pagamento em ambiente de PRODUÇÃO');
       const result = await processCardPayment(
         cardData, 
         formData, 
         installments, 
-        totalAmount, 
+        validAmount, // Ensure we use a valid number
         getProductDescription()
       );
       

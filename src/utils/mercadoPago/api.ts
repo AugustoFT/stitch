@@ -16,11 +16,19 @@ export const processCardPaymentRequest = async (paymentData: any) => {
   try {
     console.log('Enviando solicitação de pagamento com cartão para o backend:', paymentData);
     
+    // Make sure transaction amount is a valid number
+    const formattedPaymentData = {
+      ...paymentData,
+      transactionAmount: Number(paymentData.transactionAmount) // Ensure it's a number, not a string
+    };
+    
+    console.log('Formatted payment data:', formattedPaymentData);
+    
     // Usar supabase.functions.invoke para tratar autorização automaticamente
     const { data, error } = await supabase.functions.invoke('process-payment', {
       body: {
         pathname: '/card',
-        ...paymentData
+        ...formattedPaymentData
       }
     });
     
@@ -41,11 +49,19 @@ export const createPixPaymentRequest = async (paymentData: any) => {
   try {
     console.log('Enviando solicitação de pagamento PIX para o backend:', paymentData);
     
+    // Make sure transaction amount is a valid number
+    const formattedPaymentData = {
+      ...paymentData,
+      transactionAmount: Number(paymentData.transactionAmount) // Ensure it's a number, not a string
+    };
+    
+    console.log('Formatted PIX payment data:', formattedPaymentData);
+    
     // Usar supabase.functions.invoke para tratar autorização automaticamente
     const { data, error } = await supabase.functions.invoke('process-payment', {
       body: {
         pathname: '/pix',
-        ...paymentData
+        ...formattedPaymentData
       }
     });
     

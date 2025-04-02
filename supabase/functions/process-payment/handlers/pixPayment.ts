@@ -19,14 +19,21 @@ export async function createPixPayment(req: Request) {
       return createErrorResponse('Missing required PIX payment fields', 400);
     }
     
+    // Validate and format transaction amount (must be a number)
+    const amount = parseFloat(transactionAmount);
+    if (isNaN(amount) || amount <= 0) {
+      console.error('Invalid transaction amount:', transactionAmount);
+      return createErrorResponse('Invalid transaction amount. Must be a positive number.', 400);
+    }
+    
     console.log('Creating PIX payment:', { 
-      transactionAmount, 
+      amount, // Log the parsed amount
       description 
     });
     
     // Prepare data for Mercado Pago
     const payload = {
-      transaction_amount: Number(transactionAmount),
+      transaction_amount: amount, // Use the validated amount
       description,
       payment_method_id: 'pix',
       payer: {
@@ -38,6 +45,7 @@ export async function createPixPayment(req: Request) {
     };
     
     console.log('Sending PIX data to Mercado Pago API with token:', MERCADO_PAGO_ACCESS_TOKEN ? 'Present' : 'Missing');
+    console.log('PIX payload:', JSON.stringify(payload));
     
     // Send to Mercado Pago API
     const mpResponse = await fetch('https://api.mercadopago.com/v1/payments', {
@@ -53,7 +61,7 @@ export async function createPixPayment(req: Request) {
     
     if (!mpResponse.ok) {
       console.error('Error in Mercado Pago response (PIX):', responseData);
-      return createErrorResponse(responseData.message || 'Error processing PIX payment', 400);
+      return createErrorResponse(responseData.message || 'Error processing PIX payment', mpResponse.status);
     }
     
     return createJsonResponse({
