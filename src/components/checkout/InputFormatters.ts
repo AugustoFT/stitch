@@ -3,9 +3,12 @@
 
 // Format CPF (Brazilian individual taxpayer ID)
 export const formatCPF = (value: string): string => {
-  // Strip non-digits for better performance
-  const digits = value.replace(/\D/g, '');
+  // Strip non-digits and limit to 11 digits for better performance
+  const digits = value.replace(/\D/g, '').slice(0, 11);
   const len = digits.length;
+  
+  // Early return for empty value
+  if (len === 0) return '';
   
   // Fast path checks for common cases
   if (len <= 3) return digits;
@@ -18,9 +21,12 @@ export const formatCPF = (value: string): string => {
 
 // Format phone number (Brazilian format)
 export const formatPhoneNumber = (value: string): string => {
-  // Strip non-digits for better performance
-  const digits = value.replace(/\D/g, '');
+  // Strip non-digits and limit to 11 digits for better performance
+  const digits = value.replace(/\D/g, '').slice(0, 11);
   const len = digits.length;
+  
+  // Early return for empty value
+  if (len === 0) return '';
   
   // Fast path checks for common cases
   if (len <= 2) return digits;
@@ -32,8 +38,11 @@ export const formatPhoneNumber = (value: string): string => {
 
 // Format CEP (Brazilian postal code)
 export const formatCEP = (value: string): string => {
-  // Strip non-digits for better performance
-  const digits = value.replace(/\D/g, '');
+  // Strip non-digits and limit to 8 digits for better performance
+  const digits = value.replace(/\D/g, '').slice(0, 8);
+  
+  // Early return for empty value
+  if (digits.length === 0) return '';
   
   // Fast path check
   if (digits.length <= 5) return digits;

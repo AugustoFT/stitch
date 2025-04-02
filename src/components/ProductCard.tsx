@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
 import { TruckIcon } from 'lucide-react';
 import ProductQuantitySelector from './ProductQuantitySelector';
@@ -64,10 +64,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
   
-  // Check if the price is over the free shipping threshold
+  // Check if the price is over the free shipping threshold or if it's the Kit Completo
   const priceStr = typeof price === 'string' ? price : String(price);
   const priceNumber = parseFloat(priceStr.replace('R$ ', '').replace(',', '.'));
-  const hasFreeShipping = priceNumber >= 99.98;
+  const isKitCompleto = title.includes("Kit Completo");
+  const hasFreeShipping = priceNumber >= 99.98 || isKitCompleto;
   
   return (
     <motion.div
@@ -108,6 +109,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <span className="text-xs text-stitch-pink block mb-2">{additionalInfo}</span>
         )}
         
+        {hasFreeShipping && (
+          <div className="flex items-center text-green-600 text-xs mb-2 font-medium">
+            <TruckIcon className="w-3 h-3 mr-1" />
+            Frete Grátis
+          </div>
+        )}
+        
         <div className="flex flex-col space-y-3">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-gray-700">Quantidade:</label>
@@ -128,4 +136,4 @@ const ProductCard: React.FC<ProductCardProps> = ({
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

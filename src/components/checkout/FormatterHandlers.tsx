@@ -1,5 +1,5 @@
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { formatCPF, formatPhoneNumber, formatCEP } from './InputFormatters';
 
 interface FormatterHandlersProps {
@@ -9,43 +9,77 @@ interface FormatterHandlersProps {
 }
 
 export const useFormatterHandlers = ({ formData, setFormData }: FormatterHandlersProps) => {
-  // Optimized handlers for formatted fields
+  // Use refs to track previous values and avoid unnecessary updates
+  const prevValues = useRef({
+    cpf: formData.cpf || '',
+    telefone: formData.telefone || '',
+    cep: formData.cep || ''
+  });
+
+  // Optimized handlers with debounce for formatted fields
   const handleCPFChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    // Only format if the value changed
-    if (input !== formData.cpf) {
-      const formattedValue = formatCPF(input);
-      setFormData(prev => {
-        // Avoid unnecessary state updates
-        if (prev.cpf === formattedValue) return prev;
-        return { ...prev, cpf: formattedValue };
-      });
+    
+    // Avoid processing if value didn't change
+    if (input === prevValues.current.cpf) return;
+    
+    // Direct processing for empty input
+    if (input === '') {
+      setFormData(prev => ({ ...prev, cpf: '' }));
+      prevValues.current.cpf = '';
+      return;
+    }
+    
+    const formattedValue = formatCPF(input);
+    
+    // Only update state if formatted value is different
+    if (formattedValue !== formData.cpf) {
+      setFormData(prev => ({ ...prev, cpf: formattedValue }));
+      prevValues.current.cpf = formattedValue;
     }
   }, [formData.cpf, setFormData]);
   
   const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    // Only format if the value changed
-    if (input !== formData.telefone) {
-      const formattedValue = formatPhoneNumber(input);
-      setFormData(prev => {
-        // Avoid unnecessary state updates
-        if (prev.telefone === formattedValue) return prev;
-        return { ...prev, telefone: formattedValue };
-      });
+    
+    // Avoid processing if value didn't change
+    if (input === prevValues.current.telefone) return;
+    
+    // Direct processing for empty input
+    if (input === '') {
+      setFormData(prev => ({ ...prev, telefone: '' }));
+      prevValues.current.telefone = '';
+      return;
+    }
+    
+    const formattedValue = formatPhoneNumber(input);
+    
+    // Only update state if formatted value is different
+    if (formattedValue !== formData.telefone) {
+      setFormData(prev => ({ ...prev, telefone: formattedValue }));
+      prevValues.current.telefone = formattedValue;
     }
   }, [formData.telefone, setFormData]);
   
   const handleCEPChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    // Only format if the value changed
-    if (input !== formData.cep) {
-      const formattedValue = formatCEP(input);
-      setFormData(prev => {
-        // Avoid unnecessary state updates
-        if (prev.cep === formattedValue) return prev;
-        return { ...prev, cep: formattedValue };
-      });
+    
+    // Avoid processing if value didn't change
+    if (input === prevValues.current.cep) return;
+    
+    // Direct processing for empty input
+    if (input === '') {
+      setFormData(prev => ({ ...prev, cep: '' }));
+      prevValues.current.cep = '';
+      return;
+    }
+    
+    const formattedValue = formatCEP(input);
+    
+    // Only update state if formatted value is different
+    if (formattedValue !== formData.cep) {
+      setFormData(prev => ({ ...prev, cep: formattedValue }));
+      prevValues.current.cep = formattedValue;
     }
   }, [formData.cep, setFormData]);
 

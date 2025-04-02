@@ -1,3 +1,4 @@
+
 import React, { memo, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 
@@ -29,6 +30,7 @@ const FormField = memo(({
   type?: string;
   className?: string;
 }) => {
+  // Prevent unnecessary re-renders with useCallback
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e);
   }, [onChange]);
@@ -43,10 +45,13 @@ const FormField = memo(({
         id={id}
         name={id}
         required={required}
-        value={value}
+        value={value || ''}
         onChange={handleInputChange}
         className="stitch-input"
         placeholder={placeholder}
+        // Improve performance by using these attributes
+        autoComplete="off"
+        spellCheck="false"
       />
     </div>
   );
@@ -72,6 +77,7 @@ const SelectField = memo(({
   options: { value: string; label: string }[];
   className?: string;
 }) => {
+  // Prevent unnecessary re-renders with useCallback
   const handleSelectChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     onChange(e);
   }, [onChange]);
@@ -85,7 +91,7 @@ const SelectField = memo(({
         id={id}
         name={id}
         required={required}
-        value={value}
+        value={value || ''}
         onChange={handleSelectChange}
         className="stitch-select"
       >
@@ -101,6 +107,7 @@ const SelectField = memo(({
 
 SelectField.displayName = 'SelectField';
 
+// The main component that uses the optimized field components
 const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
   formData,
   handleChange,
@@ -146,7 +153,7 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
         id="nome"
         label="Nome"
         required
-        value={formData.nome}
+        value={formData.nome || ''}
         onChange={handleChange}
         placeholder="Seu nome completo"
       />
@@ -155,7 +162,7 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
         id="email"
         label="Email"
         required
-        value={formData.email}
+        value={formData.email || ''}
         onChange={handleChange}
         placeholder="seu@email.com"
         type="email"
@@ -165,7 +172,7 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
         id="telefone"
         label="Telefone"
         required
-        value={formData.telefone}
+        value={formData.telefone || ''}
         onChange={handlePhoneChange}
         placeholder="(00) 00000-0000"
       />
@@ -174,7 +181,7 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
         id="cpf"
         label="CPF"
         required
-        value={formData.cpf}
+        value={formData.cpf || ''}
         onChange={handleCPFChange}
         placeholder="000.000.000-00"
       />
@@ -183,7 +190,7 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
         id="endereco"
         label="Rua"
         required
-        value={formData.endereco}
+        value={formData.endereco || ''}
         onChange={handleChange}
         placeholder="Nome da rua"
       />
@@ -200,7 +207,7 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
       <FormField
         id="complemento"
         label="Complemento"
-        value={formData.complemento}
+        value={formData.complemento || ''}
         onChange={handleChange}
         placeholder="Apartamento, bloco, etc"
       />
@@ -210,7 +217,7 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
           id="cidade"
           label="Cidade"
           required
-          value={formData.cidade}
+          value={formData.cidade || ''}
           onChange={handleChange}
           placeholder="Sua cidade"
           className="w-full"
@@ -220,7 +227,7 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
           id="estado"
           label="Estado"
           required
-          value={formData.estado}
+          value={formData.estado || ''}
           onChange={handleChange}
           options={stateOptions}
           className="w-full"
@@ -231,7 +238,7 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
         id="cep"
         label="CEP"
         required
-        value={formData.cep}
+        value={formData.cep || ''}
         onChange={handleCEPChange}
         placeholder="00000-000"
       />
