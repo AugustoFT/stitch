@@ -16,13 +16,17 @@ export const processCardPaymentRequest = async (paymentData: any) => {
   try {
     console.log('Enviando solicitação de pagamento com cartão para o backend:', paymentData);
     
-    // Make sure transaction amount is a valid number
+    // Make sure transaction amount is a valid number and at least 0.5 for production
+    const rawAmount = Number(paymentData.transactionAmount);
+    const minimumAmount = 0.5; // Minimum amount required by Mercado Pago
+    const formattedAmount = Math.max(rawAmount, minimumAmount);
+    
     const formattedPaymentData = {
       ...paymentData,
-      transactionAmount: Number(paymentData.transactionAmount) // Ensure it's a number, not a string
+      transactionAmount: formattedAmount
     };
     
-    console.log('Formatted payment data:', formattedPaymentData);
+    console.log('Formatted payment data with amount:', formattedAmount);
     
     // Usar supabase.functions.invoke para tratar autorização automaticamente
     const { data, error } = await supabase.functions.invoke('process-payment', {

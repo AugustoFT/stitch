@@ -10,7 +10,7 @@ import { isDevelopmentEnvironment, forceProductionMode } from './environment';
 setupProcessPolyfill();
 
 // Main function to process card payment
-export const processCardPayment = async (cardData: any, formData: any, installments: number = 1, amount: number = 0.05, description: string = 'Pelúcia Stitch') => {
+export const processCardPayment = async (cardData: any, formData: any, installments: number = 1, amount: number = 0.5, description: string = 'Pelúcia Stitch') => {
   try {
     console.log('Processando pagamento com cartão no valor de:', amount, 'e descrição:', description);
     console.log('MODO DE PRODUÇÃO ATIVO!');
@@ -45,15 +45,20 @@ export const processCardPayment = async (cardData: any, formData: any, installme
       
       console.log('Token do cartão gerado com sucesso:', cardToken.id);
       
-      // Ensure amount is a valid number and positive
-      const validAmount = Math.max(Number(amount) || 0.05, 0.01);
+      // Ensure minimum amount for Mercado Pago (0.5 in production)
+      const minimumAmount = 0.5;
+      const validAmount = Math.max(Number(amount) || 0.5, minimumAmount);
+      
+      if (validAmount !== Number(amount)) {
+        console.log(`Adjusting amount from ${amount} to minimum ${validAmount}`);
+      }
       
       // Prepare payment data
       const paymentData = {
         token: cardToken.id,
         paymentMethod: determineCardType(cardData.cardNumber),
         installments: installments,
-        transactionAmount: validAmount, // Make sure it's a valid number
+        transactionAmount: validAmount,
         description: description,
         payer: {
           email: formData.email,

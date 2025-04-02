@@ -61,9 +61,11 @@ export const useCardPayment = ({
       console.log('Total amount:', totalAmount);
       console.log('Installments:', installments);
       
-      // Ensure totalAmount is a valid number
-      const validAmount = Number(totalAmount);
-      if (isNaN(validAmount) || validAmount <= 0) {
+      // Ensure totalAmount is a valid number and at least 0.5 for Mercado Pago
+      const minimumAmount = 0.5;
+      const validAmount = Math.max(Number(totalAmount) || minimumAmount, minimumAmount);
+      
+      if (isNaN(validAmount)) {
         throw new Error("Valor de pagamento inválido. Por favor, verifique o valor da compra.");
       }
       
@@ -72,7 +74,7 @@ export const useCardPayment = ({
         cardData, 
         formData, 
         installments, 
-        validAmount, // Ensure we use a valid number
+        validAmount,
         getProductDescription()
       );
       

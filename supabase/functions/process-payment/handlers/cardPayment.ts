@@ -19,17 +19,26 @@ export async function processCardPayment(req: Request) {
       return createErrorResponse('Missing required payment fields', 400);
     }
     
-    // Validate and format transaction amount (must be a number)
+    // Validate and format transaction amount (must be a positive number)
+    // Mercado Pago requires a valid number at least 0.5 in production environments
     const amount = parseFloat(transactionAmount);
-    if (isNaN(amount) || amount <= 0) {
-      console.error('Invalid transaction amount:', transactionAmount);
-      return createErrorResponse('Invalid transaction amount. Must be a positive number.', 400);
+    if (isNaN(amount)) {
+      console.error('Invalid transaction amount format:', transactionAmount);
+      return createErrorResponse('Invalid transaction amount format. Must be a number.', 400);
+    }
+    
+    // Ensure minimum amount is 0.5 for production
+    const minimumAmount = 0.5;
+    const validAmount = Math.max(amount, minimumAmount);
+    
+    if (validAmount !== amount) {
+      console.log(`Adjusted transaction amount from ${amount} to minimum ${validAmount}`);
     }
     
     console.log('Processing card payment:', { 
       paymentMethod, 
       installments, 
-      amount, // Log the parsed amount
+      amount: validAmount, 
       description 
     });
     
@@ -37,7 +46,7 @@ export async function processCardPayment(req: Request) {
     const payload = {
       token,
       installments: Number(installments),
-      transaction_amount: amount, // Use the validated amount
+      transaction_amount: validAmount,
       description,
       payment_method_id: paymentMethod,
       payer: {
