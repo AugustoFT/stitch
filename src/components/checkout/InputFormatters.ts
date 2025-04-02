@@ -1,44 +1,43 @@
 
-// Utility functions for formatting form inputs
+// Utility functions for formatting form inputs - Optimized for performance
 
 // Format CPF (Brazilian individual taxpayer ID)
 export const formatCPF = (value: string): string => {
-  // Limpar qualquer caractere que não seja número
-  const cleaned = value.replace(/\D/g, '');
+  // Strip non-digits for better performance
+  const digits = value.replace(/\D/g, '');
+  const len = digits.length;
   
-  // Aplicar a formatação apenas se necessário
-  if (cleaned.length <= 3) return cleaned;
+  // Fast path checks for common cases
+  if (len <= 3) return digits;
+  if (len <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  if (len <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
   
-  if (cleaned.length <= 6) 
-    return `${cleaned.slice(0, 3)}.${cleaned.slice(3)}`;
-  
-  if (cleaned.length <= 9)
-    return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6)}`;
-  
-  return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9, 11)}`;
+  // Full format with max 11 digits
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
 };
 
 // Format phone number (Brazilian format)
 export const formatPhoneNumber = (value: string): string => {
-  // Limpar qualquer caractere que não seja número
-  const cleaned = value.replace(/\D/g, '');
+  // Strip non-digits for better performance
+  const digits = value.replace(/\D/g, '');
+  const len = digits.length;
   
-  // Aplicar formatação apenas se necessário
-  if (cleaned.length <= 2) return cleaned;
+  // Fast path checks for common cases
+  if (len <= 2) return digits;
+  if (len <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
   
-  if (cleaned.length <= 7)
-    return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2)}`;
-  
-  return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7, 11)}`;
+  // Full format with max 11 digits
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
 };
 
 // Format CEP (Brazilian postal code)
 export const formatCEP = (value: string): string => {
-  // Limpar qualquer caractere que não seja número
-  const cleaned = value.replace(/\D/g, '');
+  // Strip non-digits for better performance
+  const digits = value.replace(/\D/g, '');
   
-  // Aplicar formatação apenas se necessário
-  if (cleaned.length <= 5) return cleaned;
+  // Fast path check
+  if (digits.length <= 5) return digits;
   
-  return `${cleaned.slice(0, 5)}-${cleaned.slice(5, 8)}`;
+  // Full format with max 8 digits
+  return `${digits.slice(0, 5)}-${digits.slice(5, 8)}`;
 };

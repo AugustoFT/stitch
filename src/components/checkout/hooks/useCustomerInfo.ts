@@ -32,10 +32,13 @@ export const useCustomerInfo = () => {
     cpf: '',
   });
 
-  // Ref para rastrear o estado de inicialização
+  // Ref for tracking initialization state
   const customerInfoLoaded = useRef(false);
+  
+  // Ref to store previous form data for comparison
+  const prevFormDataRef = useRef<CustomerInfoData>({...formData});
 
-  // Carregar dados do cliente do localStorage na montagem do componente
+  // Load customer data from localStorage on component mount
   useEffect(() => {
     if (customerInfoLoaded.current) return;
     
@@ -57,34 +60,30 @@ export const useCustomerInfo = () => {
     customerInfoLoaded.current = true;
   }, []);
 
-  // Usar versão memoizada do handleChange para evitar re-renderizações desnecessárias
+  // Optimized change handler to prevent unnecessary updates
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => {
-      // Verificar se o valor mudou para evitar atualizações desnecessárias
-      if (prev[name as keyof CustomerInfoData] === value) {
-        return prev;
-      }
-      return {
+    const fieldName = name as keyof CustomerInfoData;
+    
+    // Only update if value actually changed
+    if (formData[fieldName] !== value) {
+      setFormData(prev => ({
         ...prev,
         [name]: value
-      };
-    });
-  }, []);
+      }));
+    }
+  }, [formData]);
 
   const handlePaymentMethodChange = useCallback((method: string) => {
-    setFormData(prev => {
-      if (prev.formaPagamento === method) {
-        return prev;
-      }
-      return {
+    if (formData.formaPagamento !== method) {
+      setFormData(prev => ({
         ...prev,
         formaPagamento: method
-      };
-    });
-  }, []);
+      }));
+    }
+  }, [formData.formaPagamento]);
 
-  // Salvar informações do cliente no localStorage
+  // Save customer info to localStorage
   const saveCustomerInfo = useCallback(() => {
     if (formData.nome && formData.email) {
       const dataToSave = {
@@ -100,7 +99,15 @@ export const useCustomerInfo = () => {
         estado: formData.estado,
         cep: formData.cep
       };
-      localStorage.setItem('customerInfo', JSON.stringify(dataToSave));
+      
+      // Update only if data changed
+      const prevDataJSON = JSON.stringify(prevFormDataRef.current);
+      const newDataJSON = JSON.stringify(dataToSave);
+      
+      if (prevDataJSON !== newDataJSON) {
+        localStorage.setItem('customerInfo', newDataJSON);
+        prevFormDataRef.current = {...formData};
+      }
     }
   }, [formData]);
 
