@@ -36,7 +36,7 @@ const BenefitsSection: React.FC = () => {
           >
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <OptimizedImage 
-                src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
+                src="lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
                 alt="Coleção Stitch" 
                 className="w-full h-auto"
                 priority={true}

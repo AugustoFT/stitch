@@ -25,7 +25,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
     const preloadImages = async () => {
       try {
         const heroImage = new Image();
-        heroImage.src = "/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png";
+        heroImage.src = "lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png";
         heroImage.onload = () => setImagesLoaded(true);
       } catch (err) {
         console.error("Failed to preload images:", err);
@@ -71,7 +71,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
           >
             <div className="relative">
               <OptimizedImage 
-                src="/lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
+                src="lovable-uploads/ab25fdf7-5c56-4558-96da-9754bee039be.png" 
                 alt="Pelúcia Stitch" 
                 width={400}
                 height={400}
@@ -141,7 +141,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
         >
           <div className="relative">
             <OptimizedImage 
-              src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
+              src="lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
               alt="Kit Completo Stitch"
               width={500}
               height={500} 

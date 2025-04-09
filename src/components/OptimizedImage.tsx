@@ -24,7 +24,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [imageSrc, setImageSrc] = useState(src);
+  const [imageSrc, setImageSrc] = useState('');
   
   // Generate dimensions
   const dimensions = {
@@ -32,12 +32,34 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     height: height || undefined,
   };
   
-  // Reset states when src changes
+  // Reset states when src changes and set the correct image path
   useEffect(() => {
     setIsLoaded(false);
     setIsError(false);
-    setImageSrc(src);
-  }, [src]);
+    
+    // Make sure we're using the correct path format
+    // Remove any leading slash if it's not an absolute URL
+    const formattedSrc = src.startsWith('http') 
+      ? src 
+      : src.startsWith('/') && !src.startsWith('//') 
+        ? src 
+        : `/${src}`;
+    
+    setImageSrc(formattedSrc);
+    
+    // Preload image if priority is set
+    if (priority) {
+      const img = new Image();
+      img.src = formattedSrc;
+      img.onload = () => setIsLoaded(true);
+      img.onerror = () => {
+        console.error(`Failed to load image: ${formattedSrc}`);
+        setIsError(true);
+        // Use a fallback image - make sure placeholder.svg exists in public directory
+        setImageSrc('/placeholder.svg');
+      };
+    }
+  }, [src, priority]);
   
   // Determine loading attribute
   const loadingAttribute = priority ? 'eager' : 'lazy';
@@ -45,24 +67,12 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   // Determine fetch priority
   const fetchPriority = priority ? 'high' : 'auto';
   
-  useEffect(() => {
-    if (priority) {
-      const img = new Image();
-      img.src = src;
-      img.onload = () => setIsLoaded(true);
-      img.onerror = () => {
-        console.error(`Failed to load image: ${src}`);
-        setIsError(true);
-      };
-    }
-  }, [src, priority]);
-  
   const onImageLoad = () => {
     setIsLoaded(true);
   };
   
   const onImageError = () => {
-    console.error(`Failed to load image: ${src}`);
+    console.error(`Failed to load image: ${imageSrc}`);
     setIsError(true);
     // Use a fallback image - make sure placeholder.svg exists in public directory
     setImageSrc('/placeholder.svg');
