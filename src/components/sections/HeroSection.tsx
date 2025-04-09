@@ -76,7 +76,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
                 width={400}
                 height={400}
                 className="w-4/5 max-w-sm mx-auto drop-shadow-xl"
-                priority
+                priority={true}
               />
               <motion.div 
                 className="absolute -right-5 top-5 bg-stitch-yellow text-stitch-dark p-2 rounded-full shadow-lg font-bold text-sm transform rotate-12"
@@ -146,6 +146,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ timeLeft, scrollToCheckout })
               width={500}
               height={500} 
               className="w-4/5 max-w-sm mx-auto drop-shadow-xl"
+              priority={true}
             />
             <motion.button 
               className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-stitch-pink text-white py-2 px-6 rounded-full shadow-lg font-bold"

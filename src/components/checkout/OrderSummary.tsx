@@ -36,6 +36,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ products, totalAmount }) =>
                 className="h-full w-full object-contain"
                 width={48}
                 height={48}
+                priority={true}
               />
             </div>
             

@@ -87,6 +87,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           width={300}
           height={200}
           className="w-full h-48 object-contain p-4"
+          priority={true}
         />
         <ProductBadges 
           discount={discount} 

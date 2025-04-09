@@ -64,7 +64,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const onImageError = () => {
     console.error(`Failed to load image: ${src}`);
     setIsError(true);
-    // Use a fallback image
+    // Use a fallback image - make sure placeholder.svg exists in public directory
     setImageSrc('/placeholder.svg');
   };
   
@@ -81,6 +81,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     return null;
   };
 
+  // Use a direct src attribute to avoid any potential issues with image loading
   return (
     <div className={`relative ${className}`} style={{ width, height }}>
       {renderPlaceholder()}

@@ -43,6 +43,7 @@ const CartProductItem = memo<CartProductItemProps>(({
             className="h-full w-full object-contain"
             width={48} 
             height={48}
+            priority={true}
           />
         </div>
         
