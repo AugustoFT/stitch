@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import ProductQuantitySelector from '../../ProductQuantitySelector';
 import { ProductInfo } from '../../../hooks/useProductSelection';
+import OptimizedImage from '../../OptimizedImage';
 
 interface CartProductItemProps {
   product: ProductInfo;
@@ -36,13 +37,12 @@ const CartProductItem = memo<CartProductItemProps>(({
     >
       <div className="flex items-center">
         <div className="h-12 w-12 rounded overflow-hidden flex-shrink-0 mr-3 bg-white p-1">
-          <img 
+          <OptimizedImage 
             src={product.imageUrl} 
             alt={product.title} 
             className="h-full w-full object-contain"
-            width="48" 
-            height="48"
-            loading="lazy"
+            width={48} 
+            height={48}
           />
         </div>
         

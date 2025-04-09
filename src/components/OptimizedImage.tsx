@@ -9,6 +9,7 @@ interface OptimizedImageProps {
   className?: string;
   priority?: boolean;
   placeholder?: 'blur' | 'empty';
+  objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -18,16 +19,25 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   height,
   className = '',
   priority = false,
-  placeholder = 'empty'
+  placeholder = 'empty',
+  objectFit = 'contain'
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [imageSrc, setImageSrc] = useState(src);
   
   // Generate dimensions
   const dimensions = {
     width: width || undefined,
     height: height || undefined,
   };
+  
+  // Reset states when src changes
+  useEffect(() => {
+    setIsLoaded(false);
+    setIsError(false);
+    setImageSrc(src);
+  }, [src]);
   
   // Determine loading attribute
   const loadingAttribute = priority ? 'eager' : 'lazy';
@@ -40,7 +50,10 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       const img = new Image();
       img.src = src;
       img.onload = () => setIsLoaded(true);
-      img.onerror = () => setIsError(true);
+      img.onerror = () => {
+        console.error(`Failed to load image: ${src}`);
+        setIsError(true);
+      };
     }
   }, [src, priority]);
   
@@ -49,7 +62,10 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
   
   const onImageError = () => {
+    console.error(`Failed to load image: ${src}`);
     setIsError(true);
+    // Use a fallback image
+    setImageSrc('/placeholder.svg');
   };
   
   // Generate a placeholder for the image
@@ -69,15 +85,21 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     <div className={`relative ${className}`} style={{ width, height }}>
       {renderPlaceholder()}
       <img
-        src={src}
+        src={imageSrc}
         alt={alt}
         className={className}
+        style={{ objectFit }}
         onLoad={onImageLoad}
         onError={onImageError}
         loading={loadingAttribute}
-        fetchPriority={fetchPriority}
+        fetchPriority={fetchPriority as any}
         {...dimensions}
       />
+      {isError && !isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-500 text-xs p-2 text-center">
+          {alt || "Imagem não disponível"}
+        </div>
+      )}
     </div>
   );
 };
