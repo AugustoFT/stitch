@@ -45,32 +45,27 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       setIsError(true);
       formattedSrc = '/placeholder.svg';
     } 
-    // Handle all lovable-uploads paths by ensuring they start with /public/
+    // Handle all lovable-uploads paths
     else if (src.includes('lovable-uploads')) {
-      // Strip any existing prefixes and ensure consistent format
+      // Remove any leading paths and normalize
       let cleanPath = src;
       
-      // Remove any existing prefixes
-      if (cleanPath.startsWith('/public/')) {
-        cleanPath = cleanPath.substring(8); // Remove '/public/'
-      } else if (cleanPath.startsWith('public/')) {
-        cleanPath = cleanPath.substring(7); // Remove 'public/'
-      } else if (cleanPath.startsWith('/')) {
-        cleanPath = cleanPath.substring(1); // Remove leading '/'
+      if (cleanPath.includes('/public/')) {
+        cleanPath = cleanPath.substring(cleanPath.indexOf('/public/') + 8);
+      } else if (cleanPath.includes('public/')) {
+        cleanPath = cleanPath.substring(cleanPath.indexOf('public/') + 7);
       }
       
-      // Ensure path starts with lovable-uploads/
-      if (!cleanPath.startsWith('lovable-uploads/') && cleanPath.includes('lovable-uploads/')) {
-        cleanPath = 'lovable-uploads/' + cleanPath.substring(cleanPath.indexOf('lovable-uploads/') + 15);
-      } else if (!cleanPath.startsWith('lovable-uploads/')) {
-        cleanPath = 'lovable-uploads/' + cleanPath;
+      // Now ensure it starts with lovable-uploads
+      if (!cleanPath.startsWith('lovable-uploads') && cleanPath.includes('lovable-uploads')) {
+        cleanPath = cleanPath.substring(cleanPath.indexOf('lovable-uploads'));
       }
       
-      // Apply the standard format
-      formattedSrc = `/public/${cleanPath}`;
+      // Make final path
+      formattedSrc = `/lovable-uploads/${cleanPath.replace('lovable-uploads/', '')}`;
       
-      // Log the transformation for debugging
-      console.log(`Image path transformed: ${src} → ${formattedSrc}`);
+      // Log for debugging
+      console.log(`Image path normalized: ${src} → ${formattedSrc}`);
     } 
     // Handle absolute URLs (leave unchanged)
     else if (src.startsWith('http')) {

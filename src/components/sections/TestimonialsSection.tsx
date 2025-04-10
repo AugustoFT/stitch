@@ -46,7 +46,7 @@ const TestimonialsSection: React.FC = () => {
             </div>
             <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48 flex items-center justify-center">
               <OptimizedImage 
-                src="/public/lovable-uploads/8cfc64db-41d0-48e4-b488-c2dfabcbc412.png" 
+                src="/lovable-uploads/8cfc64db-41d0-48e4-b488-c2dfabcbc412.png" 
                 alt="Cliente com pelúcia Stitch e rosas"
                 className="w-auto h-full object-contain mx-auto"
                 priority={true}
@@ -77,7 +77,7 @@ const TestimonialsSection: React.FC = () => {
             </div>
             <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48 flex items-center justify-center">
               <OptimizedImage 
-                src="/public/lovable-uploads/2ef0eeb8-09ff-4314-a10e-794186e3aaab.png" 
+                src="/lovable-uploads/2ef0eeb8-09ff-4314-a10e-794186e3aaab.png" 
                 alt="Garrafa térmica Stitch"
                 className="w-auto h-full object-contain mx-auto"
                 priority={true}
@@ -108,7 +108,7 @@ const TestimonialsSection: React.FC = () => {
             </div>
             <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48 flex items-center justify-center">
               <OptimizedImage 
-                src="/public/lovable-uploads/86397c2f-c5df-4f68-b96a-85761e499eee.png" 
+                src="/lovable-uploads/86397c2f-c5df-4f68-b96a-85761e499eee.png" 
                 alt="Criança usando óculos do Stitch"
                 className="w-auto h-full object-contain mx-auto"
                 priority={true}
