@@ -44,21 +44,33 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       console.error('Image source is empty or undefined');
       setIsError(true);
       formattedSrc = '/placeholder.svg';
-    }
-    // Handle lovable-uploads paths consistently
+    } 
+    // Handle all lovable-uploads paths by ensuring they start with /public/
     else if (src.includes('lovable-uploads')) {
-      // Ensure all paths start with /public/ for lovable-uploads
-      if (src.startsWith('/public/')) {
-        formattedSrc = src;
-      } else if (src.startsWith('public/')) {
-        formattedSrc = `/${src}`;
-      } else if (src.startsWith('/lovable-uploads/')) {
-        formattedSrc = `/public${src}`;
-      } else if (src.startsWith('lovable-uploads/')) {
-        formattedSrc = `/public/${src}`;
-      } else if (!src.startsWith('/')) {
-        formattedSrc = `/public/${src}`;
+      // Strip any existing prefixes and ensure consistent format
+      let cleanPath = src;
+      
+      // Remove any existing prefixes
+      if (cleanPath.startsWith('/public/')) {
+        cleanPath = cleanPath.substring(8); // Remove '/public/'
+      } else if (cleanPath.startsWith('public/')) {
+        cleanPath = cleanPath.substring(7); // Remove 'public/'
+      } else if (cleanPath.startsWith('/')) {
+        cleanPath = cleanPath.substring(1); // Remove leading '/'
       }
+      
+      // Ensure path starts with lovable-uploads/
+      if (!cleanPath.startsWith('lovable-uploads/') && cleanPath.includes('lovable-uploads/')) {
+        cleanPath = 'lovable-uploads/' + cleanPath.substring(cleanPath.indexOf('lovable-uploads/') + 15);
+      } else if (!cleanPath.startsWith('lovable-uploads/')) {
+        cleanPath = 'lovable-uploads/' + cleanPath;
+      }
+      
+      // Apply the standard format
+      formattedSrc = `/public/${cleanPath}`;
+      
+      // Log the transformation for debugging
+      console.log(`Image path transformed: ${src} → ${formattedSrc}`);
     } 
     // Handle absolute URLs (leave unchanged)
     else if (src.startsWith('http')) {
