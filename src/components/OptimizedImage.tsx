@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 interface OptimizedImageProps {
@@ -40,22 +39,33 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     // Normalize image path based on different formats
     let formattedSrc = src;
     
-    if (src.includes('lovable-uploads')) {
-      // Handle paths with or without /public/ prefix
+    // Check if src is empty or undefined
+    if (!src) {
+      console.error('Image source is empty or undefined');
+      setIsError(true);
+      formattedSrc = '/placeholder.svg';
+    }
+    // Handle lovable-uploads paths consistently
+    else if (src.includes('lovable-uploads')) {
+      // Ensure all paths start with /public/ for lovable-uploads
       if (src.startsWith('/public/')) {
         formattedSrc = src;
       } else if (src.startsWith('public/')) {
         formattedSrc = `/${src}`;
+      } else if (src.startsWith('/lovable-uploads/')) {
+        formattedSrc = `/public${src}`;
       } else if (src.startsWith('lovable-uploads/')) {
-        formattedSrc = `/public/lovable-uploads/${src.replace('lovable-uploads/', '')}`;
+        formattedSrc = `/public/${src}`;
       } else if (!src.startsWith('/')) {
         formattedSrc = `/public/${src}`;
       }
-    } else if (src.startsWith('http')) {
-      // Leave absolute URLs unchanged
+    } 
+    // Handle absolute URLs (leave unchanged)
+    else if (src.startsWith('http')) {
       formattedSrc = src;
-    } else if (!src.startsWith('/')) {
-      // Add leading slash for relative paths
+    } 
+    // Handle relative paths
+    else if (!src.startsWith('/')) {
       formattedSrc = `/${src}`;
     }
     
@@ -67,7 +77,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       img.src = formattedSrc;
       img.onload = () => setIsLoaded(true);
       img.onerror = () => {
-        console.error(`Failed to load image: ${formattedSrc}`);
+        console.error(`Failed to load image: ${formattedSrc}`, { originalSrc: src });
         setIsError(true);
         // Use a fallback image
         setImageSrc('/placeholder.svg');
@@ -86,7 +96,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
   
   const onImageError = () => {
-    console.error(`Failed to load image: ${imageSrc}, original src: ${src}`);
+    console.error(`Failed to load image: ${imageSrc}`, { originalSrc: src });
     setIsError(true);
     // Use a fallback image
     setImageSrc('/placeholder.svg');
@@ -120,7 +130,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         fetchPriority={fetchPriority as any}
         {...dimensions}
       />
-      {isError && !isLoaded && (
+      {isError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100/50 text-gray-500 text-xs p-2 text-center">
           {alt || "Imagem não disponível"}
         </div>
