@@ -2,6 +2,7 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Check } from 'lucide-react';
+import OptimizedImage from '../OptimizedImage';
 
 const BenefitsSection: React.FC = () => {
   const benefitsRef = useRef<HTMLDivElement>(null);
@@ -34,8 +35,8 @@ const BenefitsSection: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <img 
-                src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png" 
+              <OptimizedImage 
+                src="/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png"
                 alt="Coleção Stitch" 
                 className="w-full h-auto"
               />

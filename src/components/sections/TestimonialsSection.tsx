@@ -2,6 +2,7 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Star, Palmtree, Flower, Sun } from 'lucide-react';
+import OptimizedImage from '../OptimizedImage';
 
 const TestimonialsSection: React.FC = () => {
   const testRef = useRef<HTMLDivElement>(null);
@@ -44,8 +45,8 @@ const TestimonialsSection: React.FC = () => {
               </div>
             </div>
             <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48 flex items-center justify-center">
-              <img 
-                src="/lovable-uploads/8cfc64db-41d0-48e4-b488-c2dfabcbc412.png" 
+              <OptimizedImage 
+                src="/lovable-uploads/8cfc64db-41d0-48e4-b488-c2dfabcbc412.png"
                 alt="Cliente com pelúcia Stitch e rosas"
                 className="w-auto h-full object-contain mx-auto"
               />
@@ -74,8 +75,8 @@ const TestimonialsSection: React.FC = () => {
               </div>
             </div>
             <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48 flex items-center justify-center">
-              <img 
-                src="/lovable-uploads/2ef0eeb8-09ff-4314-a10e-794186e3aaab.png" 
+              <OptimizedImage 
+                src="/lovable-uploads/2ef0eeb8-09ff-4314-a10e-794186e3aaab.png"
                 alt="Garrafa térmica Stitch"
                 className="w-auto h-full object-contain mx-auto"
               />
@@ -104,8 +105,8 @@ const TestimonialsSection: React.FC = () => {
               </div>
             </div>
             <div className="mb-3 relative z-10 rounded-lg overflow-hidden h-48 flex items-center justify-center">
-              <img 
-                src="/lovable-uploads/86397c2f-c5df-4f68-b96a-85761e499eee.png" 
+              <OptimizedImage 
+                src="/lovable-uploads/86397c2f-c5df-4f68-b96a-85761e499eee.png"
                 alt="Criança usando óculos do Stitch"
                 className="w-auto h-full object-contain mx-auto"
               />

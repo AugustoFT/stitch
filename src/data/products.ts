@@ -29,7 +29,7 @@ export const productsList: ProductInfo[] = [
   {
     id: 2,
     title: "Kit Completo Stitch",
-    price: "R$ 398,99",  // Updated price
+    price: "R$ 398,99",
     originalPrice: "R$ 571,40",
     description: "Kit completo com pelúcia Stitch, garrafa térmica e óculos de sol. O presente perfeito para os fãs de Lilo & Stitch.",
     imageUrl: "/lovable-uploads/1c4608df-7348-4fa2-98f9-0c546b5c8895.png",
