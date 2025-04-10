@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import OptimizedImage from '../OptimizedImage';
 
 interface Product {
   id: number;
@@ -30,14 +29,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ products, totalAmount }) =>
         {products.map((product) => (
           <div key={product.id} className="flex items-center py-2 border-b border-blue-100 last:border-b-0">
             <div className="h-10 w-10 rounded overflow-hidden flex-shrink-0 mr-3 bg-white p-1 sm:h-12 sm:w-12">
-              <OptimizedImage 
-                src={product.imageUrl} 
-                alt={product.title} 
-                className="h-full w-full object-contain"
-                width={48}
-                height={48}
-                priority={true}
-              />
+              <img src={product.imageUrl} alt={product.title} className="h-full w-full object-contain" />
             </div>
             
             <div className="flex-grow">
