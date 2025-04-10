@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 
 interface OptimizedImageProps {
@@ -36,16 +37,24 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     setIsLoaded(false);
     setIsError(false);
     
-    // Make sure we're using the correct path format
-    // For lovable-uploads, ensure we prepend /public if needed
+    // Normalize image path based on different formats
     let formattedSrc = src;
     
-    if (src.includes('lovable-uploads') && !src.startsWith('/') && !src.startsWith('http')) {
-      formattedSrc = `/public/${src}`;
+    if (src.includes('lovable-uploads')) {
+      // Handle paths with or without /public/ prefix
+      if (src.startsWith('/public/')) {
+        formattedSrc = src;
+      } else if (src.startsWith('public/')) {
+        formattedSrc = `/${src}`;
+      } else if (src.startsWith('lovable-uploads/')) {
+        formattedSrc = `/public/lovable-uploads/${src.replace('lovable-uploads/', '')}`;
+      } else if (!src.startsWith('/')) {
+        formattedSrc = `/public/${src}`;
+      }
     } else if (src.startsWith('http')) {
       // Leave absolute URLs unchanged
       formattedSrc = src;
-    } else if (!src.startsWith('/') && !src.startsWith('http')) {
+    } else if (!src.startsWith('/')) {
       // Add leading slash for relative paths
       formattedSrc = `/${src}`;
     }
@@ -77,7 +86,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
   
   const onImageError = () => {
-    console.error(`Failed to load image: ${imageSrc}`);
+    console.error(`Failed to load image: ${imageSrc}, original src: ${src}`);
     setIsError(true);
     // Use a fallback image
     setImageSrc('/placeholder.svg');
