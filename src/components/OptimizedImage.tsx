@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 interface OptimizedImageProps {
@@ -38,12 +37,18 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     setIsError(false);
     
     // Make sure we're using the correct path format
-    // Remove any leading slash if it's not an absolute URL
-    const formattedSrc = src.startsWith('http') 
-      ? src 
-      : src.startsWith('/') && !src.startsWith('//') 
-        ? src 
-        : `/${src}`;
+    // For lovable-uploads, ensure we prepend /public if needed
+    let formattedSrc = src;
+    
+    if (src.includes('lovable-uploads') && !src.startsWith('/') && !src.startsWith('http')) {
+      formattedSrc = `/public/${src}`;
+    } else if (src.startsWith('http')) {
+      // Leave absolute URLs unchanged
+      formattedSrc = src;
+    } else if (!src.startsWith('/') && !src.startsWith('http')) {
+      // Add leading slash for relative paths
+      formattedSrc = `/${src}`;
+    }
     
     setImageSrc(formattedSrc);
     
@@ -55,7 +60,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       img.onerror = () => {
         console.error(`Failed to load image: ${formattedSrc}`);
         setIsError(true);
-        // Use a fallback image - make sure placeholder.svg exists in public directory
+        // Use a fallback image
         setImageSrc('/placeholder.svg');
       };
     }
@@ -74,7 +79,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const onImageError = () => {
     console.error(`Failed to load image: ${imageSrc}`);
     setIsError(true);
-    // Use a fallback image - make sure placeholder.svg exists in public directory
+    // Use a fallback image
     setImageSrc('/placeholder.svg');
   };
   
@@ -98,7 +103,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       <img
         src={imageSrc}
         alt={alt}
-        className={className}
+        className={`${className} ${isError ? 'opacity-30' : ''}`}
         style={{ objectFit }}
         onLoad={onImageLoad}
         onError={onImageError}
@@ -107,7 +112,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         {...dimensions}
       />
       {isError && !isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-500 text-xs p-2 text-center">
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100/50 text-gray-500 text-xs p-2 text-center">
           {alt || "Imagem não disponível"}
         </div>
       )}
