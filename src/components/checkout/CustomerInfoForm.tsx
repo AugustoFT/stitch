@@ -1,7 +1,8 @@
 
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import PersonalInfoFields from '../form/PersonalInfoFields';
 import AddressFields from '../form/AddressFields';
+import { useFormattingHandlers } from '@/hooks/useFormattingHandlers';
 
 interface CustomerInfoFormProps {
   formData: any;
@@ -9,33 +10,50 @@ interface CustomerInfoFormProps {
   handlePhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCPFChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCEPChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setFormData?: (updater: (prev: any) => any) => void;
 }
 
-const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
+// Componente principal otimizado
+const CustomerInfoForm: React.FC<CustomerInfoFormProps> = memo(({
   formData,
   handleChange,
   handlePhoneChange,
   handleCPFChange,
-  handleCEPChange
+  handleCEPChange,
+  setFormData
 }) => {
+  // Usa handlers otimizados se setFormData estiver disponível
+  const optimizedHandlers = setFormData ? 
+    useFormattingHandlers({ setFormData }) : 
+    { handleCPFChange, handlePhoneChange, handleCEPChange, cleanup: () => {} };
+
+  // Limpa timers ao desmontar
+  useEffect(() => {
+    return () => {
+      optimizedHandlers.cleanup();
+    };
+  }, [optimizedHandlers]);
+
   return (
-    <div className="space-y-4">
-      {/* Seção de informações pessoais */}
+    <div className="space-y-4 form-container" style={{ contain: 'content' }}>
+      {/* Seção de informações pessoais com componentes otimizados */}
       <PersonalInfoFields
         formData={formData}
         handleChange={handleChange}
-        handlePhoneChange={handlePhoneChange}
-        handleCPFChange={handleCPFChange}
+        handlePhoneChange={setFormData ? optimizedHandlers.handlePhoneChange : handlePhoneChange}
+        handleCPFChange={setFormData ? optimizedHandlers.handleCPFChange : handleCPFChange}
       />
       
-      {/* Seção de endereço */}
+      {/* Seção de endereço com componentes otimizados */}
       <AddressFields
         formData={formData}
         handleChange={handleChange}
-        handleCEPChange={handleCEPChange}
+        handleCEPChange={setFormData ? optimizedHandlers.handleCEPChange : handleCEPChange}
       />
     </div>
   );
-};
+});
 
-export default memo(CustomerInfoForm);
+CustomerInfoForm.displayName = 'CustomerInfoForm';
+
+export default CustomerInfoForm;

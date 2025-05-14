@@ -1,7 +1,8 @@
 
 import React, { memo } from 'react';
-import FormField from './FormField';
+import AddressInputField from './fields/AddressInputField';
 import SelectField from './SelectField';
+import CEPField from './fields/CEPField';
 import { stateOptions } from './StateOptions';
 
 interface AddressFieldsProps {
@@ -24,7 +25,8 @@ const AddressFields = memo(({
 }: AddressFieldsProps) => {
   return (
     <>
-      <FormField
+      {/* Endereço otimizado */}
+      <AddressInputField
         id="endereco"
         label="Rua"
         required
@@ -33,7 +35,7 @@ const AddressFields = memo(({
         placeholder="Nome da rua"
       />
       
-      <FormField
+      <AddressInputField
         id="numero"
         label="Número"
         required
@@ -42,7 +44,7 @@ const AddressFields = memo(({
         placeholder="Número"
       />
       
-      <FormField
+      <AddressInputField
         id="complemento"
         label="Complemento"
         value={formData.complemento || ''}
@@ -51,7 +53,7 @@ const AddressFields = memo(({
       />
       
       <div className="grid grid-cols-2 gap-4">
-        <FormField
+        <AddressInputField
           id="cidade"
           label="Cidade"
           required
@@ -72,13 +74,11 @@ const AddressFields = memo(({
         />
       </div>
       
-      <FormField
-        id="cep"
-        label="CEP"
-        required
+      {/* CEP otimizado */}
+      <CEPField
         value={formData.cep || ''}
         onChange={handleCEPChange}
-        placeholder="00000-000"
+        required
       />
     </>
   );

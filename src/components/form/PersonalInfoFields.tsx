@@ -1,6 +1,8 @@
 
 import React, { memo } from 'react';
 import FormField from './FormField';
+import PhoneField from './fields/PhoneField';
+import CPFField from './fields/CPFField';
 
 interface PersonalInfoFieldsProps {
   formData: {
@@ -41,22 +43,18 @@ const PersonalInfoFields = memo(({
         type="email"
       />
       
-      <FormField
-        id="telefone"
-        label="Telefone"
-        required
+      {/* Componente otimizado para telefone */}
+      <PhoneField
         value={formData.telefone || ''}
         onChange={handlePhoneChange}
-        placeholder="(00) 00000-0000"
+        required
       />
       
-      <FormField
-        id="cpf"
-        label="CPF"
-        required
+      {/* Componente otimizado para CPF */}
+      <CPFField
         value={formData.cpf || ''}
         onChange={handleCPFChange}
-        placeholder="000.000.000-00"
+        required
       />
     </>
   );

@@ -1,0 +1,28 @@
+
+/* Otimizações de performance para formulários */
+
+.form-container {
+  contain: content;
+}
+
+.field-container {
+  contain: content;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.stitch-input {
+  contain: strict;
+  will-change: contents;
+}
+
+/* Prevenir layout shifts */
+input, select, textarea {
+  min-height: 2.5rem;
+}
+
+/* Melhorar desempenho de digitação */
+input, textarea {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeSpeed;
+}
