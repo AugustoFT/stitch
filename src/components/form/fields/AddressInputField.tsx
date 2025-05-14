@@ -22,10 +22,41 @@ const AddressInputField = memo(({
   className = '' 
 }: AddressInputFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const perfMarkRef = useRef<string | null>(null);
+  
+  // Performance metrics
+  const startTypingMeasurement = useCallback(() => {
+    perfMarkRef.current = `input-${id}-${Date.now()}`;
+    performance.mark(perfMarkRef.current);
+  }, [id]);
+  
+  const endTypingMeasurement = useCallback(() => {
+    if (perfMarkRef.current) {
+      const measureName = `${perfMarkRef.current}-duration`;
+      performance.measure(measureName, perfMarkRef.current);
+      const entries = performance.getEntriesByName(measureName);
+      
+      if (entries.length > 0) {
+        const duration = entries[0].duration;
+        if (duration > 10) {
+          console.warn(`Input ${id} performance warning: ${duration.toFixed(2)}ms latency`);
+        }
+      }
+      
+      performance.clearMarks(perfMarkRef.current);
+      performance.clearMeasures(measureName);
+      perfMarkRef.current = null;
+    }
+  }, [id]);
 
+  // Use uncontrolled input for better performance
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e);
-  }, [onChange]);
+    // Start measurement on input
+    requestAnimationFrame(() => {
+      endTypingMeasurement();
+      onChange(e);
+    });
+  }, [onChange, endTypingMeasurement]);
 
   return (
     <div className={`field-container ${className}`} style={{ contain: 'content' }}>
@@ -38,8 +69,9 @@ const AddressInputField = memo(({
         id={id}
         name={id}
         required={required}
-        value={value}
+        defaultValue={value}
         onChange={handleInputChange}
+        onKeyDown={startTypingMeasurement}
         className="stitch-input"
         placeholder={placeholder}
         autoComplete={id === "endereco" ? "street-address" : id === "cidade" ? "address-level2" : "off"}

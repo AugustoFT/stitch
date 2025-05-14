@@ -12,8 +12,8 @@ interface PersonalInfoFieldsProps {
     cpf: string;
   };
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handlePhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleCPFChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handlePhoneChange: (value: string) => void;
+  handleCPFChange: (value: string) => void;
 }
 
 const PersonalInfoFields = memo(({ 
@@ -43,17 +43,17 @@ const PersonalInfoFields = memo(({
         type="email"
       />
       
-      {/* Componente otimizado para telefone */}
+      {/* Campo de telefone com máscara DOM direta */}
       <PhoneField
         value={formData.telefone || ''}
-        onChange={handlePhoneChange}
+        onBlur={handlePhoneChange}
         required
       />
       
-      {/* Componente otimizado para CPF */}
+      {/* Campo de CPF com máscara DOM direta */}
       <CPFField
         value={formData.cpf || ''}
-        onChange={handleCPFChange}
+        onBlur={handleCPFChange}
         required
       />
     </>

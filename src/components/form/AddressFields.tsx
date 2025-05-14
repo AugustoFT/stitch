@@ -15,7 +15,7 @@ interface AddressFieldsProps {
     cep: string;
   };
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  handleCEPChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleCEPChange: (value: string) => void;
 }
 
 const AddressFields = memo(({ 
@@ -74,10 +74,10 @@ const AddressFields = memo(({
         />
       </div>
       
-      {/* CEP otimizado */}
+      {/* CEP com máscara DOM direta */}
       <CEPField
         value={formData.cep || ''}
-        onChange={handleCEPChange}
+        onBlur={handleCEPChange}
         required
       />
     </>

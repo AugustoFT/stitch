@@ -1,28 +1,41 @@
 
 /* Otimizações de performance para formulários */
 
+/* Contenção de layout */
 .form-container {
   contain: content;
+  will-change: auto;
 }
 
 .field-container {
-  contain: content;
-  will-change: transform;
-  transform: translateZ(0);
+  contain: layout;
+  will-change: auto;
 }
 
+/* Evitar repaints/reflows ao digitar */
 .stitch-input {
-  contain: strict;
+  backface-visibility: hidden;
+  transform: translateZ(0);
   will-change: contents;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeSpeed;
 }
 
 /* Prevenir layout shifts */
 input, select, textarea {
   min-height: 2.5rem;
+  contain: strict layout;
+  padding: 0 0.75rem;
 }
 
-/* Melhorar desempenho de digitação */
-input, textarea {
-  -webkit-font-smoothing: antialiased;
+/* Melhorar fluidez */
+body {
   text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Masking containers */
+.masked-input-container {
+  contain: strict;
+  isolation: isolate;
 }

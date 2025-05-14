@@ -7,9 +7,9 @@ import { useFormattingHandlers } from '@/hooks/useFormattingHandlers';
 interface CustomerInfoFormProps {
   formData: any;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  handlePhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleCPFChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleCEPChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handlePhoneChange: (value: string) => void;
+  handleCPFChange: (value: string) => void;
+  handleCEPChange: (value: string) => void;
   setFormData?: (updater: (prev: any) => any) => void;
 }
 

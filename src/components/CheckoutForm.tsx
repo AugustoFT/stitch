@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import PaymentSuccessMessage from './checkout/PaymentSuccessMessage';
 import CheckoutFormContent from './checkout/content/CheckoutFormContent';
@@ -10,6 +10,19 @@ import { useProductInteractions } from './checkout/hooks/useProductInteractions'
 import { useSubmitHandler } from './checkout/hooks/useSubmitHandler';
 import CheckoutHeader from './checkout/ui/CheckoutHeader';
 import PromoMessage from './checkout/ui/PromoMessage';
+
+// Performance monitoring
+const checkoutPerfMarker = 'checkout-form-render';
+
+// Lazy load dialog components
+const CheckoutFormSkeleton = () => (
+  <div className="animate-pulse p-5 space-y-4">
+    <div className="h-7 bg-gray-200 rounded w-4/5 mx-auto"></div>
+    <div className="h-52 bg-gray-200 rounded mb-3"></div>
+    <div className="h-72 bg-gray-200 rounded mb-3"></div>
+    <div className="h-12 bg-gray-200 rounded w-full"></div>
+  </div>
+);
 
 // Declare MercadoPago in the window object
 declare global {
@@ -45,6 +58,21 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     updateProductQuantity,
     removeProduct
   } = useCheckoutForm(selectedProducts, totalAmount);
+
+  // Performance monitoring
+  useEffect(() => {
+    performance.mark(checkoutPerfMarker);
+    
+    return () => {
+      try {
+        performance.measure('checkout-form-lifecycle', checkoutPerfMarker);
+        performance.clearMarks(checkoutPerfMarker);
+        performance.clearMeasures('checkout-form-lifecycle');
+      } catch (e) {
+        console.error('Error measuring performance:', e);
+      }
+    };
+  }, []);
 
   // Track checkout view
   useCheckoutTracking({ selectedProducts, totalAmount });
@@ -93,25 +121,27 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       {/* The form is now wrapped in a form tag, but the cart functionality is independent */}
       {(!formState.paymentResult || formState.paymentResult.status !== 'approved') && (
         <form onSubmit={enhancedHandleSubmit} className="space-y-3">
-          <CheckoutFormContent
-            formData={formState.formData}
-            isSubmitting={formState.isSubmitting}
-            cardFormVisible={formState.cardFormVisible}
-            mercadoPagoReady={formState.mercadoPagoReady}
-            paymentResult={formState.paymentResult}
-            setIsSubmitting={setIsSubmitting}
-            setPaymentResult={setPaymentResult}
-            setCardPaymentStatus={setCardPaymentStatus}
-            handleChange={handleChange}
-            handlePhoneChange={handlePhoneChange}
-            handleCPFChange={handleCPFChange}
-            handleCEPChange={handleCEPChange}
-            handlePaymentMethodChange={handlePaymentMethodChange}
-            productsWithQuantity={formState.productsWithQuantity}
-            calculatedTotal={formState.calculatedTotal}
-            onRemoveProduct={handleRemoveProduct}
-            onQuantityChange={handleQuantityChange}
-          />
+          <Suspense fallback={<CheckoutFormSkeleton />}>
+            <CheckoutFormContent
+              formData={formState.formData}
+              isSubmitting={formState.isSubmitting}
+              cardFormVisible={formState.cardFormVisible}
+              mercadoPagoReady={formState.mercadoPagoReady}
+              paymentResult={formState.paymentResult}
+              setIsSubmitting={setIsSubmitting}
+              setPaymentResult={setPaymentResult}
+              setCardPaymentStatus={setCardPaymentStatus}
+              handleChange={handleChange}
+              handlePhoneChange={handlePhoneChange}
+              handleCPFChange={handleCPFChange}
+              handleCEPChange={handleCEPChange}
+              handlePaymentMethodChange={handlePaymentMethodChange}
+              productsWithQuantity={formState.productsWithQuantity}
+              calculatedTotal={formState.calculatedTotal}
+              onRemoveProduct={handleRemoveProduct}
+              onQuantityChange={handleQuantityChange}
+            />
+          </Suspense>
         </form>
       )}
     </motion.div>

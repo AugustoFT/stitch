@@ -1,53 +1,45 @@
 
-import React, { memo, useRef, useCallback, useState, useTransition } from 'react';
+import React, { memo, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
-import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
-import { formatCEP } from '@/components/checkout/InputFormatters';
+import { useInputMask } from '@/hooks/useInputMask';
 
 interface CEPFieldProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  name?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (value: string) => void;
   required?: boolean;
   className?: string;
 }
 
-const CEPField = memo(({ value, onChange, required = false, className = '' }: CEPFieldProps) => {
-  // Estado local para controle de UI imediato
-  const [localValue, setLocalValue] = useState(value);
-  // useTransition para operações de baixa prioridade
-  const [isPending, startTransition] = useTransition();
-  // Ref para acessar input diretamente se necessário
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Função debounced para formatação do CEP
-  const debouncedFormat = useDebouncedCallback((input: string) => {
-    startTransition(() => {
-      const formattedValue = formatCEP(input);
-      setLocalValue(formattedValue);
-      
-      // Simulamos um evento para manter compatibilidade com o formulário
-      const syntheticEvent = {
-        target: {
-          name: 'cep',
-          value: formattedValue
-        }
-      } as React.ChangeEvent<HTMLInputElement>;
-      
-      onChange(syntheticEvent);
-    });
-  }, 200);
-
-  // Handler para mudança imediata no input
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    
-    // Atualize o valor local imediatamente para feedback instantâneo
-    setLocalValue(input);
-    
-    // Use debounce para a formatação e atualização do estado global
-    debouncedFormat(input);
-  }, [debouncedFormat]);
-
+const CEPField = memo(({ 
+  name = 'cep',
+  value = '', 
+  onChange, 
+  onBlur,
+  required = false, 
+  className = '' 
+}: CEPFieldProps) => {
+  // Usar máscara diretamente no DOM sem controlar via React
+  const { inputRef, getMaskedValue } = useInputMask('cep', {
+    onComplete: (value) => {
+      if (onBlur) onBlur(value);
+    }
+  });
+  
+  // Usar em conjunto com React para manter compatibilidade
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (onChange) {
+      onChange(e);
+    }
+  }, [onChange]);
+  
+  const handleBlur = useCallback(() => {
+    if (onBlur && inputRef.current) {
+      onBlur(getMaskedValue());
+    }
+  }, [onBlur, getMaskedValue]);
+  
   return (
     <div className={`field-container ${className}`} style={{ contain: 'content' }}>
       <label htmlFor="cep" className="block text-sm font-medium text-gray-700 mb-1">
@@ -56,17 +48,17 @@ const CEPField = memo(({ value, onChange, required = false, className = '' }: CE
       <Input
         ref={inputRef}
         type="text"
-        id="cep"
-        name="cep"
+        id={name}
+        name={name}
         required={required}
-        value={localValue}
-        onChange={handleInputChange}
+        defaultValue={value}
+        onChange={handleChange}
+        onBlur={handleBlur}
         className="stitch-input"
         placeholder="00000-000"
         autoComplete="postal-code"
         spellCheck="false"
         inputMode="numeric"
-        aria-busy={isPending}
       />
     </div>
   );

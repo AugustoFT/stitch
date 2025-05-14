@@ -1,6 +1,6 @@
 
-import React, { useCallback } from 'react';
-import { formatCardNumber, formatExpirationDate, formatCVV } from './CardFormatters';
+import React, { useCallback, useRef, useEffect } from 'react';
+import { useInputMask } from '@/hooks/useInputMask';
 
 interface CardInputsProps {
   cardNumber: string;
@@ -27,30 +27,63 @@ const CardInputs: React.FC<CardInputsProps> = ({
   setSecurityCode,
   validateField
 }) => {
-  // Use memoized event handlers for better performance
-  const handleCardNumberChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatCardNumber(e.target.value);
-    setCardNumber(formattedValue);
-    validateField('cardNumber', formattedValue);
-  }, [setCardNumber, validateField]);
-
+  // Usar máscaras IMask para os campos do cartão
+  const { inputRef: cardNumberRef, getMaskedValue: getCardNumber } = useInputMask('card', {
+    onComplete: (value) => {
+      setCardNumber(value);
+      validateField('cardNumber', value);
+    }
+  });
+  
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  
+  const { inputRef: expiryRef, getMaskedValue: getExpiry } = useInputMask('expiry', {
+    onComplete: (value) => {
+      setExpirationDate(value);
+      validateField('expirationDate', value);
+    }
+  });
+  
+  const { inputRef: cvvRef, getMaskedValue: getCvv } = useInputMask('cvv', {
+    onComplete: (value) => {
+      setSecurityCode(value);
+      validateField('securityCode', value);
+    }
+  });
+  
+  // Para o nome do titular, usamos uma abordagem mais simples sem máscara
   const handleCardholderNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase();
     setCardholderName(value);
     validateField('cardholderName', value);
   }, [setCardholderName, validateField]);
-
-  const handleExpirationDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatExpirationDate(e.target.value);
-    setExpirationDate(formattedValue);
-    validateField('expirationDate', formattedValue);
-  }, [setExpirationDate, validateField]);
-
-  const handleSecurityCodeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatCVV(e.target.value);
-    setSecurityCode(formattedValue);
-    validateField('securityCode', formattedValue);
-  }, [setSecurityCode, validateField]);
+  
+  // Performance tracking for name field
+  const perfMarkRef = useRef<string | null>(null);
+  
+  const startNameMeasurement = useCallback(() => {
+    perfMarkRef.current = `name-input-${Date.now()}`;
+    performance.mark(perfMarkRef.current);
+  }, []);
+  
+  const endNameMeasurement = useCallback(() => {
+    if (perfMarkRef.current) {
+      const measureName = `${perfMarkRef.current}-duration`;
+      performance.measure(measureName, perfMarkRef.current);
+      const entries = performance.getEntriesByName(measureName);
+      
+      if (entries.length > 0) {
+        const duration = entries[0].duration;
+        if (duration > 10) {
+          console.warn(`Name input performance warning: ${duration.toFixed(2)}ms latency`);
+        }
+      }
+      
+      performance.clearMarks(perfMarkRef.current);
+      performance.clearMeasures(measureName);
+      perfMarkRef.current = null;
+    }
+  }, []);
 
   return (
     <>
@@ -59,12 +92,15 @@ const CardInputs: React.FC<CardInputsProps> = ({
           Número do Cartão*
         </label>
         <input
+          ref={cardNumberRef}
           type="text"
           id="cardNumber"
-          value={cardNumber}
-          onChange={handleCardNumberChange}
+          name="cardNumber"
+          defaultValue={cardNumber}
           className={`stitch-input ${errors.cardNumber ? 'border-red-500' : ''}`}
           placeholder="0000 0000 0000 0000"
+          inputMode="numeric"
+          autoComplete="cc-number"
           required
         />
         {errors.cardNumber && (
@@ -77,12 +113,17 @@ const CardInputs: React.FC<CardInputsProps> = ({
           Nome no Cartão*
         </label>
         <input
+          ref={nameInputRef}
           type="text"
           id="cardholderName"
-          value={cardholderName}
+          name="cardholderName"
+          defaultValue={cardholderName}
           onChange={handleCardholderNameChange}
+          onKeyDown={startNameMeasurement}
+          onInput={endNameMeasurement}
           className={`stitch-input ${errors.cardholderName ? 'border-red-500' : ''}`}
           placeholder="NOME COMO ESTÁ NO CARTÃO"
+          autoComplete="cc-name"
           required
         />
         {errors.cardholderName && (
@@ -96,12 +137,15 @@ const CardInputs: React.FC<CardInputsProps> = ({
             Validade*
           </label>
           <input
+            ref={expiryRef}
             type="text"
             id="expirationDate"
-            value={expirationDate}
-            onChange={handleExpirationDateChange}
+            name="expirationDate"
+            defaultValue={expirationDate}
             className={`stitch-input ${errors.expirationDate ? 'border-red-500' : ''}`}
             placeholder="MM/AA"
+            inputMode="numeric"
+            autoComplete="cc-exp"
             required
           />
           {errors.expirationDate && (
@@ -113,12 +157,15 @@ const CardInputs: React.FC<CardInputsProps> = ({
             CVV*
           </label>
           <input
+            ref={cvvRef}
             type="text"
             id="securityCode"
-            value={securityCode}
-            onChange={handleSecurityCodeChange}
+            name="securityCode"
+            defaultValue={securityCode}
             className={`stitch-input ${errors.securityCode ? 'border-red-500' : ''}`}
             placeholder="123"
+            inputMode="numeric"
+            autoComplete="cc-csc"
             required
           />
           {errors.securityCode && (

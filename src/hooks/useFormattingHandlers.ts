@@ -1,102 +1,40 @@
 
-import { useCallback, useRef, useTransition } from 'react';
-import { useDebouncedCallback } from './useDebouncedCallback';
-import { formatCPF, formatPhoneNumber, formatCEP } from '@/components/checkout/InputFormatters';
+import { useCallback, useRef } from 'react';
 
 interface FormattingHandlersProps {
   setFormData: (updater: (prev: any) => any) => void;
 }
 
 export const useFormattingHandlers = ({ setFormData }: FormattingHandlersProps) => {
-  // Use refs para evitar re-renderizações desnecessárias
-  const prevValues = useRef({
-    cpf: '',
-    telefone: '',
-    cep: ''
-  });
+  // As formatações agora acontecem diretamente no DOM, não precisamos mais guardar valores anteriores
   
-  // useTransition para operações de baixa prioridade
-  const [isPending, startTransition] = useTransition();
+  // O telefone só é atualizado no blur, não a cada tecla
+  const handlePhoneChange = useCallback((value: string) => {
+    // Atualiza o estado global apenas quando o usuário termina de digitar (onBlur)
+    setFormData(prev => ({ ...prev, telefone: value }));
+  }, [setFormData]);
+  
+  // O CPF só é atualizado no blur, não a cada tecla
+  const handleCPFChange = useCallback((value: string) => {
+    // Atualiza o estado global apenas quando o usuário termina de digitar (onBlur)
+    setFormData(prev => ({ ...prev, cpf: value }));
+  }, [setFormData]);
+  
+  // O CEP só é atualizado no blur, não a cada tecla
+  const handleCEPChange = useCallback((value: string) => {
+    // Atualiza o estado global apenas quando o usuário termina de digitar (onBlur)
+    setFormData(prev => ({ ...prev, cep: value }));
+  }, [setFormData]);
 
-  // Handler CPF otimizado com debounce
-  const handleCPFChange = useDebouncedCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    
-    // Atualização imediata para feedback visual
-    if (input === '') {
-      setFormData(prev => ({ ...prev, cpf: '' }));
-      prevValues.current.cpf = '';
-      return;
-    }
-    
-    // Formatação com baixa prioridade
-    startTransition(() => {
-      const formattedValue = formatCPF(input);
-      
-      // Só atualiza se o valor for diferente
-      if (formattedValue !== prevValues.current.cpf) {
-        setFormData(prev => ({ ...prev, cpf: formattedValue }));
-        prevValues.current.cpf = formattedValue;
-      }
-    });
-  }, 200);
-  
-  // Handler telefone otimizado com debounce
-  const handlePhoneChange = useDebouncedCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    
-    // Atualização imediata para feedback visual
-    if (input === '') {
-      setFormData(prev => ({ ...prev, telefone: '' }));
-      prevValues.current.telefone = '';
-      return;
-    }
-    
-    // Formatação com baixa prioridade
-    startTransition(() => {
-      const formattedValue = formatPhoneNumber(input);
-      
-      // Só atualiza se o valor for diferente
-      if (formattedValue !== prevValues.current.telefone) {
-        setFormData(prev => ({ ...prev, telefone: formattedValue }));
-        prevValues.current.telefone = formattedValue;
-      }
-    });
-  }, 200);
-  
-  // Handler CEP otimizado com debounce
-  const handleCEPChange = useDebouncedCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    
-    // Atualização imediata para feedback visual
-    if (input === '') {
-      setFormData(prev => ({ ...prev, cep: '' }));
-      prevValues.current.cep = '';
-      return;
-    }
-    
-    // Formatação com baixa prioridade
-    startTransition(() => {
-      const formattedValue = formatCEP(input);
-      
-      // Só atualiza se o valor for diferente
-      if (formattedValue !== prevValues.current.cep) {
-        setFormData(prev => ({ ...prev, cep: formattedValue }));
-        prevValues.current.cep = formattedValue;
-      }
-    });
-  }, 200);
-
-  // Função utilitária para limpar timers e prevenir vazamento de memória
+  // Função utilitária para limpar qualquer pendência
   const cleanup = useCallback(() => {
-    // Implementada no hook de debounce
+    // Não há mais timers para limpar pois a formatação ocorre no DOM
   }, []);
 
   return {
     handleCPFChange,
     handlePhoneChange,
     handleCEPChange,
-    isPending,
     cleanup
   };
 };
