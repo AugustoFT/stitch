@@ -1,4 +1,16 @@
+
 import { preferenceClient } from './config';
+import { ProductInfo } from '../../hooks/useProductSelection';
+
+// Define the CustomerInfo interface
+interface CustomerInfo {
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  number: string;
+  cep: string;
+}
 
 // This function creates a checkout preference
 export const createPreference = async (
