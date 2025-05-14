@@ -20,13 +20,25 @@ export const createPreference = async (
   
   try {
     // Format items for MercadoPago
-    const preferenceItems = products.map((product) => ({
-      id: product.id.toString(),
-      title: product.title,
-      quantity: product.quantity,
-      currency_id: 'BRL',
-      unit_price: product.price
-    }));
+    const preferenceItems = products.map((product) => {
+      // Ensure unit_price is always a number
+      let unitPrice: number;
+      
+      if (typeof product.price === 'string') {
+        // Convert string price (e.g. "R$ 139,99") to number
+        unitPrice = parseFloat(product.price.replace('R$ ', '').replace(',', '.'));
+      } else {
+        unitPrice = product.price as number;
+      }
+      
+      return {
+        id: product.id.toString(),
+        title: product.title,
+        quantity: product.quantity,
+        currency_id: 'BRL',
+        unit_price: unitPrice // Now guaranteed to be a number
+      };
+    });
     
     // Create preference object
     const preference = {
